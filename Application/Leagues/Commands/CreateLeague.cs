@@ -1,4 +1,5 @@
 using System;
+using Application.Leagues.DTOs;
 using Domain;
 using MediatR;
 using Persistence;
@@ -9,20 +10,34 @@ public class CreateLeague
 {
     public class Command : IRequest<string>
     {
-        public required League League { get; set; }
+        public required CreateLeagueDto LeagueDto { get; set; }
     }
 
     public class Handler(AppDbContext context) : IRequestHandler<Command, string>
     {
         public async Task<string> Handle(Command request, CancellationToken cancellationToken)
         {
-            context.Leagues.Add(request.League);
+            List<LeagueMember> members = [..
+                request.LeagueDto.Members.Select<string, LeagueMember>(
+                    s => new LeagueMember() { DisplayName = s }
+                )
+            ];
+            League league = new()
+            {
+                Title = request.LeagueDto.Title,
+                Description = request.LeagueDto.Description,
+                StartDate = request.LeagueDto.StartDate,
+                Members = members,
+            };
+
+
+            context.Leagues.Add(league);
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
 
             if (!res) throw new Exception("Failed to create leaderboard");
 
-            return request.League.Id;
+            return league.Id;
         }
     }
 }

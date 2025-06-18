@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Application.Leagues.Commands;
+using Application.Leagues.DTOs;
 using Application.Leagues.Queries;
 using Domain;
 using MediatR;
@@ -25,9 +26,9 @@ public class LeaguesController() : BaseApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult<string>> CreateLeague(League league)
+    public async Task<ActionResult<string>> CreateLeague(CreateLeagueDto leagueDto)
     {
-        return await Mediator.Send(new CreateLeague.Command { League = league });
+        return await Mediator.Send(new CreateLeague.Command { LeagueDto = leagueDto });
     }
 
 }
