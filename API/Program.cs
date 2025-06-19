@@ -7,10 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddAutoMapper(opt =>
-{
-    opt.AddProfile<MappingProfiles>();
-});
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
