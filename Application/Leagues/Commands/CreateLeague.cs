@@ -1,5 +1,6 @@
 using System;
 using Application.Leagues.DTOs;
+using AutoMapper;
 using Domain;
 using MediatR;
 using Persistence;
@@ -13,23 +14,11 @@ public class CreateLeague
         public required CreateLeagueDto LeagueDto { get; set; }
     }
 
-    public class Handler(AppDbContext context) : IRequestHandler<Command, string>
+    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, string>
     {
         public async Task<string> Handle(Command request, CancellationToken cancellationToken)
         {
-            List<LeagueMember> members = [..
-                request.LeagueDto.Members.Select<string, LeagueMember>(
-                    s => new LeagueMember() { DisplayName = s }
-                )
-            ];
-            League league = new()
-            {
-                Title = request.LeagueDto.Title,
-                Description = request.LeagueDto.Description,
-                StartDate = request.LeagueDto.StartDate,
-                Members = members,
-            };
-
+            var league = mapper.Map<League>(request.LeagueDto);
 
             context.Leagues.Add(league);
 
