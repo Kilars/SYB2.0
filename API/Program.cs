@@ -22,6 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddCors();
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<GetLeagueList.Handler>());
 builder.Services.AddIdentityApiEndpoints<User>(opt =>
 {
@@ -32,6 +33,7 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 
 var app = builder.Build();
 
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000"));
 app.UseAuthentication();
 app.UseAuthorization();
 

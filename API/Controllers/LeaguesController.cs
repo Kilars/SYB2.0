@@ -1,19 +1,16 @@
 using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using Application.Leagues.Commands;
 using Application.Leagues.DTOs;
 using Application.Leagues.Queries;
 using Domain;
-using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace API.Controllers;
 
 public class LeaguesController() : BaseApiController
 {
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<League>>> GetLeagues()
     {
