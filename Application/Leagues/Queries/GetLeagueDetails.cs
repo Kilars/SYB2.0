@@ -1,4 +1,6 @@
 using System;
+using Application.Leagues.DTOs;
+using AutoMapper;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,21 +11,23 @@ namespace Application.Leagues.Queries;
 
 public class GetLeagueDetails
 {
-    public class Query : IRequest<League>
+    public class Query : IRequest<LeagueDto>
     {
         public required string Id { get; set; }
     }
 
-    public class Command(AppDbContext context) : IRequestHandler<Query, League>
+    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Query, LeagueDto>
     {
-        public async Task<League> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<LeagueDto> Handle(Query request, CancellationToken cancellationToken)
         {
             var league = await context.Leagues
                 .Include(x => x.Members)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
                     ?? throw new Exception("Activity not found");
 
-            return league;
+            var leagueDto = mapper.Map<LeagueDto>(league);
+
+            return leagueDto;
         }
     }
 }

@@ -12,12 +12,12 @@ public class LeaguesController() : BaseApiController
 {
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<List<League>>> GetLeagues()
+    public async Task<ActionResult<List<LeagueDto>>> GetLeagues()
     {
         return await Mediator.Send(new GetLeagueList.Query());
     }
     [HttpGet("{id}")]
-    public async Task<ActionResult<League>> GetLeagueDetails(string id)
+    public async Task<ActionResult<LeagueDto>> GetLeagueDetails(string id)
     {
         return await Mediator.Send(new GetLeagueDetails.Query { Id = id });
     }
@@ -26,6 +26,11 @@ public class LeaguesController() : BaseApiController
     public async Task<ActionResult<string>> CreateLeague(CreateLeagueDto leagueDto)
     {
         return await Mediator.Send(new CreateLeague.Command { LeagueDto = leagueDto });
+    }
+    [HttpPut]
+    public async Task<ActionResult> UpdateLeague(UpdateLeagueDto leagueDto)
+    {
+        return Ok(await Mediator.Send(new UpdateLeague.Command { UpdateLeagueDto = leagueDto }));
     }
 
 }

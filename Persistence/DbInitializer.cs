@@ -33,10 +33,9 @@ public class DbInitializer
             StartDate = new DateTime(2025, 3, 1),
             EndDate = new DateTime(2025, 5, 1),
             Members = [
-                new() { DisplayName = "Alice", IsAdmin = true },
-                new() { DisplayName = "Bob", IsAdmin = false },
-                new() { DisplayName = "Charlie", IsAdmin = false },
-                new() { DisplayName = "Diana", IsAdmin = false },
+                new() { UserId = "bob-id", DisplayName = "Bob", IsAdmin = true },
+                new() { UserId = "tom-id", DisplayName = "Tom", IsAdmin = false },
+                new() { UserId = "jane-id", DisplayName = "Jane", IsAdmin = false },
             ]
         },
         new() {
@@ -45,12 +44,8 @@ public class DbInitializer
             Status = LeagueStatus.Active,
             StartDate = new DateTime(2025, 6, 1),
             Members = [
-                new() { DisplayName = "Eve", IsAdmin = true },
-                new() { DisplayName = "Frank", IsAdmin = false },
-                new() { DisplayName = "Grace", IsAdmin = false },
-                new() { DisplayName = "Heidi", IsAdmin = false },
-                new() { DisplayName = "Ivan", IsAdmin = false },
-                new() { DisplayName = "Judy", IsAdmin = false },
+                new() { UserId = "bob-id", DisplayName = "Bob", IsAdmin = true },
+                new() { UserId = "jane-id", DisplayName = "Jane", IsAdmin = false },
             ]
         },
         new() {
@@ -59,11 +54,8 @@ public class DbInitializer
             Status = LeagueStatus.Complete,
             StartDate = new DateTime(2024, 9, 1),
             Members = [
-                new() { DisplayName = "Karl", IsAdmin = true },
-                new() { DisplayName = "Liam", IsAdmin = false },
-                new() { DisplayName = "Mona", IsAdmin = false },
-                new() { DisplayName = "Nina", IsAdmin = false },
-                new() { DisplayName = "Oscar", IsAdmin = false },
+                new() { UserId = "tom-id", DisplayName = "Tom", IsAdmin = true },
+                new() { UserId = "jane-id", DisplayName = "Jane", IsAdmin = false },
             ]
         }
         };

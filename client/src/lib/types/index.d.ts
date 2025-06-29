@@ -10,9 +10,11 @@ type League = {
 
 type LeagueMember = {
     id: string;
+    userId: string;
     displayName: string;
     dateJoined: Date;
     isAdmin: boolean;
+    imageUrl?: string
 }
 type User = {
     id: string

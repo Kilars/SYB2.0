@@ -42,11 +42,11 @@ export default function UserMenu() {
                     },
                 }}
             >
-                <MenuItem component={Link} to='/createActivity' onClick={handleClose}>
+                <MenuItem component={Link} to='/createLeague' onClick={handleClose}>
                     <ListItemIcon>
                         <Add />
                     </ListItemIcon>
-                    <ListItemText>Create Activity</ListItemText>
+                    <ListItemText>Create League</ListItemText>
                 </MenuItem>
                 <MenuItem component={Link} to={`/profiles/${currentUser?.id}`} onClick={handleClose}>
                     <ListItemIcon>

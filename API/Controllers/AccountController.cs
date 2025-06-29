@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using API.DTOs;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -30,6 +32,13 @@ public class AccountController(SignInManager<User> signInManager) : BaseApiContr
         }
 
         return ValidationProblem();
+    }
+    [HttpGet("users")]
+    public async Task<ActionResult> GetUsers()
+    {
+        var users = await signInManager.UserManager.Users.ToListAsync();
+
+        return Ok(users);
     }
     [AllowAnonymous]
     [HttpGet("user-info")]

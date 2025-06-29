@@ -14,6 +14,13 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     {
         base.OnModelCreating(builder);
 
+        builder.Entity<LeagueMember>(x => x.HasKey(m => new { m.UserId, m.LeagueId }));
+
+        builder.Entity<LeagueMember>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.LeagueMembers)
+            .HasForeignKey(x => x.UserId);
+
         builder.Entity<LeagueMember>()
             .HasOne(x => x.League)
             .WithMany(x => x.Members)

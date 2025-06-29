@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using Application.Leagues.DTOs;
 using AutoMapper;
 using Domain;
@@ -10,11 +11,13 @@ public class MappingProfiles : Profile
 
     public MappingProfiles()
     {
-        CreateMap<CreateLeagueDto, League>()
-            .ForMember(x => x.Members, o => o.MapFrom(
-                s => s.Members.Select(memberString => new LeagueMember { DisplayName = memberString })
+        CreateMap<CreateLeagueDto, League>();
+        CreateMap<CreateLeagueMemberDto, LeagueMember>();
+        CreateMap<User, UserDto>();
+        CreateMap<League, LeagueDto>();
+        CreateMap<LeagueMember, LeagueMemberDto>()
+            .ForMember(x => x.Id, o => o.MapFrom(
+                s => $"{s.UserId}_{s.LeagueId}"
             ));
-
-
     }
 }
