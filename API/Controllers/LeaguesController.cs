@@ -27,9 +27,11 @@ public class LeaguesController() : BaseApiController
     {
         return await Mediator.Send(new CreateLeague.Command { LeagueDto = leagueDto });
     }
-    [HttpPut]
-    public async Task<ActionResult> UpdateLeague(UpdateLeagueDto leagueDto)
+    [HttpPut("{id}")]
+    [Authorize(Policy = "IsLeagueAdmin")]
+    public async Task<ActionResult> UpdateLeague(string id, UpdateLeagueDto leagueDto)
     {
+        leagueDto.Id = id;
         return Ok(await Mediator.Send(new UpdateLeague.Command { UpdateLeagueDto = leagueDto }));
     }
 

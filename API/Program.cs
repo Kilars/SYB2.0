@@ -1,6 +1,8 @@
 using Application.Core;
+using Application.Interfaces;
 using Application.Leagues.Queries;
 using Domain;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -11,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 builder.Services.AddControllers(opt =>
 {
@@ -30,6 +33,15 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("IsLeagueAdmin", policy =>
+    {
+        policy.Requirements.Add(new IsAdminRequirement());
+    });
+});
+builder.Services.AddTransient<IAuthorizationHandler, IsAdminRequirementHandler>();
 
 var app = builder.Build();
 

@@ -32,11 +32,14 @@ public class UpdateLeague
             var updatedUserIds = request.UpdateLeagueDto.Members.Select(m => m.UserId).ToHashSet();
 
             var existingMembersToKeep = league.Members
-                .Where(m => !updatedUserIds.Contains(m.UserId!));
+                .Where(m => updatedUserIds.Contains(m.UserId!)).ToList();
 
             var newMembersToAdd = request.UpdateLeagueDto.Members
                 .Where(m => m.Id == null)
-                .Select(mapper.Map<LeagueMember>);
+                .Select(mapper.Map<LeagueMember>).ToList();
+
+            var adminsRemoved = league.Members.Where(m => !updatedUserIds.Contains(m.UserId!)).Any(x => x.IsAdmin);
+            if (adminsRemoved) throw new Exception("Cannot remove admin user");
 
             league.Members.Clear();
             league.Members = [.. existingMembersToKeep, .. newMembersToAdd];

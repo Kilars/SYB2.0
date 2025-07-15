@@ -31,7 +31,7 @@ export const useLeagues = (id?: string) => {
 
     const updateLeague = useMutation({
         mutationFn: async (data: LeagueSchema) => {
-            await agent.put('/leagues', data);
+            await agent.put(`/leagues/${data.id}`, data);
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ['league', id]})

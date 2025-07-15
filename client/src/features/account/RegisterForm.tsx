@@ -24,7 +24,6 @@ export default function LoginForm() {
                     })
 
                 }
-                console.log(error);
             }
         });
     }
