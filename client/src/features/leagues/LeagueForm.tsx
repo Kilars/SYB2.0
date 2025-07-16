@@ -29,6 +29,8 @@ export default function LeagueForm() {
             await createLeague.mutateAsync(data);
             navigate('/leagues');
         } else {
+            console.log(league);
+            console.log(data)
             await updateLeague.mutateAsync({...league, ...data});
             navigate('/leagues');
         }

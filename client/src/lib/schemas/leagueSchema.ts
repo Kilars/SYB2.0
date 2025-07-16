@@ -5,7 +5,7 @@ export const leagueSchema = z.object({
     id: z.string().optional(),
     title: requiredString("Title"),
     description: requiredString("Description"),
-    startDate: z.coerce.date(),
+    startDate: z.coerce.date({message: "Date is required"}),
     members: z.object({
         id: z.string().optional(),
         userId: requiredString("User Id"),

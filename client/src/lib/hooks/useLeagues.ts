@@ -25,6 +25,7 @@ export const useLeagues = (id?: string) => {
 
     const createLeague = useMutation({
         mutationFn: async (data: LeagueSchema) => {
+            console.log(data)
             await agent.post('/leagues', data);
         }
     })

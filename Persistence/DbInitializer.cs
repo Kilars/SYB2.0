@@ -30,8 +30,7 @@ public class DbInitializer
             Title = "Spring Showdown",
             Description = "A competitive league to kick off the spring season.",
             Status = LeagueStatus.Planned,
-            StartDate = new DateTime(2025, 3, 1),
-            EndDate = new DateTime(2025, 5, 1),
+            StartDate = DateTime.Now.AddDays(7),
             Members = [
                 new() { UserId = "bob-id", DisplayName = "Bob", IsAdmin = true },
                 new() { UserId = "tom-id", DisplayName = "Tom", IsAdmin = false },
@@ -42,7 +41,7 @@ public class DbInitializer
             Title = "Summer Slam",
             Description = "High-intensity summer matchups for experienced players.",
             Status = LeagueStatus.Active,
-            StartDate = new DateTime(2025, 6, 1),
+            StartDate = DateTime.Now.AddMonths(2),
             Members = [
                 new() { UserId = "bob-id", DisplayName = "Bob", IsAdmin = true },
                 new() { UserId = "jane-id", DisplayName = "Jane", IsAdmin = false },
@@ -52,7 +51,7 @@ public class DbInitializer
             Title = "Autumn Arena",
             Description = "Casual but spirited competition for all skill levels.",
             Status = LeagueStatus.Complete,
-            StartDate = new DateTime(2024, 9, 1),
+            StartDate = DateTime.Now.AddMonths(3),
             Members = [
                 new() { UserId = "tom-id", DisplayName = "Tom", IsAdmin = true },
                 new() { UserId = "jane-id", DisplayName = "Jane", IsAdmin = false },
