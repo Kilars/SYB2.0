@@ -1,13 +1,15 @@
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Chip, Typography } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useNavigate } from "react-router";
-import { Event, Group, Person, SportsEsports } from "@mui/icons-material";
+import { AccessTime, Edit, Group, Person, SportsEsports, Visibility } from "@mui/icons-material";
 import { formatDate } from "../../lib/util/util";
 import { Fragment } from "react/jsx-runtime";
+import { useAccount } from "../../lib/hooks/useAccount";
 
 export default function LeagueList() {
     const navigate = useNavigate();
     const { leagues, isLeaguesLoading } = useLeagues();
+    const { currentUser } = useAccount();
     const LEAGUE_STATUSES = [
         ['Planned', "warning"],
         ['Started', "success"],
@@ -37,7 +39,7 @@ export default function LeagueList() {
                                 <Typography>Super Smash Bros</Typography>
                             </Box>
                             <Box display='flex' alignItems='center'>
-                                <Event sx={{ mr: 2 }} />
+                                <AccessTime sx={{ mr: 2 }} />
                                 <Typography>{formatDate(league.startDate)}</Typography>
                             </Box>
                             <Box display='flex' alignItems='center'>
@@ -52,7 +54,22 @@ export default function LeagueList() {
                         </Box>
                     </CardContent>
                     <CardActions>
-                        <Button variant="contained" onClick={() => navigate(`/manage/${league.id}`)}>Edit league</Button>
+                        <Box gap={2} display='flex' justifyContent='flex-end' width='100%'>
+                            {currentUser && league.members.filter(m => m.isAdmin).map(x => x.userId).includes(currentUser.id) &&
+                                <Button variant="contained" color="secondary" onClick={() => navigate(`/manage/${league.id}`)}>
+                                    <Edit />
+                                    <Typography variant="button" ml={1}>
+                                        Edit league
+                                    </Typography>
+                                </Button>
+                            }
+                            <Button variant="contained" onClick={() => navigate(`/leagues/${league.id}`)}>
+                                <Visibility />
+                                <Typography variant="button" ml={1}>
+                                    View
+                                </Typography>
+                            </Button>
+                        </Box>
                     </CardActions>
                 </Card>
             ))}

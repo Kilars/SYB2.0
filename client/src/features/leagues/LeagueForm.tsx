@@ -26,13 +26,14 @@ export default function LeagueForm() {
 
     const onSubmit = async (data: LeagueSchema) => {
         if (!league) {
-            await createLeague.mutateAsync(data);
-            navigate('/leagues');
+            await createLeague.mutateAsync(data, {
+                onSuccess: (id) => navigate(`/leagues/${id}`)
+            });
         } else {
-            console.log(league);
-            console.log(data)
-            await updateLeague.mutateAsync({...league, ...data});
-            navigate('/leagues');
+            await updateLeague.mutateAsync({ ...league, ...data }, {
+                onSuccess: () => navigate(`/leagues/${league.id}`)
+            }
+            );
         }
     }
 
@@ -58,7 +59,7 @@ export default function LeagueForm() {
         >
             <Box display='flex' alignItems='center' justifyContent='center' gap={3} color='secondary.main'>
                 <Leaderboard fontSize="large" />
-                <Typography variant="h4">{id ? 'Edit' : 'Create' } League</Typography>
+                <Typography variant="h4">{id ? 'Edit' : 'Create'} League</Typography>
             </Box>
             <Box display='flex' flexDirection='column' gap={3}>
                 <TextInput label='Title' control={control} name='title' />
@@ -71,7 +72,7 @@ export default function LeagueForm() {
                         name='members'
                         users={users}
                         currentUser={currentUser}
-                        defaultValue={[{userId: currentUser.id, displayName: currentUser.displayName}]}
+                        defaultValue={[{ userId: currentUser.id, displayName: currentUser.displayName }]}
                     />
                 }
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
@@ -82,7 +83,7 @@ export default function LeagueForm() {
                         disabled={!isDirty || !isValid || isSubmitting}
                         size="large"
                     >
-                        { id ? 'Save' : 'Create' }
+                        {id ? 'Save' : 'Create'}
                     </Button>
                 </Box>
             </Box>
