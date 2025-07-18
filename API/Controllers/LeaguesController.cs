@@ -34,5 +34,11 @@ public class LeaguesController() : BaseApiController
         leagueDto.Id = id;
         return Ok(await Mediator.Send(new UpdateLeague.Command { UpdateLeagueDto = leagueDto }));
     }
+    [HttpPost("{id}")]
+    [Authorize(Policy = "IsLeagueAdmin")]
+    public async Task<ActionResult> ChangeLeagueStatus(string id, LeagueStatus status)
+    {
+        return Ok(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = id, NewStatus = status}));
+    }
 
 }

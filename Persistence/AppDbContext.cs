@@ -1,4 +1,5 @@
 using System;
+using System.IO.Compression;
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +11,16 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 {
     public required DbSet<League> Leagues { get; set; }
     public required DbSet<LeagueMember> LeagueMembers { get; set; }
+    public required DbSet<Match> Matches { get; set; }
+    public required DbSet<Round> Rounds { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
         builder.Entity<LeagueMember>(x => x.HasKey(m => new { m.UserId, m.LeagueId }));
+        builder.Entity<Match>(x => x.HasKey(m => new { m.LeagueId, m.MatchIndex, m.Split }));
+        builder.Entity<Round>(x => x.HasKey(m => new { m.LeagueId, m.MatchIndex, m.Split, m.RoundNumber }));
 
         builder.Entity<LeagueMember>()
             .HasOne(x => x.User)
@@ -26,6 +31,26 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .HasOne(x => x.League)
             .WithMany(x => x.Members)
             .HasForeignKey(x => x.LeagueId);
+
+        builder.Entity<Match>()
+            .HasOne(x => x.League)
+            .WithMany(x => x.Matches)
+            .HasForeignKey(x => x.LeagueId);
+
+        builder.Entity<Match>()
+            .HasOne(x => x.PlayerOne)
+            .WithMany(x => x.MatchesAsPlayerOne)
+            .HasForeignKey(x => new { x.PlayerOneUserId, x.PlayerOneLeagueId });
+
+        builder.Entity<Match>()
+            .HasOne(x => x.PlayerTwo)
+            .WithMany(x => x.MatchesAsPlayerTwo)
+            .HasForeignKey(x => new { x.PlayerTwoUserId, x.PlayerTwoLeagueId });
+
+        builder.Entity<Round>()
+            .HasOne(x => x.Match)
+            .WithMany(x => x.Rounds)
+            .HasForeignKey(x => new { x.LeagueId, x.MatchIndex, x.Split });
 
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),

@@ -19,4 +19,5 @@ public class League
 
     // Nav properties
     public ICollection<LeagueMember> Members { get; set; } = [];
+    public ICollection<Match> Matches { get; set; } = [];
 }

@@ -13,4 +13,8 @@ public class LeagueMember
     public bool IsAdmin { get; set; }
     public required string DisplayName { get; set; }
     public DateTime DateJoined { get; set; } = DateTime.UtcNow;
+
+    [JsonIgnore]
+    public ICollection<Match> MatchesAsPlayerOne = [];
+    public ICollection<Match> MatchesAsPlayerTwo = [];
 }
