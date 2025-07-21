@@ -14,5 +14,6 @@ public class LeagueDto
 
     // Nav properties
     public required ICollection<LeagueMemberDto> Members { get; set; }
+    public required ICollection<MatchDto> Matches { get; set; }
 
 }

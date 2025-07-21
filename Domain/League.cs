@@ -4,9 +4,9 @@ namespace Domain;
 
 public enum LeagueStatus
 {
-    Planned,
-    Active,
-    Complete
+    Planned = 0,
+    Active = 1,
+    Complete = 2,
 }
 public class League
 {

@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace Domain;
 
@@ -7,7 +8,7 @@ public class Match
     public bool Completed { get; set; } = false;
     public int Split = 1;
     public int MatchIndex = 0;
-    public string? WinnerId { get; set; }
+    public string? WinnerUserId { get; set; }
     public DateTime? RegisteredTime { get; set; }
 
     //Nav properties
@@ -19,6 +20,6 @@ public class Match
     public required string PlayerTwoLeagueId { get; set; }
     public LeagueMember? PlayerTwo { get; set; }
     public required string LeagueId { get; set; }
+    [JsonIgnore]
     public League? League { get; set; }
-
 }

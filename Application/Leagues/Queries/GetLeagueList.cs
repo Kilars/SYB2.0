@@ -18,6 +18,7 @@ public class GetLeagueList
         {
             return await context.Leagues
                 .Include(x => x.Members)
+                .Include(x => x.Matches)
                 .Select(league => mapper.Map<LeagueDto>(league))
                 .ToListAsync(cancellationToken);
         }

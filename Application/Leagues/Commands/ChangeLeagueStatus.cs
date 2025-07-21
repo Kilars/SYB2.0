@@ -2,6 +2,7 @@ using System;
 using Application.Interfaces;
 using Domain;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Leagues.Commands;
@@ -17,13 +18,16 @@ public class ChangeLeagueStatus
     {
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
-            var league = await context.Leagues.FindAsync([request.LeagueId], cancellationToken);
+            var league = await context.Leagues
+                .Include(x => x.Members)
+                .FirstOrDefaultAsync(x => x.Id == request.LeagueId, cancellationToken);
             if (league == null) throw new Exception("Not found");
 
             switch ((league.Status, request.NewStatus))
             {
                 case (LeagueStatus.Planned, LeagueStatus.Active):
                     CreateMatchesBetweenAllPlayers(league);
+                    league.Status = LeagueStatus.Active;
                     break;
 
                 case (LeagueStatus.Active, LeagueStatus.Complete):
@@ -34,20 +38,21 @@ public class ChangeLeagueStatus
                     break;
                 case (LeagueStatus.Active, LeagueStatus.Planned):
                     //Delete all matches and set status to planned
+                    context.RemoveRange(context.Matches.Where(m => m.LeagueId == league.Id));
+                    league.Status = LeagueStatus.Planned;
                     break;
 
                 default:
                     break;
             }
 
-            var res = await context.SaveChangesAsync() > 0;
+            var res = await context.SaveChangesAsync(cancellationToken) > 0;
 
             if (!res) throw new Exception("Could not create matches");
             return Unit.Value;
         }
         private void CreateMatchesBetweenAllPlayers(League league)
         {
-            var matches = new List<Match>();
             var firstSplit = new List<Match>();
             var secondSplit = new List<Match>();
 

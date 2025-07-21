@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using Application.Leagues.DTOs;
 using AutoMapper;
 using Domain;
@@ -22,6 +23,7 @@ public class GetLeagueDetails
         {
             var league = await context.Leagues
                 .Include(x => x.Members)
+                .Include(x => x.Matches)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
                     ?? throw new Exception("Activity not found");
 

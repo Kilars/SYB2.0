@@ -19,5 +19,9 @@ public class MappingProfiles : Profile
             .ForMember(x => x.Id, o => o.MapFrom(
                 s => $"{s.UserId}_{s.LeagueId}"
             ));
+        CreateMap<Match, MatchDto>()
+            .ForMember(x => x.Id, o => o.MapFrom(
+                s => $"{s.LeagueId}_{s.Split}_{s.MatchIndex}"
+            ));
     }
 }

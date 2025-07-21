@@ -14,7 +14,6 @@ public class LeagueMember
     public required string DisplayName { get; set; }
     public DateTime DateJoined { get; set; } = DateTime.UtcNow;
 
-    [JsonIgnore]
     public ICollection<Match> MatchesAsPlayerOne = [];
     public ICollection<Match> MatchesAsPlayerTwo = [];
 }
