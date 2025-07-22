@@ -14,31 +14,31 @@ public class LeaguesController() : BaseApiController
     [HttpGet]
     public async Task<ActionResult<List<LeagueDto>>> GetLeagues()
     {
-        return await Mediator.Send(new GetLeagueList.Query());
+        return HandleResult(await Mediator.Send(new GetLeagueList.Query()));
     }
     [HttpGet("{id}")]
     public async Task<ActionResult<LeagueDto>> GetLeagueDetails(string id)
     {
-        return await Mediator.Send(new GetLeagueDetails.Query { Id = id });
+        return HandleResult(await Mediator.Send(new GetLeagueDetails.Query { Id = id }));
     }
 
     [HttpPost]
     public async Task<ActionResult<string>> CreateLeague(CreateLeagueDto leagueDto)
     {
-        return await Mediator.Send(new CreateLeague.Command { LeagueDto = leagueDto });
+        return HandleResult(await Mediator.Send(new CreateLeague.Command { LeagueDto = leagueDto }));
     }
     [HttpPut("{id}")]
     [Authorize(Policy = "IsLeagueAdmin")]
     public async Task<ActionResult> UpdateLeague(string id, UpdateLeagueDto leagueDto)
     {
         leagueDto.Id = id;
-        return Ok(await Mediator.Send(new UpdateLeague.Command { UpdateLeagueDto = leagueDto }));
+        return HandleResult(await Mediator.Send(new UpdateLeague.Command { UpdateLeagueDto = leagueDto }));
     }
     [HttpPost("{id}/status")]
     [Authorize(Policy = "IsLeagueAdmin")]
     public async Task<ActionResult> ChangeLeagueStatus(string id, LeagueStatus status)
     {
-        return Ok(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = id, NewStatus = status}));
+        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = id, NewStatus = status}));
     }
 
 }

@@ -1,4 +1,5 @@
 using System;
+using Application.Core;
 using Application.Interfaces;
 using Application.Leagues.DTOs;
 using AutoMapper;
@@ -10,14 +11,14 @@ namespace Application.Leagues.Commands;
 
 public class CreateLeague
 {
-    public class Command : IRequest<string>
+    public class Command : IRequest<Result<string>>
     {
         public required CreateLeagueDto LeagueDto { get; set; }
     }
 
-    public class Handler(AppDbContext context, IMapper mapper, IUserAccessor userAccessor) : IRequestHandler<Command, string>
+    public class Handler(AppDbContext context, IMapper mapper, IUserAccessor userAccessor) : IRequestHandler<Command, Result<string>>
     {
-        public async Task<string> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
             var user = await userAccessor.GetUserAsync();
             var league = mapper.Map<League>(request.LeagueDto);
@@ -40,9 +41,9 @@ public class CreateLeague
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
 
-            if (!res) throw new Exception("Failed to create leaderboard");
-
-            return league.Id;
+            return res
+             ? Result<string>.Success(league.Id)
+             : Result<string>.Failure("Failed to create leaderboard", 400);
         }
     }
 }

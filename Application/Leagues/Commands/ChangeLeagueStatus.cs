@@ -1,5 +1,8 @@
 using System;
+using System.Collections.ObjectModel;
+using Application.Core;
 using Application.Interfaces;
+using AutoMapper.Execution;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,19 +12,21 @@ namespace Application.Leagues.Commands;
 
 public class ChangeLeagueStatus
 {
-    public class Command : IRequest<Unit>
+    public class Command : IRequest<Result<Unit>>
     {
         public required string LeagueId { get; set; }
         public required LeagueStatus NewStatus { get; set; }
     }
-    public class Handler(AppDbContext context) : IRequestHandler<Command, Unit>
+    public class Handler(AppDbContext context) : IRequestHandler<Command, Result<Unit>>
     {
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
             var league = await context.Leagues
                 .Include(x => x.Members)
                 .FirstOrDefaultAsync(x => x.Id == request.LeagueId, cancellationToken);
-            if (league == null) throw new Exception("Not found");
+            if (league == null) return Result<Unit>.Failure("League not found", 404);
+            var members = league.Members.ToList();
+            if (members.Count <= 1) return Result<Unit>.Failure("Cannot make status update for one or less players", 400);
 
             switch ((league.Status, request.NewStatus))
             {
@@ -48,8 +53,8 @@ public class ChangeLeagueStatus
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
 
-            if (!res) throw new Exception("Could not create matches");
-            return Unit.Value;
+            if (!res) return Result<Unit>.Failure("Could not change status of league", 400);
+            return Result<Unit>.Success(Unit.Value);
         }
         private void CreateMatchesBetweenAllPlayers(League league)
         {
@@ -57,8 +62,6 @@ public class ChangeLeagueStatus
             var secondSplit = new List<Match>();
 
             var members = league.Members.ToList();
-
-            if (members.Count <= 1) throw new Exception("Cannot make matches for one or less players");
 
             // Generate unique pairings (combinations) of players
             for (int i = 0; i < members.Count; i++)
@@ -101,12 +104,32 @@ public class ChangeLeagueStatus
             {
                 match.MatchIndex = index;
                 index++;
+                for (int i = 0; i < 3; i++)
+                {
+                    context.Rounds.Add(new Round
+                    {
+                        LeagueId = match.LeagueId,
+                        MatchIndex = match.MatchIndex,
+                        Split = match.Split,
+                        RoundNumber = i + 1
+                    });
+                }
             }
             index = 1;
             foreach (var match in secondSplit)
             {
                 match.MatchIndex = index;
                 index++;
+                for (int i = 0; i < 3; i++)
+                {
+                    context.Rounds.Add(new Round
+                    {
+                        LeagueId = match.LeagueId,
+                        MatchIndex = match.MatchIndex,
+                        Split = match.Split,
+                        RoundNumber = i + 1
+                    });
+                }
             }
 
             context.Matches.AddRange(firstSplit);

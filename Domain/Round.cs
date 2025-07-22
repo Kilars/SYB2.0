@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Domain;
@@ -16,5 +17,6 @@ public class Round
     public required int MatchIndex { get; set; }
     public required string LeagueId { get; set; }
     public required int Split { get; set; }
+    [JsonIgnore]
     public Match? Match { get; set; }
 }

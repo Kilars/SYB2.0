@@ -1,4 +1,5 @@
 using System;
+using Application.Core;
 using Application.Leagues.DTOs;
 using AutoMapper;
 using Domain;
@@ -10,20 +11,20 @@ namespace Application.Leagues.Commands;
 
 public class UpdateLeague
 {
-    public class Command : IRequest<Unit>
+    public class Command : IRequest<Result<Unit>>
     {
         public required UpdateLeagueDto UpdateLeagueDto { get; set; }
     }
 
-    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, Unit>
+    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, Result<Unit>>
     {
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
             var league = await context.Leagues
                 .Include(x => x.Members)
                 .FirstOrDefaultAsync(x => x.Id == request.UpdateLeagueDto.Id, cancellationToken: cancellationToken);
 
-            if (league == null) throw new Exception("Cannot find league");
+            if (league == null) return Result<Unit>.Failure("Cannot find league", 404);
 
             league.Title = request.UpdateLeagueDto.Title;
             league.StartDate = request.UpdateLeagueDto.StartDate;
@@ -39,16 +40,16 @@ public class UpdateLeague
                 .Select(mapper.Map<LeagueMember>).ToList();
 
             var adminsRemoved = league.Members.Where(m => !updatedUserIds.Contains(m.UserId!)).Any(x => x.IsAdmin);
-            if (adminsRemoved) throw new Exception("Cannot remove admin user");
+            if (adminsRemoved) return Result<Unit>.Failure("Cannot remove admin user", 403);
 
             league.Members.Clear();
             league.Members = [.. existingMembersToKeep, .. newMembersToAdd];
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
 
-            if (!res) throw new Exception("Failed to update leaderboard");
-
-            return Unit.Value;
+            return res
+             ? Result<Unit>.Success(Unit.Value)
+             : Result<Unit>.Failure("Failed to update leaderboard", 400);
         }
     }
 }

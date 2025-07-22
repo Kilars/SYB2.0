@@ -14,4 +14,5 @@ public class MatchDto
 
     public LeagueMemberDto? PlayerOne { get; set; }
     public LeagueMemberDto? PlayerTwo { get; set; }
+    public required ICollection<RoundDto> Rounds { get; set; }
 }

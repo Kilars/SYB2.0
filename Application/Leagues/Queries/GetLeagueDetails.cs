@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
+using Application.Core;
 using Application.Leagues.DTOs;
 using AutoMapper;
 using Domain;
@@ -12,24 +13,25 @@ namespace Application.Leagues.Queries;
 
 public class GetLeagueDetails
 {
-    public class Query : IRequest<LeagueDto>
+    public class Query : IRequest<Result<LeagueDto>>
     {
         public required string Id { get; set; }
     }
 
-    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Query, LeagueDto>
+    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Query, Result<LeagueDto>>
     {
-        public async Task<LeagueDto> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<LeagueDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var league = await context.Leagues
                 .Include(x => x.Members)
                 .Include(x => x.Matches)
+                    .ThenInclude(m => m.Rounds)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
                     ?? throw new Exception("Activity not found");
 
             var leagueDto = mapper.Map<LeagueDto>(league);
 
-            return leagueDto;
+            return Result<LeagueDto>.Success(leagueDto);
         }
     }
 }
