@@ -1,7 +1,9 @@
 using Application.Core;
 using Application.Interfaces;
 using Application.Leagues.Queries;
+using Application.Leagues.Validators;
 using Domain;
+using FluentValidation;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+builder.Services.AddValidatorsFromAssemblyContaining<CreateLeagueValidator>();
 builder.Services.AddControllers(opt =>
 {
     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
@@ -26,7 +29,12 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 
 builder.Services.AddCors();
-builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<GetLeagueList.Handler>());
+builder.Services.AddMediatR(
+    x => {
+        x.RegisterServicesFromAssemblyContaining<GetLeagueList.Handler>();
+        x.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+    }
+);
 builder.Services.AddIdentityApiEndpoints<User>(opt =>
 {
     opt.User.RequireUniqueEmail = true;
