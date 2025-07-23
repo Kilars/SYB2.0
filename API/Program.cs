@@ -1,3 +1,4 @@
+using API.Middleware;
 using Application.Core;
 using Application.Interfaces;
 using Application.Leagues.Queries;
@@ -18,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<CreateLeagueValidator>();
+builder.Services.AddTransient<ExceptionMiddleware>();
 builder.Services.AddControllers(opt =>
 {
     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
@@ -53,6 +55,7 @@ builder.Services.AddTransient<IAuthorizationHandler, IsAdminRequirementHandler>(
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000"));
 app.UseAuthentication();
 app.UseAuthorization();
