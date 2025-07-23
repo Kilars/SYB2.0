@@ -50,6 +50,14 @@ builder.Services.AddAuthorization(opt =>
     {
         policy.Requirements.Add(new IsAdminRequirement());
     });
+    opt.AddPolicy("IsLeagueMember", policy =>
+    {
+        policy.Requirements.Add(new IsLeagueMember());
+    });
+    opt.AddPolicy("IsMatchEditable", policy =>
+    {
+        policy.Requirements.Add(new IsMatchEditable());
+    });
 });
 builder.Services.AddTransient<IAuthorizationHandler, IsAdminRequirementHandler>();
 
