@@ -37,6 +37,15 @@ export const useLeagues = (id?: string) => {
         },
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ['league', id]})
+        },
+    })
+
+    const updateStatus = useMutation({
+        mutationFn: async (data: number) => {
+            await agent.post(`leagues/${id}/status?status=${data}`)
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ['league', id]})
         }
     })
 
@@ -46,6 +55,7 @@ export const useLeagues = (id?: string) => {
         isLeagueLoading,
         isLeaguesLoading,
         createLeague,
-        updateLeague
+        updateLeague,
+        updateStatus
     }
 }
