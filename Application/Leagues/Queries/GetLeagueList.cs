@@ -2,6 +2,7 @@ using System;
 using Application.Core;
 using Application.Leagues.DTOs;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +20,7 @@ public class GetLeagueList
         {
             return Result<List<LeagueDto>>.Success(
                 await context.Leagues
-                .Include(x => x.Members)
-                .Select(league => mapper.Map<LeagueDto>(league))
+                .ProjectTo<LeagueDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken)
             );
         }

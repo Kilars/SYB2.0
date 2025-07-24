@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using Application.Core;
 using Application.Leagues.DTOs;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +24,7 @@ public class GetLeagueDetails
     {
         public async Task<Result<LeagueDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var league = await context.Leagues.Include(x => x.Members).Include(x => x.Matches)
-                    .ThenInclude(m => m.Rounds)
+            var league = await context.Leagues.ProjectTo<LeagueDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
             if (league == null) return Result<LeagueDto>.Failure("League not found", 404);
