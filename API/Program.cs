@@ -1,3 +1,6 @@
+//TODO
+// Client work (show matches and show match.)
+// Think about how u want to register rounds/matches, signalR?
 using API.Middleware;
 using Application.Core;
 using Application.Interfaces;

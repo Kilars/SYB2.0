@@ -1,4 +1,4 @@
-import { Box, Button, Chip, Divider, Typography } from "@mui/material";
+import { Box, Button, Card, CardHeader, Chip, Divider, Typography } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useNavigate, useParams } from "react-router";
 import { AccessTime, Edit, Group, Person, SportsEsports } from "@mui/icons-material";
@@ -19,7 +19,7 @@ export default function LeagueDetails() {
     if (isLeagueLoading) return <Typography>Loading...</Typography>
     if (!league) return <Typography>No leagues found</Typography>
     return (
-        <Box p={4}>
+        <Box p={3}>
             <Box>
                 <Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
                     <Typography variant="h3" fontWeight="bold" gutterBottom>
@@ -73,7 +73,7 @@ export default function LeagueDetails() {
                         />
                     ))}
                 </Box>
-                <Box display='flex' width='100%' justifyContent='flex-end'>
+                <Box display='flex' width='100%' justifyContent='flex-end' pt={2}>
                     {currentUser && league.members.filter(m => m.isAdmin).map(x => x.userId).includes(currentUser.id) &&
                         <>
                             {league.status === 0 &&
@@ -89,16 +89,30 @@ export default function LeagueDetails() {
                     }
                 </Box>
             </Box>
-            <Box>
-                <Typography variant="h3" fontWeight="bold">Matches</Typography>
+            <Box mt={4}>
+                <Typography variant="h4" fontWeight="bold">Matches</Typography>
                 {league.matches.length === 0
                     ? <Typography>No matches...</Typography>
-                    : league.matches.map(match => (
-                        <Box sx={{ border: '1px solid black', mb: 2 }}>
-                            <Box>{match.playerOne.displayName}</Box>
-                            <Box>{match.playerTwo.displayName}</Box>
+                    :
+                    <Box display='flex' flexDirection='column' gap={2}>
+                        {league.matches.map(match => (
+                        <Box component={Card} elevation={3} p={2} onClick={() => navigate(`/matches/${match.id}`)}>
+                            <CardHeader action={<Chip label={match.completed ? 'Played' : 'Upcoming'} color={match.completed ? 'success' : 'primary'}></Chip>} />
+                            <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center' gap={2}>
+                                <Typography variant="h3">{match.playerOne.displayName}</Typography>
+                                <Typography variant="h4" fontStyle="italic">vs</Typography>
+                                <Typography variant="h3">{match.playerTwo.displayName}</Typography>
+                            </Box>
+                            <Box>
+                                <Typography> Match #{match.matchIndex} </Typography>
+                                <Typography> Split {match.split} </Typography>
+                                <Typography fontWeight="bold">
+                                    Bo{match.rounds.length}
+                                </Typography>
+                            </Box>
                         </Box>
-                    ))
+                    ))}
+                    </Box>
                 }
             </Box>
         </Box >
