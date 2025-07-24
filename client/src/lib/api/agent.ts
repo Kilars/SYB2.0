@@ -17,7 +17,6 @@ agent.interceptors.response.use(
         return res
     },
     async error => {
-        toast.success("TOAST")
         await sleep(500);
         const { status, data } = error.response;
         console.log("error hello", error)

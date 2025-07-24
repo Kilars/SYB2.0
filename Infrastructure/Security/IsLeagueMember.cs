@@ -22,8 +22,9 @@ public class IsLeagueMemberHandler(AppDbContext dbContext, IHttpContextAccessor 
 
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("id") is not string leagueId) return;
+        if (httpContext?.GetRouteValue("id") is not string id) return;
 
+        var leagueId = id.Split("_")[0];
         var member = await dbContext.LeagueMembers
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.UserId == userId && x.LeagueId == leagueId);

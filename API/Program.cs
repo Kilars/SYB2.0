@@ -58,8 +58,15 @@ builder.Services.AddAuthorization(opt =>
     {
         policy.Requirements.Add(new IsMatchEditable());
     });
+    opt.AddPolicy("IsLeaguePlanned", policy =>
+    {
+        policy.Requirements.Add(new IsPlannedRequirement());
+    });
 });
 builder.Services.AddTransient<IAuthorizationHandler, IsAdminRequirementHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsPlannerRequirementHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsMatchEditableHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsLeagueMemberHandler>();
 
 var app = builder.Build();
 

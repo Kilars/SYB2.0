@@ -1,4 +1,5 @@
 using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using Application.Core;
 using Application.Leagues.DTOs;
@@ -22,12 +23,11 @@ public class GetLeagueDetails
     {
         public async Task<Result<LeagueDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var league = await context.Leagues
-                .Include(x => x.Members)
-                .Include(x => x.Matches)
+            var league = await context.Leagues.Include(x => x.Members).Include(x => x.Matches)
                     .ThenInclude(m => m.Rounds)
-                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
-                    ?? throw new Exception("Activity not found");
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+
+            if (league == null) return Result<LeagueDto>.Failure("League not found", 404);
 
             var leagueDto = mapper.Map<LeagueDto>(league);
 

@@ -29,6 +29,7 @@ public class LeaguesController() : BaseApiController
     }
     [HttpPut("{id}")]
     [Authorize(Policy = "IsLeagueAdmin")]
+    [Authorize(Policy = "IsLeaguePlanned")]
     public async Task<ActionResult> UpdateLeague(string id, UpdateLeagueDto leagueDto)
     {
         leagueDto.Id = id;
