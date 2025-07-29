@@ -55,7 +55,7 @@ export default function LeagueList() {
                     </CardContent>
                     <CardActions>
                         <Box gap={2} display='flex' justifyContent='flex-end' width='100%'>
-                            {currentUser && league.members.filter(m => m.isAdmin).map(x => x.userId).includes(currentUser.id) &&
+                            {currentUser && league.members.filter(m => m.isAdmin).map(x => x.userId).includes(currentUser.id) && league.status == 0 &&
                                 <Button variant="contained" color="secondary" onClick={() => navigate(`/manage/${league.id}`)}>
                                     <Edit />
                                     <Typography variant="button" ml={1}>
