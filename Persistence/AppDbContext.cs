@@ -1,5 +1,4 @@
 using System;
-using System.IO.Compression;
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public required DbSet<LeagueMember> LeagueMembers { get; set; }
     public required DbSet<Match> Matches { get; set; }
     public required DbSet<Round> Rounds { get; set; }
+    public required DbSet<Character> Characters { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -51,6 +51,16 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .HasOne(x => x.Match)
             .WithMany(x => x.Rounds)
             .HasForeignKey(x => new { x.LeagueId, x.MatchIndex, x.Split });
+
+        builder.Entity<Round>()
+            .HasOne(x => x.PlayerOneCharacter)
+            .WithMany(x => x.RoundsAsPlayerOne)
+            .HasForeignKey(x => x.PlayerOneCharacterId);
+
+        builder.Entity<Round>()
+            .HasOne(x => x.PlayerTwoCharacter)
+            .WithMany(x => x.RoundsAsPlayerTwo)
+            .HasForeignKey(x => x.PlayerTwoCharacterId);
 
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),
