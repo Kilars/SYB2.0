@@ -1,6 +1,7 @@
 import { useParams } from "react-router";
 import { useMatch } from "../../lib/hooks/useMatch";
 import { Box, Button, Checkbox, Divider, Typography } from "@mui/material";
+import CharacterSelect from "./CharacterSelect";
 
 export default function MatchDetails() {
   const { id } = useParams();
@@ -19,12 +20,12 @@ export default function MatchDetails() {
             <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
               <Box sx={{display: 'flex', flexDirection: 'column'}}>
                 <Typography variant="h6" textAlign="right">{match.playerOne.displayName}</Typography>
-                <Box>Select character...</Box>
+                <CharacterSelect />
                 <Box>Winner: <Checkbox /></Box>
               </Box>
               <Box>
                 <Typography variant="h6">{match.playerTwo.displayName}</Typography>
-                <Box>Select character...</Box>
+                <CharacterSelect />
                 <Box>Winner: <Checkbox /></Box>
               </Box>
             </Box>

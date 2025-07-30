@@ -50,3 +50,10 @@ type Round = {
   playerOneCharacterId?: string
   playerTwoCharacterId?: string
 }
+
+type Character = {
+	id: string;
+	fullName: string;
+  shorthandName: string;
+	imageUrl: string;
+}

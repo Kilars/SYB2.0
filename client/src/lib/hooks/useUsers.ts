@@ -4,7 +4,7 @@ import { useLocation } from "react-router";
 
 export const useUsers= () => {
     const location = useLocation();
-    const { data: users } = useQuery({
+    const { data: users } = useQuery<User[]>({
         queryKey: ["users"],
         queryFn: async () => {
             const res = await agent.get<User[]>('/account/users');

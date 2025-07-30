@@ -35,7 +35,10 @@ agent.interceptors.response.use(
                 toast.error('Not found')
                 break;
             case 500:
-                toast.error('Internal server error' + data)
+                router.navigate('/server-error', { state: { error: data } });
+                break;
+            default:
+                break;
         }
         return Promise.reject(error);
     }

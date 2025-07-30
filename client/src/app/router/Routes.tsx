@@ -7,6 +7,7 @@ import LeagueForm from "../../features/leagues/LeagueForm";
 import RequireAuth from "./RequireAuth";
 import LeagueDetails from "../../features/leagues/LeagueDetails";
 import MatchDetails from "../../features/matches/MatchDetails";
+import ServerError from "../../features/error/ServerError";
 
 export const router = createBrowserRouter([
     {
@@ -15,13 +16,14 @@ export const router = createBrowserRouter([
                 element: <RequireAuth />, children: [
                     { path: 'createLeague', element: <LeagueForm key='create' /> },
                     { path: 'manage/:id', element: <LeagueForm /> },
-                    { path: 'leagues/:id', element: <LeagueDetails />},
-                    { path: 'matches/:id', element: <MatchDetails />},
+                    { path: 'leagues/:id', element: <LeagueDetails /> },
+                    { path: 'matches/:id', element: <MatchDetails /> },
                 ]
             },
             { path: 'leagues', element: <LeagueList /> },
             { path: 'login', element: <LoginForm /> },
             { path: 'register', element: <RegisterForm /> },
+            { path: 'server-error', element: <ServerError /> },
         ]
     },
 ])
