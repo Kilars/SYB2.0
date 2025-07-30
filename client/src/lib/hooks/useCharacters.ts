@@ -8,7 +8,7 @@ export const useCharacters = () => {
             const res = await agent.get<Character[]>('/characters');
             return res.data;
         },
-        staleTime: 0
+        staleTime: Infinity
     });
 
     return {
