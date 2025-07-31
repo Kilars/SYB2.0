@@ -19,7 +19,7 @@ export default function LeagueForm() {
     const { currentUser } = useAccount();
     const { createLeague, updateLeague, league, isLeagueLoading } = useLeagues(id);
     const navigate = useNavigate();
-    const { control, handleSubmit, formState: { isValid, isSubmitting, isDirty }, reset } = useForm<LeagueSchema>({
+    const { control, handleSubmit, formState: { isValid, isSubmitting, isDirty }, reset } = useForm({
         mode: 'onTouched',
         resolver: zodResolver(leagueSchema)
     })

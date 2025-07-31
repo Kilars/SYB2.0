@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { requiredString } from "../util/util";
 
 export const registerSchema = z.object({
-    email: z.string().email(),
+    email: z.email(),
     displayName: requiredString('Display Name'),
     password: requiredString('password')
 });

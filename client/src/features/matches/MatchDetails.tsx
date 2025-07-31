@@ -17,13 +17,13 @@ export default function MatchDetails() {
         <Box key={round.id}>
           <Typography variant="h5" mt={2}> Round {round.roundNumber} </Typography>
           <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
-              <Box sx={{display: 'flex', flexDirection: 'column'}}>
-                <Typography variant="h6" textAlign="right">{match.playerOne.displayName}</Typography>
+            <Box sx={{ display: 'flex'}}>
+              <Box sx={{display: 'flex', flexDirection: 'column', flexGrow: 0.5}}>
+                <Typography variant="h6">{match.playerOne.displayName}</Typography>
                 <CharacterSelect />
                 <Box>Winner: <Checkbox /></Box>
               </Box>
-              <Box>
+              <Box sx={{display: 'flex', flexDirection: 'column', flexGrow: 0.5}}>
                 <Typography variant="h6">{match.playerTwo.displayName}</Typography>
                 <CharacterSelect />
                 <Box>Winner: <Checkbox /></Box>

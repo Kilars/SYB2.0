@@ -10,16 +10,16 @@ import { Typography } from '@mui/material';
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   borderBottom: '1px solid black',
-  backgroundColor: theme.palette.primary.main,
+  background: 'white',
   '&.MuiAutocomplete-option:hover': {
     fontWeight: theme.typography.fontWeightBold,
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: '#ddd',
     '.non-pop-out-box': {
       visibility: 'hidden',
     },
     '.custom-pop-out-box': {
       display: 'flex',
-      transform: 'scale(1.4)',
+      transform: 'scale(1.2)',
       transformOrigin: 'left',
       position: 'absolute',
       zIndex: 10,
@@ -27,13 +27,12 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   },
   '&.MuiAutocomplete-option.MuiAutocomplete-option[aria-selected="true"]': {
     fontWeight: theme.typography.fontWeightBold,
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: '#ddd',
   }
 }));
 
-const CustomTextField = styled(TextField)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: '100%',
+const CustomTextField = styled(TextField)(() => ({
+  width: '100%',
   '& .MuiOutlinedInput-root': {
     '& fieldset': {  // This targets the notched outline specifically
       border: 'none',
@@ -48,18 +47,9 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 }));
 
 export default function CharacterSelect() {
-  const {characters, charactersIsLoading } = useCharacters();
+  const { characters, charactersIsLoading } = useCharacters();
 
   const selectedCharacter = characters?.[0];
-//  useEffect(() => {
-//    if (selectedCharacterId && characters) {
-//      const foundCharacter = characters.find((char) => char.id === selectedCharacterId);
-//      if (foundCharacter) {
-//        setSelectedCharacter(foundCharacter);
-//      }
-//    }
-//  }, [selectedCharacterId, characters]);
-
 
   if (charactersIsLoading) return <Typography>Loading characters...</Typography>
   if (!characters) return <Typography>No characters found...</Typography>
@@ -67,19 +57,15 @@ export default function CharacterSelect() {
   return (
     <Autocomplete
       options={characters}
-//      value={selectedCharacter}
-//      onChange={(_event, newValue) => onSelectChar(newValue?.id || null)}
+      fullWidth
       getOptionLabel={(option) => option.fullName}
-      ListboxProps={{
-        style: {
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginTop: '5px',
-        }
-      }}
-      componentsProps={{
-        paper: {
-          sx: { backgroundColor: 'transparent', borderRadius: '5%' }
+      slotProps={{
+        listbox: {
+          style: {
+            paddingTop: 0,
+            paddingBottom: 0,
+            marginTop: '5px',
+          }
         },
       }}
       renderInput={(params) => {
@@ -88,7 +74,11 @@ export default function CharacterSelect() {
           <>
             <CustomTextField
               {...params}
-              InputProps={{ ...params.InputProps, startAdornment: optionalCharacterImage }}
+              slotProps={{
+                input: {
+                  ...params.InputProps, startAdornment: optionalCharacterImage
+                }
+              }}
               variant="outlined"
               placeholder="Select character..."
             />

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { requiredString } from "../util/util";
 
 export const leagueSchema = z.object({
