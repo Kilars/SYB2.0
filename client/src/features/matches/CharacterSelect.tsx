@@ -46,18 +46,25 @@ const CustomTextField = styled(TextField)(() => ({
   },
 }));
 
-export default function CharacterSelect() {
-  const { characters, charactersIsLoading } = useCharacters();
+type Props = {
+  selectedId?: string;
+  onChange: (id?: string) => void;
+}
 
-  const selectedCharacter = characters?.[0];
+export default function CharacterSelect({ selectedId, onChange }: Props) {
+  const { characters, charactersIsLoading } = useCharacters();
 
   if (charactersIsLoading) return <Typography>Loading characters...</Typography>
   if (!characters) return <Typography>No characters found...</Typography>
+
+  const selectedCharacter = characters.find(char => char.id === selectedId);
 
   return (
     <Autocomplete
       options={characters}
       fullWidth
+      value={selectedCharacter}
+      onChange={(_event, newValue) => onChange(newValue?.id)}
       getOptionLabel={(option) => option.fullName}
       slotProps={{
         listbox: {
