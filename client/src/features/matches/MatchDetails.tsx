@@ -4,6 +4,8 @@ import { Box, Button, Checkbox, Divider, Typography } from "@mui/material";
 import CharacterSelect from "./CharacterSelect";
 import { matchSchema } from "../../lib/schemas/matchSchema";
 import { useEffect, useState } from "react";
+import z from "zod";
+import { toast } from "react-toastify";
 
 export default function MatchDetails() {
   const { id } = useParams();
@@ -13,6 +15,19 @@ export default function MatchDetails() {
   useEffect(() => {
     setRounds(match?.rounds)
   }, [match])
+
+  const onSubmit = () => {
+    try {
+      matchSchema.parse(rounds)
+      toast('Succes', {type: 'success'})
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        for (const issue of error.issues) {
+          toast(issue.message, {type: 'error'});
+        }
+      }
+    }
+  }
 
   if (isMatchLoading) return <Typography>Loading...</Typography>
   if (!match) return <Typography>Match not found...</Typography>
@@ -105,6 +120,7 @@ export default function MatchDetails() {
         variant="contained"
         fullWidth
         sx={{ mt: 3 }}
+        onClick={() => onSubmit()}
       >
         Complete
       </Button>
