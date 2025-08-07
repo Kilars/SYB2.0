@@ -23,3 +23,10 @@ public class Match
     [JsonIgnore]
     public League? League { get; set; }
 }
+
+public record MatchId
+{
+    public required string LeagueId { get; set; }
+    public required int Split { get; set; }
+    public required int MatchIndex { get; set; }
+}

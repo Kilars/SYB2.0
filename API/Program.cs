@@ -1,6 +1,5 @@
 //TODO
-// Client work (show matches and show match.)
-// Think about how u want to register rounds/matches, signalR?
+//Get record MatchId as [NotMapped] into the Match.cs somehow
 using API.Middleware;
 using Application.Core;
 using Application.Interfaces;

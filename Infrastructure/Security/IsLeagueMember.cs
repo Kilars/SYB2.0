@@ -25,10 +25,8 @@ public class IsLeagueMemberHandler(AppDbContext dbContext, IHttpContextAccessor 
         if (httpContext?.GetRouteValue("id") is not string id) return;
 
         var leagueId = id.Split("_")[0];
-        var member = await dbContext.LeagueMembers
-            .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.UserId == userId && x.LeagueId == leagueId);
-
-        if (member != null) context.Succeed(requirement);
+        var league = await dbContext.Leagues.AsNoTracking().Include(l => l.Members).FirstOrDefaultAsync(x => x.Id == leagueId);
+        if (league == null) context.Succeed(requirement);
+        else if (league.Members.Any(x => x.UserId == userId)) context.Succeed(requirement);
     }
 }

@@ -15,4 +15,17 @@ public class MatchDto
     public LeagueMemberDto? PlayerOne { get; set; }
     public LeagueMemberDto? PlayerTwo { get; set; }
     public required ICollection<RoundDto> Rounds { get; set; }
+    public MatchId MatchId
+    {
+        get
+        {
+            var parts = Id.Split('_');
+            return new MatchId
+            {
+                LeagueId = parts[0],
+                Split = int.Parse(parts[1]),
+                MatchIndex = int.Parse(parts[2]),
+            };
+        }
+    }
 }

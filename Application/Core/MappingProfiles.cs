@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
 using Application.Leagues.DTOs;
 using AutoMapper;
 using Domain;
@@ -27,5 +26,6 @@ public class MappingProfiles : Profile
             .ForMember(x => x.Id, o => o.MapFrom(
                 s => $"{s.LeagueId}_{s.Split}_{s.MatchIndex}_{s.RoundNumber}"
             ));
+        CreateMap<RoundDto, Round>();
     }
 }
