@@ -1,6 +1,4 @@
 using System;
-using System.Reflection.Metadata.Ecma335;
-using System.Text.RegularExpressions;
 using Application.Matches.Commands;
 using FluentValidation;
 
@@ -23,8 +21,8 @@ public class CompleteMatchValidator : AbstractValidator<CompleteMatch.Command>
         });
         RuleFor(x => x.Rounds)
         // No partial fill
-        .Must(rounds => !rounds.Any(r => (string.IsNullOrEmpty(r.WinnerUserId) || r.PlayerOneCharacterId == null || r.PlayerTwoCharacterId == null)
-            && (!string.IsNullOrEmpty(r.WinnerUserId) || r.PlayerOneCharacterId != null || r.PlayerTwoCharacterId != null)))
+        .Must(rounds => !rounds.Any(r => (string.IsNullOrEmpty(r.WinnerUserId) || string.IsNullOrEmpty(r.PlayerOneCharacterId) || string.IsNullOrEmpty(r.PlayerTwoCharacterId))
+            && !(string.IsNullOrEmpty(r.WinnerUserId) && string.IsNullOrEmpty(r.PlayerOneCharacterId) && string.IsNullOrEmpty(r.PlayerTwoCharacterId))))
             .WithMessage("Partially filled rounds are not allowed")
         // Enough rounds to decide the match
         .Must(rounds => rounds

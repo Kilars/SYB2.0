@@ -64,11 +64,16 @@ builder.Services.AddAuthorization(opt =>
     {
         policy.Requirements.Add(new IsPlannedRequirement());
     });
+    opt.AddPolicy("IsMatchComplete", policy =>
+    {
+        policy.Requirements.Add(new IsMatchComplete());
+    });
 });
 builder.Services.AddTransient<IAuthorizationHandler, IsAdminRequirementHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsPlannerRequirementHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsMatchEditableHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsLeagueMemberHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsMatchCompleteHandler>();
 
 var app = builder.Build();
 

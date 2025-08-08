@@ -32,9 +32,11 @@ public class CompleteMatch
 
                 if (dbRound == null) return Result<Unit>.Failure($"Round ({round.RoundId.LeagueId}, {round.RoundId.Split}, {round.RoundId.MatchIndex}, {round.RoundId.RoundNumber}) does not exist", 400);
 
-                if (!string.IsNullOrEmpty(round.WinnerUserId)) { round.Completed = true; }
-
-                mapper.Map(round, dbRound);
+                if (!string.IsNullOrEmpty(round.WinnerUserId))
+                {
+                    round.Completed = true;
+                    mapper.Map(round, dbRound);
+                }
             }
             ;
 

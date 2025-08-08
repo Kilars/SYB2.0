@@ -18,9 +18,16 @@ public class MatchesController : BaseApiController
 
     [HttpPost("{id}/complete")]
     [Authorize (Policy = "IsLeagueMember")]
+    [Authorize (Policy = "IsMatchEditable")]
     public async Task<ActionResult<MatchDto>> CompleteMatch(string id, List<RoundDto> rounds)
     {
         return HandleResult(await Mediator.Send(new CompleteMatch.Command { MatchId = id, Rounds = rounds }));
     }
-
+    [HttpPost("{id}/reopen")]
+    [Authorize (Policy = "IsLeagueMember")]
+    [Authorize (Policy = "IsMatchComplete")]
+    public async Task<ActionResult<MatchDto>> ReopenMatch(string id)
+    {
+        return HandleResult(await Mediator.Send(new ReopenMatch.Command { MatchId = id }));
+    }
 }
