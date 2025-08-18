@@ -56,14 +56,14 @@ export default function LeagueList() {
                     <CardActions>
                         <Box gap={2} display='flex' justifyContent='flex-end' width='100%'>
                             {currentUser && league.members.filter(m => m.isAdmin).map(x => x.userId).includes(currentUser.id) && league.status == 0 &&
-                                <Button variant="contained" color="secondary" onClick={() => navigate(`/manage/${league.id}`)}>
+                                <Button variant="contained" color="secondary" onClick={() => navigate(`/manage/${league.id}/leaderboard`)}>
                                     <Edit />
                                     <Typography variant="button" ml={1}>
                                         Edit league
                                     </Typography>
                                 </Button>
                             }
-                            <Button variant="contained" onClick={() => navigate(`/leagues/${league.id}`)}>
+                            <Button variant="contained" onClick={() => navigate(`/leagues/${league.id}/leaderboard`)}>
                                 <Visibility />
                                 <Typography variant="button" ml={1}>
                                     View

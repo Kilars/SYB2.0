@@ -48,7 +48,9 @@ type Round = {
   winnerUserId?: string
   registeredTime?: Date
   playerOneCharacterId?: string
+  playerOneCharacter?: Character
   playerTwoCharacterId?: string
+  playerTwoCharacter?: Character
 }
 
 type Character = {

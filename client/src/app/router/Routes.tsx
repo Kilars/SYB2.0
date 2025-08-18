@@ -16,7 +16,10 @@ export const router = createBrowserRouter([
                 element: <RequireAuth />, children: [
                     { path: 'createLeague', element: <LeagueForm key='create' /> },
                     { path: 'manage/:id', element: <LeagueForm /> },
-                    { path: 'leagues/:id', element: <LeagueTabs /> },
+                    { path: 'leagues/:id/description', element: <LeagueTabs key='description' tab='description' /> },
+                    { path: 'leagues/:id/leaderboard', element: <LeagueTabs key='leaderboard' tab='leaderboard' /> },
+                    { path: 'leagues/:id/matches', element: <LeagueTabs key='matches' tab='matches' /> },
+                    { path: 'leagues/:id/stats', element: <LeagueTabs key='stats' tab='stats' /> },
                     { path: 'matches/:id', element: <MatchDetails /> },
                 ]
             },

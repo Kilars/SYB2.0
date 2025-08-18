@@ -21,7 +21,7 @@ public class CompleteMatch
     {
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            foreach (var round in request.Rounds)
+            foreach (var round in request.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)))
             {
                 var dbRound = await context.Rounds.FirstAsync(r =>
                     r.LeagueId == round.RoundId.LeagueId
@@ -32,11 +32,8 @@ public class CompleteMatch
 
                 if (dbRound == null) return Result<Unit>.Failure($"Round ({round.RoundId.LeagueId}, {round.RoundId.Split}, {round.RoundId.MatchIndex}, {round.RoundId.RoundNumber}) does not exist", 400);
 
-                if (!string.IsNullOrEmpty(round.WinnerUserId))
-                {
-                    round.Completed = true;
-                    mapper.Map(round, dbRound);
-                }
+                round.Completed = true;
+                mapper.Map(round, dbRound);
             }
             ;
 
