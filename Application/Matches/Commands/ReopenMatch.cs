@@ -34,6 +34,7 @@ public class ReopenMatch
                 round.Completed = false;
             }
             match.Completed = false;
+            match.WinnerUserId = null;
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
 

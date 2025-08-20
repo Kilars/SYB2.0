@@ -39,7 +39,13 @@ public class LeaguesController() : BaseApiController
     [Authorize(Policy = "IsLeagueAdmin")]
     public async Task<ActionResult> ChangeLeagueStatus(string id, LeagueStatus status)
     {
-        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = id, NewStatus = status}));
+        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = id, NewStatus = status }));
+    }
+    [HttpGet("{id}/leaderboard")]
+    [Authorize(Policy = "IsLeagueMember")]
+    public async Task<ActionResult> GetLeagueLeaderboard(string id)
+    {
+        return HandleResult(await Mediator.Send(new GetLeagueLeaderboard.Query { Id = id }));
     }
 
 }

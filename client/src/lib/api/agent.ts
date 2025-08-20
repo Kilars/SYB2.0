@@ -19,7 +19,6 @@ agent.interceptors.response.use(
     async error => {
         await sleep(500);
         const { status, data } = error.response;
-        console.log("error hello", error)
         switch (status) {
             case 400:
                 toast.error(data);
@@ -29,7 +28,7 @@ agent.interceptors.response.use(
                 router.navigate('/login');
                 break;
             case 403:
-                toast.error('Forbidden')
+                toast.error('The action you performed is forbidden')
                 break;
             case 404:
                 toast.error('Not found')
