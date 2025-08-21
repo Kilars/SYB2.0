@@ -23,6 +23,15 @@ export const useLeagues = (id?: string) => {
         enabled: !!id
     })
 
+    const { data: leaderboard, isLoading: isLeaderboardLoading } = useQuery({
+        queryKey: ["leaderboard", id],
+        queryFn: async () => {
+            const res = await agent.get<LeaderboardUser[]>(`/leagues/${id}/leaderboard`);
+            return res.data;
+        },
+        enabled: !!id
+    })
+
     const createLeague = useMutation({
         mutationFn: async (data: LeagueSchema) => {
             console.log(data)
@@ -52,6 +61,8 @@ export const useLeagues = (id?: string) => {
     return {
         leagues,
         league,
+        leaderboard,
+        isLeaderboardLoading,
         isLeagueLoading,
         isLeaguesLoading,
         createLeague,

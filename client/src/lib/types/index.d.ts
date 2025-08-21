@@ -59,3 +59,11 @@ type Character = {
   shorthandName: string;
 	imageUrl: string;
 }
+type LeaderboardUser =
+{
+  wins: number;
+  losses: number;
+  flawless: number;
+  points: number;
+  displayName: string;
+}

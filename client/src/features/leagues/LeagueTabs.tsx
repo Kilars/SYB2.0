@@ -1,5 +1,5 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import LeagueDetails from "./LeagueDetails";
+import Leaderboard from "./Leaderboard";
 import MatchesList from "../matches/MatchesList";
 import LeagueStats from "../stats/LeagueStats";
 import { useNavigate, useParams } from "react-router";
@@ -39,7 +39,7 @@ export default function LeagueTabs({ tab }: Props) {
         </Tabs>
       </Box>
       {tab === 'description' && <Description />}
-      {tab === 'leaderboard' && <LeagueDetails />}
+      {tab === 'leaderboard' && <Leaderboard />}
       {tab === 'matches' && <MatchesList />}
       {tab === 'stats' && <LeagueStats />}
     </Box>
