@@ -63,34 +63,429 @@ public class DbInitializer
         var characters = new List<Character>()
         {
             new() {
-                Id = "1",
-                FullName = "King K. Rool",
-                ShorthandName = "King K.",
-                ImageUrl = "data:image/webp;base64,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"
-            },
-            new() {
-                Id = "2",
-                FullName = "Donkey Kong",
-                ShorthandName = "DK",
-                ImageUrl = "data:image/jpeg;base64,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"
-            },
-            new() {
-                Id = "3",
                 FullName = "Zero Suit Samus",
                 ShorthandName = "ZSS",
-                ImageUrl = "data:image/jpeg;base64,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"
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174165/WmVyb19zdWl0X3NhbXVzX2dmZ21jbw==/drilldown"
             },
             new() {
-                Id = "4",
-                FullName = "Marth",
-                ShorthandName = "Marth",
-                ImageUrl = "data:image/jpeg;base64,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"
+                FullName = "Zelda",
+                ShorthandName = "zelda",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174160/WmVsZGFfbTN6dzV0/drilldown"
             },
             new() {
-                Id = "5",
+                FullName = "Young Link",
+                ShorthandName = "Young Link",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174160/WW91bmdfTGlua193dWVmMDU=/drilldown"
+            },
+            new() {
+                FullName = "Wolf",
+                ShorthandName = "Wolf",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V29sZl9oeWZwNWk=/drilldown"
+            },
+            new() {
+                FullName = "Yoshi",
+                ShorthandName = "Yoshi",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/WW9zaGlfZWxmdHRz/drilldown"
+            },
+            new() {
+                FullName = "Wario",
+                ShorthandName = "Wario",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V2FyaW9fcWE2cnZq/drilldown"
+            },
+            new() {
+                FullName = "Wii fit trainer",
+                ShorthandName = "Wii",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V2lpX2ZpdF90cmFpbmVyX3kyMmFhcA==/drilldown"
+            },
+            new() {
+                FullName = "Sora",
+                ShorthandName = "Sora",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174153/U29yYV9iem1nNXk=/drilldown"
+            },
+            new() {
+                FullName = "Villager",
+                ShorthandName = "Villager",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174153/VmlsbGFnZXJfY3lvcGpo/drilldown"
+            },
+            new() {
+                FullName = "Toon Link",
+                ShorthandName = "Toon Link",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174153/VG9vbl9MaW5rX2NzdzFibg==/drilldown"
+            },
+            new() {
+                FullName = "Wario",
+                ShorthandName = "Wario",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V2FyaW9fcWE2cnZq/drilldown"
+            },
+            new() {
+                FullName = "Terry",
+                ShorthandName = "Terry",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/VGVycnlfd255YWcx/drilldown"
+            },
+            new() {
+                FullName = "Steve",
+                ShorthandName = "Steve",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U3RldmVfYTlpb2xt/drilldown"
+            },
+            new() {
+                FullName = "Sonic",
+                ShorthandName = "Sonic",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U29uaWNfZXV6aWZz/drilldown"
+            },
+            new() {
+                FullName = "Snake",
+                ShorthandName = "Snake",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U25ha2Vfd3Bidm9p/drilldown"
+            },
+            new() {
+                FullName = "Simon",
+                ShorthandName = "Simon",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U2ltb25fbGp4YmRm/drilldown"
+            },
+            new() {
+                FullName = "Sheik",
+                ShorthandName = "Sheik",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2hlaWtfaGZpdWxy/drilldown"
+            },
+            new() {
+                FullName = "Shulk",
+                ShorthandName = "Shulk",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2h1bGtfenVlbndh/drilldown"
+            },
+            new() {
+                FullName = "Sheik",
+                ShorthandName = "Sheik",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2hlaWtfaGZpdWxy/drilldown"
+            },
+            new() {
+                FullName = "Sephiroth",
+                ShorthandName = "Sephiroth",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2VwaGlyb3RoX2h5dWtodw==/drilldown"
+            },
+            new() {
+                FullName = "Samus",
+                ShorthandName = "Samus",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2FtdXNfaGRiNXpm/drilldown"
+            },
+            new() {
+                FullName = "Ryu",
+                ShorthandName = "Ryu",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174145/Unl1X3B5OGVlaQ==/drilldown"
+            },
+            new() {
                 FullName = "Roy",
                 ShorthandName = "Roy",
-                ImageUrl = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAMAAzAMBIgACEQEDEQH/xAAcAAACAgMBAQAAAAAAAAAAAAAABgUHAQIEAwj/xAA7EAACAQMCBAQDBQYHAQEBAAABAgMABBEFIQYSMUETUWFxByKBFDJCkaEVI1KxwdEzQ2Jy4fDxgjQk/8QAGgEAAwEBAQEAAAAAAAAAAAAAAAIDAQQFBv/EACgRAAICAgICAgIBBQEAAAAAAAABAhEDIRIxBEETIjJRcTNCUmGRI//aAAwDAQACEQMRAD8AvGiiigAooooAKKKKACiiigAorUkDqa8EvLaRuRLiJm/hDDNBtNnTWD0qPvdY02whaa7v7eKJPvM0o2qHXj/haSXwxrEHXGTnlP1rUm/RhIa7b3lxBiBEZV3+ViH+hrHDd/JeQyxTOXkhIyx6kHpn12Nes+uWAsGure4juVx+7SFuZnY9AAPOozR7my0HTidSu4VvLhzNOqvzYY7BRjyAA9SCe9WTvG41sz2NFYYgDJOBSRqfxAt4wV0+3Mh6c8hwPy6n9KXjxdqDalBcXD88aODykDlx3wvt9aaPi5GrejOSLZFFcemX8Oo2q3FvzchP4hiul3VAOZgMnA9652mnTGN6KgL/AIr0fT4w1xdDmYKRGgLP8wBGw9CK2n4ktUt1kgjlllcAiHlKt9R2pHNIdY5tXRO1pLIkUTySMERFLMxOAAO9Rmm6pHcac15cskCJkyBsr4fuTVP/ABB4+m4luI9J0GRo9PMqqZeXJuXzgbfwZxt3o5KrNjjlJ0XopyB2zW1c9jHJDaQxTzNNIkaq8rAAucbscede4piZmiiigAooooAKKKKACiiigArV2CqWJwB1rauHVjOtpI1vJHGwGS8gJCjzoNirdCJxbrMs+p8tjMF8NceLDLtj286r/VNWu31Bbe1LeMzY8Rj8xJ6nm7bZqR1C/SW9l5nPiSE8hwPm9T5UsW6yfabm9V3ZVHhq/VSx679sYrjfKTbPpIxx4YRj+zbU5D48hcRy7ncnP96euCtB0PVrMSR6TZ+Iu0txc3jsFPpFnr7ED1quJT4jMHPzHz7/AFogPhswkLCNu5G31q2LK46OLzMayLki/wC24Z4W0qFn+y2S5PM0rBV39MYx9Kiry04TMpMVvI7ea3Dqp/Wqssprm3PhlgVKjlUjZh5rXpKZLOL7REShR0NxCPu8rgcsijsckA++a6szyQXPHI8bDKEpVNFm6VLpFtdSR2lgsLII35nmMhdCxDfe6AHkJ964LedI3cpFi4DsCUHzZz6Up266z+0bG8sNNvLr78TqkLEMj42zjA6dT3Apgu7TiJ71rOLT7lCwB54o8F/9z9AfrUseSclcmVzQjF/UltQ1bU7e1hYagtqXJUfaJwuemNsE172dw0MVq9xqEl1ezQoVCx5UOwGMnP8AER1HQdKj7HgHWJJA9xNa2/4uYkyPnyPb9an9P4IWyjgb9pTNPCcrhQEz226+XetaTdk0xCgs5df4snhhkFlayTPI9wBuY0PIgXyPIq4q07mw0ePTua4SMQQrkzc2GXHfmG4PrXBpXBej6M8k8b3J+TlYyzsVx7dKrf4o8VxXGdA0glbVDm4Ze5/hJ/n9POpxh25LR2ZMnytKLdIiOPOOLjii4aysmeLRoThEJy1wf4mP8hUNwzp02o63YW1qgaQzoQDnGxyScb4AGSaik+UcoG56Yp84VjuNNtGIxHLcHYIv7xs7coPXHtSSkdOPDapF620qTRh0YOMkcwG2Rsa9RUfocE1tpsEVzjxFQZCgAD0qQ71ZdHmSVNpGaKKK0UKKKKACiiigAooooAK4tYtXvdNuLaJuVpUKhvKu2tXYKpLHAAzWM1OnZQXGOky6Td6jyRswEghSQjpzDOPfGDUDpsNzNpcvhIXsvxvnmCkK3LgA9cmre4k4p028J0+1tBc+K3M0sq4QFT1HmcgV5Lc6MnDsN5ZQwxW0rD5AoAVu6n1Bzn2pZcsGmuztnkfkcb00VSujy3GnTXUccxILFfEjwDg4IHsairtFtIIPFT77fMpHUelWvdXtrNaGaB0eEZHMjbetVJqEs13rF0GyVIZo89ABg7VHH9pbHyS4wqxhguop1VIiZLJfxMuWg8ifTt6VMWGlCTwpmkSOInknbflUc3n26A0n6W0tlIwhkKApuOwz1GPanzg6fUNQ4dkVrFp4oWa0RkTm2ADFiD1O+DvufaqZoTwL69HFGCmXRbmN4UaFw8ZUcrA5BHvXpg18/wA+papYFo7K4n0+8D/OryMqFeXZSowQc48xvUW/xB4gDFLqa45h1Vrh1I9xVYSg1t0NLx8kez6Vzt5VHajrWn2APj3CeIP8tDlvyr50k421CTOVLZ7vOxqNvNbv75DHLL4cR6rFtn3PWnvFHt2EcEmWNxx8R3uDJZaYQN8Eg5CH18z6VWDu7udy8jHJz5nqa1jjJ+5yqAN2OwFDXtva/LBmWTzFQnkc3ro6owUESunRQ2jLPckFvWrK+G+nz6zqceqStE1pbE4jOSRJty58sde/0qnI3muZR4hJydlAzX0XwdJpHD3D1jbNParcSIpbwRlpGPn3JpYpXs3LklwqKHHGKyKwDmsirHnGaKKKACiiigAooooAKKKwaADNL3FWrpaWU8UcwSUjGRuR7fSpi/vYLC3e4uXCRIMk/wBvM0pcSyWiWc4aPNxP83zbYzuB6VXDieSaiSy5fjjZXWsXwEtqXUYTmZScLzDuCcb1zzala+Gs3hNNaXkmLixnAKuy5w64OzDl6jGe+a8tQtpnjmMpWKFPvSSvhV9v+K5dEtYtWdtL057i8vHJlVfD8OKJVxzOXboNx0z5d6n5GKEJ03e/5LYc02k2jXU9UluIPs9jbC1s135BgFj7Dp7VExoxlMrKRIycqrjfJxn9KshPh/HYShdY1KWSVQG5LRAgb0y2cjt0H0qTS20jQVWRYIbVwNi372ZvbO/54pvixR3Ed5G+xX0TglpI/tOtSC3t2GfA5iHlJGwJH3Afz8qZjqosLbljaKxWDCR8o5OUADAVewwRt0O571BcQcVGQEWqCMEfNI+Hkby36L9M+9Rd0bziD7PcXkgi5VIxGoHynuB2yQDvvvUp5HdzehKvozxfqX7YjiltFaS5S4EO64Loyk9OuAw28gTS/qPD95PPPKslqhjUDkkuBzvhdzg9/wDipOHTb6yvIpLC78WMMTIBGeZhkbK24BqVv9EVbXxYYIZYZGZvHDAsG8i3c52z71yzzRu0XhOdV+hL0fRDfRyyyu0QRuUbDc9xvUqeH7aJwC0536vgZ/Su21aQFxGyJJzK4J22PUA48+tdUTXEVsXuC/LF8zyM/Nzn+HBHtRbfTB5Zt0ha4h4dubV7YJO8vjKxMbEAJjG23Xr+e3nXjY8PKTm4mEY8l3qUuftV3OZWceSLzfcXsvsKwLO5b8YH/wBU1tKjvxYv8kd9jBpen4aFR4gH+Ixy2PftTHwnIdR160ghtwyNJnx2jYhOUE5BBG+wH69qSzo9zJ/nxgeWT/arA4F1fTuGLORHS+urqY5fCryjHZBn+dEVG+yuV5VCoxLZXYVsK5tPuReWkVwsbxiReblcYI9xXSK6jxGn7M0UUUGBRRRQAUUUUAFYOe1Zrg1y+GnaZPcn8C7e9ak5OkAg/FDioafG1taMHuxtEOoRv4q4rTUrfXL+G8mbNu0YfkPc46H6/wAqrHii/e+1V5Xck8x79K34f1ybT3RJMyW+SeXoRnOcH1zV/nWJygv1RfJ4vOEX7RYekaCnFGrPc34xp9qwYpnZiei+m25PqPPZkkGncPxvJpFpbQzH8Krtj1PWlX4dcSWgk1nS7iVFuTIssIzgSqEVdvX5a21rVEAZriZIk7sSFz+deVK70Xxxils9peL5NVtzHYssVzGCDBKQXTzCHoaU7i5mmlYSOxfPzcx3z65rhuf2de3fi2tyok5wCueXnJ7j+9dE637y/Y3BLgY5cZOPeu/EuS+2jhzcYv6nbokVnPekXbqSg5gHO2c/rTEEsB9pZ3Q+Eiuka/jJOMn0GKVLXThO7KsitygE8u6j0B71GSaghDO58JIwEw22QP575P1qGfFDI7TK+PylqWhutLZL65lWKZ3MfK6TcpVixwOUe2+w23z5V4tdarHeZRGl0wyRtcquOYBWztkj3IHXFSAnt9F0vTjyk3TuphVN3kkIzt6efbb2qR02a50txqQubcXAOFt5sLG/oG6g+tY8Kk79GaXs4NW0R7rU/tunW91DFKMu91bNEoY7nAOM/SlziFrqwn+xu6MkiBg4XHMM74q5jeWvEmix3VjKGUtzqvPkCRTurY9cikfirQ11ezAiHLNESYs9Qe6mnj48OOuzMeVxnsQYZiu43HautLoV78F8PPr2qfY3bwgoPikuAy+ynqc1IcR8F6toBaYx/arMf58IJ5f9w6j36VJw9nqR8iN8WyOWcH1pk4O0u6v9agCeLBEq+I0vhndc9j0yf70taTpt3qd4bO0iZ7kx86R5CkjK7742we396u7hXQLfQLDwYVBmc800n8TY/lRDHbszP5XGFLtkyoA2Gdh3reiiug8kKKKKACiiigAooooAKUfiZK0fD+FJHM2KbqWPiLbtPwzcOnWLDfSqYXU0zV2fNN0zSySOOpcmvKMnOSMH0rWNyMA+Ve6hh06VyydyZ6kfRnw4nHzoCexxgj61vDbRtOjPHz46eIxb+dYYSqcEsDjpTlofw91jWeHDq1jcQmRzmK3yMsB3z2Pof/Ni3dk8nFLZA3VvEsaSIwVzuWRs4I7g9jTDw9PeXone58ViseF5UwWPb60yXV9qVrw49tecOmB3jMM4QhhnlxzEADqd6gr3Wta0i2t40j02Mv8AKC3PKx9fwj+dXySjJ7PPdpnnb6frQjuYbZkshNzF5HJMmPQDvuN/WvHT+GbSZra4ml8V4cllkOzZ5SCQN/PateLotWs7dGuNVkmedS5WFFhQfdGNhnsOvlUhbR4sY5Yxp11ZlA0bXJKtGPLI699qSMNUjOVEjcS2f2uO4Km71CNDHEke/hhsZ6bLnA3PYY71tf6nbWlpJaT+FPcOB4qmMSBPp/T86hBxZb2beFbafHPENm8JvBj+gwSfrj2qQsNV4SvpgJ9LSxlJwSUCgk/6k2P1AqjhJI1SVq0cHA+sHhzV5UjMn7MupPmt8Z5CejKB+oH9Kse+xzfakIdHALEdx2auG2tNC0YLcRx20DMuY5HyWIPkTk7+lcWkcSWd7qjWKqyQSf4LvsC3cAdqMTr6yY2WPyfaEeiTTUdP4Z8bVV0l5ZJWAnmtjhipxuwJwenXrThouq2et6fHfWMhkhfbcYIPcEUpTw+ExgkTmhfIUN2HcVPcG29tZaOtnaDHgseZST3Oc7k9fTAznYUTi7v/AKTjKPH/AGTcVrbxMHjgiRgpUFUAIGc49s17YHlRRSGhRRRQAUUUUAFFFFABRRRQAVzajbLeWU9s+MSxld/WumsHei6A+Rb+yksr6e1lRlkglaJgR3UkVm0DyusSIzMzYCgZJ9KtD4vcJyjXYdUsYJHS/IilES5IlA2P1Hc+XrXRwpwvDw5Gt/qBEmpuvyom4iHcA+frU3C2el8kVj5exe0myVRFY6xYsrTMebxkIZT23PptTJpGmT6R4iaJqV3aB9wmQyZ9j/39a21+9tbTRr251FwgkKi1O3OzKwJVPp1PbG/WkmPjy/iYZgR99s4BqvFdUcDm+rLJudN1a5tHl1DUopIUHM+RydPOqk13VGvddjQH91C+FA7bHAr21jjTWNTt2gLeDGd8A5pWtZTDOgl3fnDAj8e+fzNHBvsQsDjuaa4ttPlYYRouYAeuKUY49tjj0FWnp+jxcT8HxSxHmngUAY35hjbHuMflSKdLkF28BjJdGww9un6Yp8Uo7TMp+iOGw6V6W8bzSosasfmG4H6Vm7vLOzlZFAuLgbEL9xPQnvTt8NOJtMtZeXUdOhMwOVuFXLoPby9t6yea1oZKi3LLSrebQbKy1G2SUJborJKoODyjNLmofDbT5H59Ou57Q5yBjnCnzGd/1pys7qC8t1ntZlliYbMhzXtmpqmrGjklHpkC+jsLVILiXxmCgGXHKWYDr6VH4m0a7R1JaPo3+oeRpuZQwwa4ryzS4hKMBzHofKrRmnpnPKL7R1QTJPCksRyjAEGvWlfSLt9NvTZ3JxE5wD2Vv7GmcEGklHix4ytGaKKKUYKKKKACiiigAooooAM1zzXUMU8UEj4klDFB54617mkTju8is76M3MkxV0wscRwxU9RntmllfpWaq9kvrWpj8HRTtj+dI3E3EVlpDKlwDc3+P/yo2OUHoZG/D7da5dS4k59NvtQ0qJ4ntlIAmbmPN5/TtVYvcZk8S45maQlmkO5YnqSfOmjJS9VQSdIlOIL261W8S+vJBJzJyIoGFiGfuqOwqHdQFzXUkgeznX8CgOpPrXlFGJCmNw1OnWxVFyejyxsT5V72elG8kQSMEiZhlsYPXtmmjhfh7R9ULR3msJZXPNiNZYsq3/0TjrjanK0+F11LbRyy6lD4pzlQpK4zsQw8+v1rJZb6LxxRX9QkdE4fl4NS0ns5bi9s5RyThYjzL3DY6461WvGHFq6xc30Wj2hs4pZQPF2EjIAdsD7uWJP/ADV/6DpX7HsEskupp4o9o/GIJRf4c9wOgpB+IPw88WSTWdAjHjklp7UdHPdk8j5jv70sIRbqRKT/AEUfHb+H8vKc432rrsZ5Le5jlhB50YEetTdvo8+ouZRCywxyBJZsbA9eX39O1T0mmaLJataxi4hDfdY4Yxt2Yt+IeY8qpNVoS6Onh3iSWynefTpjGAQGib7r+hH9atDh/iyy1blhkIt7s7eEx2Y/6T/SqGWyvrG6ktpERDjBY/dYdipqYjee0k8O4XmIwAM57dm8q5ZReN3HoompH0GDtWHGRt1qs+GeN5bdEh1AtcW4wA5/xE9z+L+dWLY39tfwCe0lWWM91PT0NPDIpfyY40Ret2IuIw6L+8UdPOvXh/UDcRfZ5z++jXYnqw/vUlMgILY96XNSgezuVu7f5SDzZ9f7V0/lGiX4uxqzRXJp96l7brKmx6Mvka66i9FLCiiigAooooAKKKKACq4+K9uyvZ3K9wUI9cirGJxSN8VA0mlR4G8b7befU1fxn/6onl/ErmwUHRtTM33JSUBO+Wwf7ikR8crRMoYA4JHSn+7tc6PBZ3EhhiEJmlZDykZPUk7d6REt/GuvBtxlmfkjXIOSTgDPQ9RvXPy5ZJSXtlYr6qy5eHfhlpN5wLYxTo0F9OnjtON2BbcKQSQQBgYGO52yaR+JODNW4fkYS27S2+cJcQrlSPUDpX0Bptv9l062t9/3USpv6CugoGUqwBB7EUNJ9lMeVwPlZLmSM4I5gM586mdK4mvLB/8A+S+uLcgjOHOPyzjFXhrXBeg6xG/2ixSOVv8ANhHIwP8A3zqp+Kvhvf6PzzW4a8sRkiWNfnj/AN6/1H6VNxa6O2GaGTXRZ/A+rX2sadHdvfW99EzcrnwfBkjI6ggZB+n5mmlqq7gnjfStM0uHT763lSQEB54ohh+g5nAOc9MkDerOikSZA6EMjDKkdxVE7RxZYSi9qiv+IdKvYrvU+eBFtruQSQSRD5CdvveT/odvoptZsjSc0ZGM5Ddf/au5o1dSrKCpGCD0NLGv8MrcPLcWYAkKZ5T3I7D3/wC9dnsjRW1zDDfWP2O7kaJQP3FyvWE+vmpri0m6s9LtpdL4ls5FhDkx6hB+85NunL+Nf19K6r5ZnNxHbxOTEhafb/DXzqKbUptPlNu9utzZKAsmx3b0zsdsVKbv6JWzeuyU1nhq8sUh1GylN1p8iB4riA5VlIyD59POuXS+JNT0aZZ7GRS56q33XHcMP612aNxNLw7eQmxja40a4jLSWp35M7khT0/5OafF4X4W4rsl1XTgYhcDIlgbHKe4K9Ac7HaofHy2iqlWmMHDGv2nEOmpdWxAfYTRH70b9wa67uFTGyuAyHrmoXhLhJOHLmeaO+kn8ZAjIUCjY5B/U/nTNIgdSGFdMG0tk5JPoUredtGvyCT4LbP7efvTapDDIORilzWrbkB8Xdeqt/T3qR4elL2QjLBvDwAf9PaqzVqycdOiUoooqY4UUUUAFFFFAGDSf8RLf7dawWcX+OxJQg4wacDSM14OIuK72O3YfZNKZI3cHd5cZK48hlf1rHf9oa9i1e2K2tky3r+LLyBJXxuwxjH6mkvhjQp5+NbXSj83JcK5dRsYl+YMPQgD8zTbxJfPeXk6RhViErBMHcgHbNd3w3u4YuIBFLbc87QmOObG8a5zj2yDTul0KkWuOlZoHSilGMHpWAB5VtRQAuazwXoerlnmtBFM3WWH5CffGxrz0LQ9S4fDQ22ofbbPqkNzsy+zDt6YpnxWMCsof5JVT6NY2ZkBdeVu4znH1rzu4TcW8kQdoy6kB06r7V70UMQpLX/2nw1q0/27mdJgR9pJP7wep6Cle6kFxLLcNy5lbmyuMD0r6SkjSVGSVFdGGCrDIP0pJ4k+HGlah4txpq/YrwgkeHtGx9Vp8HHE7oTJFyVJlXcO3sMNybW5YBHyEc78ueo/PvTlwjGvC139rtrm5lsbrIlhOCOYdGGwwe36eVJ0ug3tvM0N5A0TrIVYk75HlTFprONMNkXeRxF1Y/ePmfypsihHJSfZkG+Oy3bG9hv4BNbtzLncdwfI11VWnBmtGxvJYrpWWBxhh1KsD1/7/Sn2LVbKX7lwmfInFI0UOqaKOaNo5FDK3UGuTTtOSxmlaF2Mcn4W/D7V6ftGzMqx/aI+djgDPeuoUWZRmiiisNCiisGgAzQTt1xWhNaSSCNGdzhVGSfSgBa+I3FA4Z4fmlhKm+mUpaqd8Nj75HkOtL/w+tJND4MjknLePMrXMpY5PM2Tue/akXiXVZuM+K05w6WfOIo0PVIs/Mx9cZP5VYeuXqxaLJHGAisoRQOgz/xTIJKhPkK/NG3TOAa99A59P1iO46iN1Prjf+5/SuNnDLnORWtrfiG8SOVcoyEA+vUf1/OtYqL2ikWWJJY25lYZBHcV6VT1pxXeaepNncARr1jI5h+VWfodxeXWlW9xqMSw3Eq8zRr+HPTP0pBiSorFFAGaxRQaACisVmgAooooAhdf0OHU0MyIq3arhW/jH8LeY/lVTaus+k3SanG5axUmK6iIGYt/v5xnbvnt7VeWaRtW02KLWZ7W4TmtNRz7ZI/9H5VqSb2YxRvRkC5i+dMfOFOMjGzV4oIbiMGO7eGbqrhsfQ9iPeojRdSOla1dcM6q4VrWRlt5m/Gv4VPrjv3/AJ9Wr3On2RYrMOcb+Gm4+vl+dNZiGu24fub77HdWGuQz3COjSQElMEEHAwd6tAdarbhjgvUJJoL3VJ4raDZ1t4G52kHUZfoB6DPvVkLjtSsY2ooorACtGretCNqANGZR94gVHXuqwQxsEcFx0DdKX/iPc3kdpBDZyCPnyWZiR0xjBxjz/OqkuINZuHKmSQg9vHz+maXkkOkqsYeLNRSO9laRIBPL15CDt9MYpUbiS7VTBOWeIHK75x/WvZeFtZlCtFZXLtn/AC4HOR74xUnpnA3ETzq50do1B+/eOgz6gAn9azl+ik5RkqOK01NZ4M8rbbEgHApu4E0vTteh1WK6RHlWNfAkPWMnm3B/Kt4eB+IMr4dxbWq5+bq+R5dqadC4UawYvJKpdgOdo0C5xTRba2Qoh+COAWtbn9o66F50b9zaqQRsdnfG2fIdup64Flcw865YbRYwDlj9a6AtaBvmjNYxWKANs1gmsHpWtAG3NRzeta1jFAHoGHnRzVpg1goTQBvzjzFJnF08h1mBeQ+ClsJEcDYPz7j3xy03NDkd81H6josd/EUdiuRjPcVqYFBfEyyOpfEKRIG8MSQxycw7nFecOkaeJle+1R2kUj7pJ/TFP2sfDXUBetfWtw9xJylVORzAYwBv1H1pYu+AuIgxYWUshz+FP+cUvIbRbXA2pRXfDdqqyGQwAxcxGMheh/LFMiyg9KRvh7w7qWk2cyX8bQiQhgjspOe+ACcD606xxFB50IxnQpzW1aKK3rTD/9k="
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174145/Um95X2ZrcHpiMA==/drilldown"
+            },
+            new() {
+                FullName = "Rosalina & Luma",
+                ShorthandName = "Rosalina",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/Um9zYWxpbmFfYW5kX2x1bWFfbGVsYnR3/drilldown"
+            },
+            new() {
+                FullName = "Rob",
+                ShorthandName = "Rob",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/Um9iX3prY2hsbw==/drilldown"
+            },
+            new() {
+                FullName = "Robin",
+                ShorthandName = "Robin",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/Um9iaW5feXNxY2xs/drilldown"
+            },
+            new() {
+                FullName = "Ridley",
+                ShorthandName = "Ridley",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/UmlkbGV5X29xZXNwaQ==/drilldown"
+            },
+            new() {
+                FullName = "Richter",
+                ShorthandName = "Richter",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/UmljaHRlcl9qYmJkdGU=/drilldown"
+            },
+            new() {
+                FullName = "Pyra (& mythra)",
+                ShorthandName = "Pyra",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174138/UHlyYV9ib21xZXc=/drilldown"
+            },
+            new() {
+                FullName = "Pit",
+                ShorthandName = "Pit",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174138/UGl0X3NlbTdteA==/drilldown"
+            },
+            new() {
+                FullName = "Pirhana Plant",
+                ShorthandName = "Pirhana",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174138/UGlyYW5oYV9QbGFudF9kZGluZno=/drilldown"
+            },
+            new() {
+                FullName = "Palutena",
+                ShorthandName = "Palutena",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174131/UGFsdXRlbmFfdmJyYzl6/drilldown"
+            },
+            new() {
+                FullName = "Pikachu",
+                ShorthandName = "Pikachu",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174131/UGlrYWNodV9sbXJlb3U=/drilldown"
+            },
+            new() {
+                FullName = "Pichu",
+                ShorthandName = "Pichu",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174131/UGljaHVfeWdxOXo5/drilldown"
+            },
+            new() {
+                FullName = "Peach",
+                ShorthandName = "Peach",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174130/UGVhY2hfZ2puZmxo/drilldown"
+            },
+            new() {
+                FullName = "Olimar",
+                ShorthandName = "Olimar",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/T2xpbWFyX3EzaWptcw==/drilldown"
+            },
+            new() {
+                FullName = "Pac Man",
+                ShorthandName = "Pac Man",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/UGFjX01hbl9nenJ5MGI=/drilldown"
+            },
+            new() {
+                FullName = "Min Min",
+                ShorthandName = "Min Min",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/TWluX01pbl9oMWgxcjE=/drilldown"
+            },
+            new() {
+                FullName = "Ness",
+                ShorthandName = "Ness",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/TmVzc19iNDQ4ano=/drilldown"
+            },
+            new() {
+                FullName = "Mr. Game & Watch",
+                ShorthandName = "Mr. Game",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/TXJfZ2FtZV9hbmRfd2F0Y2hfeXl0c2Ri/drilldown"
+            },
+            new() {
+                FullName = "Mewtwo",
+                ShorthandName = "Mewtwo",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWV3dHdvX3ZzaHZ2dg==/drilldown"
+            },
+            new() {
+                FullName = "Meta Knight",
+                ShorthandName = "Meta Knight",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWV0YV9LbmlnaHRfZmUxaGxm/drilldown"
+            },
+            new() {
+                FullName = "Mega Man",
+                ShorthandName = "Mega Man",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWVnYV9NYW5fbHkzdDhm/drilldown"
+            },
+            new() {
+                FullName = "Marth",
+                ShorthandName = "Marth",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWFydGhfZnI5cHJ2/drilldown"
+            },
+            new() {
+                FullName = "Mario",
+                ShorthandName = "Mario",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174121/TWFyaW9famIyZjlq/drilldown"
+            },
+            new() {
+                FullName = "Luigi",
+                ShorthandName = "Luigi",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174115/THVpZ2lfYnNweXJo/drilldown"
+            },
+            new() {
+                FullName = "Lucas",
+                ShorthandName = "Lucas",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/THVjYXNfZmcwamt2/drilldown"
+            },
+            new() {
+                FullName = "Lucina",
+                ShorthandName = "Lucina",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/THVjaW5hX2NocHY5cg==/drilldown"
+            },
+            new() {
+                FullName = "Lucario",
+                ShorthandName = "Lucario",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/THVjYXJpb19od2tudGo=/drilldown"
+            },
+            new() {
+                FullName = "Little Mac",
+                ShorthandName = "Little Mac",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/TGl0dGxlX01hY192ZnFvcnM=/drilldown"
+            },
+            new() {
+                FullName = "Link",
+                ShorthandName = "Link",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/TGlua19la2lrZm0=/drilldown"
+            },
+            new() {
+                FullName = "King Dededede",
+                ShorthandName = "King Dedede",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2luZ19EZWRlZGVfZ3N4bnh1/drilldown"
+            },
+            new() {
+                FullName = "Kirby",
+                ShorthandName = "Kirby",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2lyYnlfdWJ3cnNy/drilldown"
+            },
+            new() {
+                FullName = "King K Rool",
+                ShorthandName = "King K Rool",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2luZ19LX1Jvb2xfeWJodG9t/drilldown"
+            },
+            new() {
+                FullName = "Ken",
+                ShorthandName = "Ken",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2VuX21kOHIycA==/drilldown"
+            },
+            new() {
+                FullName = "Kazuya",
+                ShorthandName = "Kazuya",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/S2F6dXlhX3BrZHpvcw==/drilldown"
+            },
+            new() {
+                FullName = "Inkling",
+                ShorthandName = "Inkling",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/SW5rbGluZ19yZ3dhOWk=/drilldown"
+            },
+            new() {
+                FullName = "Joker",
+                ShorthandName = "Joker",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/Sm9rZXJfdXlqemJy/drilldown"
+            },
+            new() {
+                FullName = "Jigglypuff",
+                ShorthandName = "Jigglypuff",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SmlnZ2x5cHVmZl9oeXNwaGY=/drilldown"
+            },
+            new() {
+                FullName = "Isabelle",
+                ShorthandName = "Isabelle",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SXNhYmVsbGVfdWN1eXdv/drilldown"
+            },
+            new() {
+                FullName = "Inkling",
+                ShorthandName = "Inkling",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/SW5rbGluZ19yZ3dhOWk=/drilldown"
+            },
+            new() {
+                FullName = "Ike",
+                ShorthandName = "Ike",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SWtlX3RuMG56cA==/drilldown"
+            },
+            new() {
+                FullName = "Incineroar",
+                ShorthandName = "Incineroar",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SW5jaW5lcm9hcl93NmRianI=/drilldown"
+            },
+            new() {
+                FullName = "Ice Climbers",
+                ShorthandName = "Ice Climbers",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SWNlX0NsaW1iZXJzX2NxZHpraw==/drilldown"
+            },
+            new() {
+                FullName = "Ganondorf",
+                ShorthandName = "Ganondorf",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/R2Fub25kb3JmX2MzejBmZQ==/drilldown"
+            },
+            new() {
+                FullName = "Hero",
+                ShorthandName = "Hero",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/SGVyb19hMzRjbHo=/drilldown"
+            },
+            new() {
+                FullName = "Greninja",
+                ShorthandName = "Greninja",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/R3JlbmluamFfZXRnOGtz/drilldown"
+            },
+            new() {
+                FullName = "Fox",
+                ShorthandName = "Fox",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/Rm94X3dsc3lidA==/drilldown"
+            },
+            new() {
+                FullName = "Falco",
+                ShorthandName = "Falco",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174101/RmFsY29fYXVnaGdq/drilldown"
+            },
+            new() {
+                FullName = "Duck Hunt Duo",
+                ShorthandName = "Duck Hunt",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174101/RHVja19IdW50X3Rwa3ZpaA==/drilldown"
+            },
+            new() {
+                FullName = "Dr. Mario",
+                ShorthandName = "Dr. Mario",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174101/RHJfTWFyaW9fZWMzOHVv/drilldown"
+            },
+            new() {
+                FullName = "Daisy",
+                ShorthandName = "Daisy",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RGFpc3lfeGoyeHFy/drilldown"
+            },
+            new() {
+                FullName = "Diddy Kong",
+                ShorthandName = "Diddy Kong",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RGlkZHlfS29uZ19ueGFhanA=/drilldown"
+            },
+            new() {
+                FullName = "Donkey Kong",
+                ShorthandName = "Donkey Kong",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RG9ua2V5X0tvbmdfdXhlcmph/drilldown"
+            },
+            new() {
+                FullName = "Dark Samus",
+                ShorthandName = "Dark Samus",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RGFya19TYW11c190bTM1cWc=/drilldown"
+            },
+            new() {
+                FullName = "Corrin",
+                ShorthandName = "Corrin",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q29ycmluX2UxdGE2dA==/drilldown"
+            },
+            new() {
+                FullName = "Dark Pit",
+                ShorthandName = "Dark Pit",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/RGFya19QaXRfcm93Mm5j/drilldown"
+            },
+            new() {
+                FullName = "Cloud",
+                ShorthandName = "Cloud",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q2xvdWRfam80M291/drilldown"
+            },
+            new() {
+                FullName = "Byleth",
+                ShorthandName = "Byleth",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/QnlsZXRoX2x4YXVwcg==/drilldown"
+            },
+            new() {
+                FullName = "Chrom",
+                ShorthandName = "Chrom",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q2hyb21fbTBhcDFu/drilldown"
+            },
+            new() {
+                FullName = "Captain Falcon",
+                ShorthandName = "Captain Falcon",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q2FwdGFpbl9GYWxjb25fbmM1Z2Rw/drilldown"
+            },
+            new() {
+                FullName = "Bayonetta",
+                ShorthandName = "Bayonetta",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/QmF5b25ldHRhX2Nvcm5waw==/drilldown"
+            },
+            new() {
+                FullName = "Bowser",
+                ShorthandName = "Bowser",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Qm93c2VyX3NtbXIwbQ==/drilldown"
+            },
+            new() {
+                FullName = "Banjoo and Kazooie",
+                ShorthandName = "Banjoo",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/QmFuam9fYW5kX2them9vaWVfa3RraXM4/drilldown"
+            },
+            new() {
+                FullName = "Bowser jr.",
+                ShorthandName = "Bowser jr.",
+                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Qm93c2VyX2pyX25xcmxseA==/drilldown"
             },
         };
 
