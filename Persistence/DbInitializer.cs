@@ -65,427 +65,412 @@ public class DbInitializer
             new() {
                 FullName = "Zero Suit Samus",
                 ShorthandName = "ZSS",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174165/WmVyb19zdWl0X3NhbXVzX2dmZ21jbw==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174165/Zero_suit_samus_gfgmco.webp"
             },
             new() {
                 FullName = "Zelda",
                 ShorthandName = "zelda",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174160/WmVsZGFfbTN6dzV0/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174160/Zelda_m3zw5t.webp"
             },
             new() {
                 FullName = "Young Link",
                 ShorthandName = "Young Link",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174160/WW91bmdfTGlua193dWVmMDU=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174160/Young_Link_wuef05.webp"
             },
             new() {
                 FullName = "Wolf",
                 ShorthandName = "Wolf",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V29sZl9oeWZwNWk=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174159/Wolf_hyfp5i.webp"
             },
             new() {
                 FullName = "Yoshi",
                 ShorthandName = "Yoshi",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/WW9zaGlfZWxmdHRz/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174159/Yoshi_elftts.webp"
             },
             new() {
                 FullName = "Wario",
                 ShorthandName = "Wario",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V2FyaW9fcWE2cnZq/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174159/Wario_qa6rvj.webp"
             },
             new() {
                 FullName = "Wii fit trainer",
                 ShorthandName = "Wii",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V2lpX2ZpdF90cmFpbmVyX3kyMmFhcA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174159/Wii_fit_trainer_y22aap.webp"
             },
             new() {
                 FullName = "Sora",
                 ShorthandName = "Sora",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174153/U29yYV9iem1nNXk=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174153/Sora_bzmg5y.webp"
             },
             new() {
                 FullName = "Villager",
                 ShorthandName = "Villager",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174153/VmlsbGFnZXJfY3lvcGpo/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174153/Villager_cyopjh.webp"
             },
             new() {
                 FullName = "Toon Link",
                 ShorthandName = "Toon Link",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174153/VG9vbl9MaW5rX2NzdzFibg==/drilldown"
-            },
-            new() {
-                FullName = "Wario",
-                ShorthandName = "Wario",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174159/V2FyaW9fcWE2cnZq/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174153/Toon_Link_csw1bn.webp"
             },
             new() {
                 FullName = "Terry",
                 ShorthandName = "Terry",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/VGVycnlfd255YWcx/drilldown"
-            },
-            new() {
-                FullName = "Steve",
-                ShorthandName = "Steve",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U3RldmVfYTlpb2xt/drilldown"
-            },
-            new() {
-                FullName = "Sonic",
-                ShorthandName = "Sonic",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U29uaWNfZXV6aWZz/drilldown"
-            },
-            new() {
-                FullName = "Snake",
-                ShorthandName = "Snake",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U25ha2Vfd3Bidm9p/drilldown"
-            },
-            new() {
-                FullName = "Simon",
-                ShorthandName = "Simon",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174152/U2ltb25fbGp4YmRm/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174152/Terry_wnyag1.webp"
             },
             new() {
                 FullName = "Sheik",
                 ShorthandName = "Sheik",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2hlaWtfaGZpdWxy/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174146/Sheik_hfiulr.webp"
             },
             new() {
                 FullName = "Shulk",
                 ShorthandName = "Shulk",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2h1bGtfenVlbndh/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174146/Shulk_zuenwa.webp"
             },
             new() {
-                FullName = "Sheik",
-                ShorthandName = "Sheik",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2hlaWtfaGZpdWxy/drilldown"
+                FullName = "Sonic",
+                ShorthandName = "Sonic",
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174152/Sonic_euzifs.webp"
+            },
+            new() {
+                FullName = "Snake",
+                ShorthandName = "Snake",
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174152/Snake_wpbvoi.webp"
+            },
+            new() {
+                FullName = "Simon",
+                ShorthandName = "Simon",
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174152/Simon_ljxbdf.webp"
+            },
+            new() {
+                FullName = "Steve",
+                ShorthandName = "Steve",
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174152/Steve_a9iolm.webp"
             },
             new() {
                 FullName = "Sephiroth",
                 ShorthandName = "Sephiroth",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2VwaGlyb3RoX2h5dWtodw==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174146/Sephiroth_hyukhw.webp"
             },
             new() {
                 FullName = "Samus",
                 ShorthandName = "Samus",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174146/U2FtdXNfaGRiNXpm/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174146/Samus_hdb5zf.webp"
             },
             new() {
                 FullName = "Ryu",
                 ShorthandName = "Ryu",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174145/Unl1X3B5OGVlaQ==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174145/Ryu_py8eei.webp"
             },
             new() {
                 FullName = "Roy",
                 ShorthandName = "Roy",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174145/Um95X2ZrcHpiMA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174145/Roy_fkpzb0.webp"
             },
             new() {
                 FullName = "Rosalina & Luma",
                 ShorthandName = "Rosalina",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/Um9zYWxpbmFfYW5kX2x1bWFfbGVsYnR3/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174139/Rosalina_and_luma_lelbtw.webp"
             },
             new() {
                 FullName = "Rob",
                 ShorthandName = "Rob",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/Um9iX3prY2hsbw==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174139/Rob_zkchlo.webp"
             },
             new() {
                 FullName = "Robin",
                 ShorthandName = "Robin",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/Um9iaW5feXNxY2xs/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174139/Robin_ysqcll.webp"
             },
             new() {
                 FullName = "Ridley",
                 ShorthandName = "Ridley",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/UmlkbGV5X29xZXNwaQ==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174139/Ridley_oqespi.webp"
             },
             new() {
                 FullName = "Richter",
                 ShorthandName = "Richter",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174139/UmljaHRlcl9qYmJkdGU=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174139/Richter_jbbdte.webp"
             },
             new() {
                 FullName = "Pyra (& mythra)",
                 ShorthandName = "Pyra",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174138/UHlyYV9ib21xZXc=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174138/Pyra_bomqew.webp"
             },
             new() {
                 FullName = "Pit",
                 ShorthandName = "Pit",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174138/UGl0X3NlbTdteA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174138/Pit_sem7mx.webp"
             },
             new() {
                 FullName = "Pirhana Plant",
                 ShorthandName = "Pirhana",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174138/UGlyYW5oYV9QbGFudF9kZGluZno=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174138/Piranha_Plant_ddinfz.webp"
             },
             new() {
                 FullName = "Palutena",
                 ShorthandName = "Palutena",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174131/UGFsdXRlbmFfdmJyYzl6/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174131/Palutena_vbrc9z.webp"
             },
             new() {
                 FullName = "Pikachu",
                 ShorthandName = "Pikachu",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174131/UGlrYWNodV9sbXJlb3U=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174131/Pikachu_lmreou.webp"
             },
             new() {
                 FullName = "Pichu",
                 ShorthandName = "Pichu",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174131/UGljaHVfeWdxOXo5/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174131/Pichu_ygq9z9.webp"
             },
             new() {
                 FullName = "Peach",
                 ShorthandName = "Peach",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174130/UGVhY2hfZ2puZmxo/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174130/Peach_gjnflh.webp"
             },
             new() {
                 FullName = "Olimar",
                 ShorthandName = "Olimar",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/T2xpbWFyX3EzaWptcw==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174129/Olimar_q3ijms.webp"
             },
             new() {
                 FullName = "Pac Man",
                 ShorthandName = "Pac Man",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/UGFjX01hbl9nenJ5MGI=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174129/Pac_Man_gzry0b.webp"
             },
             new() {
                 FullName = "Min Min",
                 ShorthandName = "Min Min",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/TWluX01pbl9oMWgxcjE=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174129/Min_Min_h1h1r1.webp"
             },
             new() {
                 FullName = "Ness",
                 ShorthandName = "Ness",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/TmVzc19iNDQ4ano=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174129/Ness_b448jz.webp"
             },
             new() {
                 FullName = "Mr. Game & Watch",
                 ShorthandName = "Mr. Game",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174129/TXJfZ2FtZV9hbmRfd2F0Y2hfeXl0c2Ri/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174129/Mr_game_and_watch_yytsdb.webp"
             },
             new() {
                 FullName = "Mewtwo",
                 ShorthandName = "Mewtwo",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWV3dHdvX3ZzaHZ2dg==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174122/Mewtwo_vshvvv.webp"
             },
             new() {
                 FullName = "Meta Knight",
                 ShorthandName = "Meta Knight",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWV0YV9LbmlnaHRfZmUxaGxm/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174122/Meta_Knight_fe1hlf.webp"
             },
             new() {
                 FullName = "Mega Man",
                 ShorthandName = "Mega Man",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWVnYV9NYW5fbHkzdDhm/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174122/Mega_Man_ly3t8f.webp"
             },
             new() {
                 FullName = "Marth",
                 ShorthandName = "Marth",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174122/TWFydGhfZnI5cHJ2/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174122/Marth_fr9prv.webp"
             },
             new() {
                 FullName = "Mario",
                 ShorthandName = "Mario",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174121/TWFyaW9famIyZjlq/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174121/Mario_jb2f9j.webp"
             },
             new() {
                 FullName = "Luigi",
                 ShorthandName = "Luigi",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174115/THVpZ2lfYnNweXJo/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174115/Luigi_bspyrh.webp"
             },
             new() {
                 FullName = "Lucas",
                 ShorthandName = "Lucas",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/THVjYXNfZmcwamt2/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174114/Lucas_fg0jkv.webp"
             },
             new() {
                 FullName = "Lucina",
                 ShorthandName = "Lucina",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/THVjaW5hX2NocHY5cg==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174114/Lucina_chpv9r.webp"
             },
             new() {
                 FullName = "Lucario",
                 ShorthandName = "Lucario",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/THVjYXJpb19od2tudGo=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174114/Lucario_hwkntj.webp"
             },
             new() {
                 FullName = "Little Mac",
                 ShorthandName = "Little Mac",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/TGl0dGxlX01hY192ZnFvcnM=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174114/Little_Mac_vfqors.webp"
             },
             new() {
                 FullName = "Link",
                 ShorthandName = "Link",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174114/TGlua19la2lrZm0=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174114/Link_ekikfm.webp"
             },
             new() {
                 FullName = "King Dededede",
                 ShorthandName = "King Dedede",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2luZ19EZWRlZGVfZ3N4bnh1/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174113/King_Dedede_gsxnxu.webp"
             },
             new() {
                 FullName = "Kirby",
                 ShorthandName = "Kirby",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2lyYnlfdWJ3cnNy/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174113/Kirby_ubwrsr.webp"
             },
             new() {
                 FullName = "King K Rool",
                 ShorthandName = "King K Rool",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2luZ19LX1Jvb2xfeWJodG9t/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174113/King_K_Rool_ybhtom.webp"
             },
             new() {
                 FullName = "Ken",
                 ShorthandName = "Ken",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174113/S2VuX21kOHIycA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174113/Ken_md8r2p.webp"
             },
             new() {
                 FullName = "Kazuya",
                 ShorthandName = "Kazuya",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/S2F6dXlhX3BrZHpvcw==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174108/Kazuya_pkdzos.webp"
             },
             new() {
                 FullName = "Inkling",
                 ShorthandName = "Inkling",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/SW5rbGluZ19yZ3dhOWk=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174108/Inkling_rgwa9i.webp"
             },
             new() {
                 FullName = "Joker",
                 ShorthandName = "Joker",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/Sm9rZXJfdXlqemJy/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174108/Joker_uyjzbr.webp"
             },
             new() {
                 FullName = "Jigglypuff",
                 ShorthandName = "Jigglypuff",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SmlnZ2x5cHVmZl9oeXNwaGY=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174107/Jigglypuff_hysphf.webp"
             },
             new() {
                 FullName = "Isabelle",
                 ShorthandName = "Isabelle",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SXNhYmVsbGVfdWN1eXdv/drilldown"
-            },
-            new() {
-                FullName = "Inkling",
-                ShorthandName = "Inkling",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174108/SW5rbGluZ19yZ3dhOWk=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174107/Isabelle_ucuywo.webp"
             },
             new() {
                 FullName = "Ike",
                 ShorthandName = "Ike",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SWtlX3RuMG56cA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174107/Ike_tn0nzp.webp"
             },
             new() {
                 FullName = "Incineroar",
                 ShorthandName = "Incineroar",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SW5jaW5lcm9hcl93NmRianI=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174107/Incineroar_w6dbjr.webp"
             },
             new() {
                 FullName = "Ice Climbers",
                 ShorthandName = "Ice Climbers",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174107/SWNlX0NsaW1iZXJzX2NxZHpraw==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174107/Ice_Climbers_cqdzkk.webp"
             },
             new() {
                 FullName = "Ganondorf",
                 ShorthandName = "Ganondorf",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/R2Fub25kb3JmX2MzejBmZQ==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174102/Ganondorf_c3z0fe.webp"
             },
             new() {
                 FullName = "Hero",
                 ShorthandName = "Hero",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/SGVyb19hMzRjbHo=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174102/Hero_a34clz.webp"
             },
             new() {
                 FullName = "Greninja",
                 ShorthandName = "Greninja",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/R3JlbmluamFfZXRnOGtz/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174102/Greninja_etg8ks.webp"
             },
             new() {
                 FullName = "Fox",
                 ShorthandName = "Fox",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174102/Rm94X3dsc3lidA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174102/Fox_wlsybt.webp"
             },
             new() {
                 FullName = "Falco",
                 ShorthandName = "Falco",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174101/RmFsY29fYXVnaGdq/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174101/Falco_aughgj.webp"
             },
             new() {
                 FullName = "Duck Hunt Duo",
                 ShorthandName = "Duck Hunt",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174101/RHVja19IdW50X3Rwa3ZpaA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174101/Duck_Hunt_tpkvih.webp"
             },
             new() {
                 FullName = "Dr. Mario",
                 ShorthandName = "Dr. Mario",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174101/RHJfTWFyaW9fZWMzOHVv/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174101/Dr_Mario_ec38uo.webp"
             },
             new() {
                 FullName = "Daisy",
                 ShorthandName = "Daisy",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RGFpc3lfeGoyeHFy/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174093/Daisy_xj2xqr.webp"
             },
             new() {
                 FullName = "Diddy Kong",
                 ShorthandName = "Diddy Kong",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RGlkZHlfS29uZ19ueGFhanA=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174093/Diddy_Kong_nxaajp.webp"
             },
             new() {
                 FullName = "Donkey Kong",
                 ShorthandName = "Donkey Kong",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RG9ua2V5X0tvbmdfdXhlcmph/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174093/Donkey_Kong_uxerja.webp"
             },
             new() {
                 FullName = "Dark Samus",
                 ShorthandName = "Dark Samus",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174093/RGFya19TYW11c190bTM1cWc=/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174093/Dark_Samus_tm35qg.webp"
             },
             new() {
                 FullName = "Corrin",
                 ShorthandName = "Corrin",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q29ycmluX2UxdGE2dA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Corrin_e1ta6t.webp"
             },
             new() {
                 FullName = "Dark Pit",
                 ShorthandName = "Dark Pit",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/RGFya19QaXRfcm93Mm5j/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Dark_Pit_row2nc.webp"
             },
             new() {
                 FullName = "Cloud",
                 ShorthandName = "Cloud",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q2xvdWRfam80M291/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Cloud_jo43ou.webp"
             },
             new() {
                 FullName = "Byleth",
                 ShorthandName = "Byleth",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/QnlsZXRoX2x4YXVwcg==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Byleth_lxaupr.webp"
             },
             new() {
                 FullName = "Chrom",
                 ShorthandName = "Chrom",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q2hyb21fbTBhcDFu/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Chrom_m0ap1n.webp"
             },
             new() {
                 FullName = "Captain Falcon",
                 ShorthandName = "Captain Falcon",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Q2FwdGFpbl9GYWxjb25fbmM1Z2Rw/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Captain_Falcon_nc5gdp.webp"
             },
             new() {
                 FullName = "Bayonetta",
                 ShorthandName = "Bayonetta",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/QmF5b25ldHRhX2Nvcm5waw==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Bowser_smmr0m.webp"
             },
             new() {
                 FullName = "Bowser",
                 ShorthandName = "Bowser",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Qm93c2VyX3NtbXIwbQ==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Bayonetta_cornpk.webp"
             },
             new() {
                 FullName = "Banjoo and Kazooie",
                 ShorthandName = "Banjoo",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/QmFuam9fYW5kX2them9vaWVfa3RraXM4/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Banjo_and_kazooie_ktkis8.webp"
             },
             new() {
                 FullName = "Bowser jr.",
                 ShorthandName = "Bowser jr.",
-                ImageUrl = "https://res-console.cloudinary.com/dq1en6kue/thumbnails/v1/image/upload/v1759174092/Qm93c2VyX2pyX25xcmxseA==/drilldown"
+                ImageUrl = "https://res.cloudinary.com/dq1en6kue/image/upload/v1759174092/Bowser_jr_nqrllx.webp"
             },
         };
 

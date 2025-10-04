@@ -1,8 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Domain;
 
