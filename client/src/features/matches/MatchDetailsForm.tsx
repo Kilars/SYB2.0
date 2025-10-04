@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useMatch } from "../../lib/hooks/useMatch";
-import { Box, Button, Checkbox, Divider, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Typography } from "@mui/material";
 import CharacterSelect from "./CharacterSelect";
 import { matchSchema } from "../../lib/schemas/matchSchema";
 import { useEffect, useState } from "react";
@@ -42,7 +42,7 @@ export default function MatchDetailsForm() {
           <Typography variant="h5" mt={2}> Round {round.roundNumber} </Typography>
           <Box>
             <Box sx={{ display: 'flex' }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 0.5 }}>
+              <Box sx={{ width: '50%' }}>
                 <Typography variant="h6">{match.playerOne.displayName}</Typography>
                 <CharacterSelect onChange={id =>
                   setRounds(originalRounds => {
@@ -77,7 +77,7 @@ export default function MatchDetailsForm() {
                   />
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 0.5 }}>
+              <Box sx={{ width: '50%'}}>
                 <Typography variant="h6">{match.playerTwo.displayName}</Typography>
                 <CharacterSelect onChange={id =>
                   setRounds(originalRounds => {
@@ -114,7 +114,6 @@ export default function MatchDetailsForm() {
               </Box>
             </Box>
           </Box>
-          {i !== match.rounds.length && <Divider />}
         </Box>
       ))}
       <Button
