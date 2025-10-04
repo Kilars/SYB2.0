@@ -5,7 +5,7 @@ namespace Domain;
 
 public class Character
 {
-    public string Id { get; set; } = new Guid()
+    public string Id { get; set; } = new Guid().ToString();
     public required string FullName { get; set; }
     public required string ShorthandName { get; set; }
     public string? ImageUrl { get; set; }

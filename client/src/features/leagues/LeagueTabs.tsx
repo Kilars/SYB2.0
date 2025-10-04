@@ -30,18 +30,22 @@ export default function LeagueTabs({ tab }: Props) {
   return (
     <Box sx={{ width: '100%' }}>
       <Typography variant="h5">{league.title}</Typography>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={pathMap.findIndex(path => path === tab)} onChange={handleChange} aria-label="League tab switcher">
-          <Tab label="Description" />
-          <Tab label="Leaderboard" />
-          <Tab label="Matches" />
-          <Tab label="Stats" />
-        </Tabs>
+      <Box display='flex' flexDirection='column' flexGrow={1}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3}}>
+          <Tabs variant="scrollable" value={pathMap.findIndex(path => path === tab)} onChange={handleChange} aria-label="League tab switcher">
+            <Tab label="Description" />
+            <Tab label="Leaderboard" />
+            <Tab label="Matches" />
+            <Tab label="Stats" />
+          </Tabs>
+        </Box>
+        <Box>
+          {tab === 'description' && <Description />}
+          {tab === 'leaderboard' && <Leaderboard />}
+          {tab === 'matches' && <MatchesList />}
+          {tab === 'stats' && <LeagueStats />}
+        </Box>
       </Box>
-      {tab === 'description' && <Description />}
-      {tab === 'leaderboard' && <Leaderboard />}
-      {tab === 'matches' && <MatchesList />}
-      {tab === 'stats' && <LeagueStats />}
     </Box>
   );
 }

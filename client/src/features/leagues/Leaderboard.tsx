@@ -21,7 +21,7 @@ export default function Leaderboard() {
                             <TableCell> Rank </TableCell>
                             <TableCell> Player </TableCell>
                             <TableCell> Points </TableCell>
-                            <TableCell> Win rate </TableCell>
+                            <TableCell> WR </TableCell>
                             <TableCell> Wins </TableCell>
                             <TableCell> Losses </TableCell>
                             <TableCell> Flawless </TableCell>
@@ -31,13 +31,13 @@ export default function Leaderboard() {
                     <TableBody>
                         {leaderboard.map((leaderboardUser, i) => (
                             <TableRow key={leaderboardUser.displayName}>
-                                <TableCell> {(i + 1) + "."} </TableCell>
+                                <TableCell variant="head"> {(i + 1) + "."} </TableCell>
                                 <TableCell> {leaderboardUser.displayName} </TableCell>
-                                <TableCell> {leaderboardUser.points} </TableCell>
-                                <TableCell> {Math.round((leaderboardUser.wins * 100) / (leaderboardUser.wins + leaderboardUser.losses)) + "%"} </TableCell>
-                                <TableCell> {leaderboardUser.wins} </TableCell>
-                                <TableCell> {leaderboardUser.losses} </TableCell>
-                                <TableCell> {leaderboardUser.flawless} </TableCell>
+                                <TableCell align="center"> {leaderboardUser.points} </TableCell>
+                                <TableCell align="center"> {Math.round((leaderboardUser.wins * 100) / (leaderboardUser.wins + leaderboardUser.losses)) + "%"} </TableCell>
+                                <TableCell align="center"> {leaderboardUser.wins} </TableCell>
+                                <TableCell align="center"> {leaderboardUser.losses} </TableCell>
+                                <TableCell align="center"> {leaderboardUser.flawless} </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
