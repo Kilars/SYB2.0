@@ -266,7 +266,7 @@ public class SeasonOneLeague
                 W = "larsski",
                 R = [
                     ("king_k_rool", "joker", "matias"),
-                    ("incineroar", "captain_falconk", "larsski"),
+                    ("incineroar", "captain_falcon", "larsski"),
                     ("piranha_plant", "pyra_mythra", "larsski"),
                 ]
             },
@@ -356,6 +356,195 @@ public class SeasonOneLeague
                 ]
             },
             //30+ vv
+            new() {
+                P1 = "sander",
+                P2 = "bh",
+                W = "sander",
+                R = [
+                    ("byleth", "incineroar", "sander"),
+                    ("mario", "samus", "bh"),
+                    ("luigi", "villager", "sander"),
+                ]
+            },
+            new() {
+                P1 = "hansemann",
+                P2 = "bh",
+                W = "hansemann",
+                R = [
+                    ("yoshi", "samus", "hansemann"),
+                    ("ness", "dark_pit", "hansemann"),
+                ]
+            },
+            new() {
+                P1 = "sander",
+                P2 = "larsengstad",
+                W = "larsengstad",
+                R = [
+                    ("luigi", "link", "larsengstad"),
+                    ("ness", "piranha_plant", "larsengstad"),
+                ]
+            },
+            new() {
+                P1 = "eirik",
+                P2 = "timmeehh",
+                W = "timmeehh",
+                R = [
+                    ("isabelle", "min_min", "timmeehh"),
+                    ("palutena", "byleth", "timmeehh"),
+                ]
+            },
+            new() {
+                P1 = "eirik",
+                P2 = "larsski",
+                W = "eirik",
+                R = [
+                    ("sephiroth", "joker", "eirik"),
+                    ("mewtwo", "pyra_mythra", "eirik"),
+                ]
+            },
+            new() {
+                P1 = "timmeehh",
+                P2 = "matias",
+                W = "matias",
+                R = [
+                    ("captain_falcon", "king_k_rool", "matias"),
+                    ("min_min", "ness", "matias"),
+                ]
+            },
+            new() {
+                P1 = "denix",
+                P2 = "cpu",
+                W = "denix",
+                R = [
+                    ("king_k_rool", "dede", "denix"),
+                    ("incineroar", "dede", "denix"),
+                ]
+            },
+            new() {
+                P1 = "larsski",
+                P2 = "cpu",
+                W = "cpu",
+                R = [
+                    ("pyra_mythra", "dede", "larsski"),
+                    ("joker", "dede", "cpu"),
+                    ("captain_falcon", "dede", "cpu"),
+                ]
+            },
+            new() {
+                P1 = "eirik",
+                P2 = "denix",
+                W = "eirik",
+                R = [
+                    ("sephiroth", "hero", "eirik"),
+                    ("ridley", "king_k_rool", "eirik"),
+                ]
+            },
+            new() {
+                P1 = "bh",
+                P2 = "cpu",
+                W = "cpu",
+                R = [
+                    ("samus", "dede", "bh"),
+                    ("cloud", "dede", "cpu"),
+                    ("king_k_rool", "dede", "cpu"),
+                ]
+            },
+            //40+ vv
+            new() {
+                P1 = "hansemann",
+                P2 = "sander",
+                W = "sander",
+                R = [
+                    ("ness", "luigi", "hansemann"),
+                    ("yoshi", "byleth", "sander"),
+                    ("incineroar", "corrin", "sander"),
+                ]
+            },
+            new() {
+                P1 = "hansemann",
+                P2 = "matias",
+                W = "hansemann",
+                R = [
+                    ("cloud", "ness", "hansemann"),
+                    ("ness", "king_k_rool", "hansemann"),
+                ]
+            },
+            new() {
+                P1 = "larsengstad",
+                P2 = "oliver",
+                W = "larsengstad",
+                R = [
+                    ("isabelle", "duck_hunt_duo", "larsengstad"),
+                    ("captain_falcon", "joker", "larsengstad"),
+                ]
+            },
+            new() {
+                P1 = "matias",
+                P2 = "sander",
+                W = "sander",
+                R = [
+                    ("ness", "ness", "sander"),
+                    ("piranha_plant", "mario", "sander"),
+                ]
+            },
+            new() {
+                P1 = "oliver",
+                P2 = "bh",
+                W = "oliver",
+                R = [
+                    ("joker", "banjoo_and_kazooie", "oliver"),
+                    ("pikachu", "samus", "oliver"),
+                ]
+            },
+            new() {
+                P1 = "eirik",
+                P2 = "sander",
+                W = "eirik",
+                R = [
+                    ("palutena", "luigi", "sander"),
+                    ("ridley", "byleth", "eirik"),
+                    ("sephiroth", "donkey_kong", "eirik"),
+                ]
+            },
+            new() {
+                P1 = "larsengsad",
+                P2 = "bennern",
+                W = "larsengstad",
+                R = [
+                    ("link", "isabelle", "larsengstad"),
+                    ("piranha_plant", "inkling", "bennern"),
+                    ("captain_falcon", "zelda", "larsengstad"),
+                ]
+            },
+            new() {
+                P1 = "matias",
+                P2 = "denix",
+                W = "matias",
+                R = [
+                    ("ness", "mr_game_watch", "matias"),
+                    ("lucas", "king_k_rool", "denix"),
+                    ("piranha_plant", "incineroar", "matias"),
+                ]
+            },
+            new() {
+                P1 = "matias",
+                P2 = "oliver",
+                W = "oliver",
+                R = [
+                    ("ness", "joker", "oliver"),
+                    ("lucas", "corrin", "oliver"),
+                ]
+            },
+            new() {
+                P1 = "oliver",
+                P2 = "larsski",
+                W = "oliver",
+                R = [
+                    ("joker", "captain_falcon", "oliver"),
+                    ("duck_hunt_duo", "pyra_mythra", "oliver"),
+                ]
+            },
+            //50+ vv
         };
         return matches;
     }
