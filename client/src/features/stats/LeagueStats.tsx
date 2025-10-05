@@ -29,7 +29,7 @@ export default function LeagueStats() {
     const charDict = Object.entries(winsDict).map(([charId, [wins, total]]) => {
       const charName = characters.find(c => c.id === charId)?.shorthandName || "Unknown";
       const winrate = Math.round((wins / total) * 100);
-      return [charName, winrate];
+      return [charName, winrate, total];
     })
     return charDict;
   }
@@ -41,11 +41,12 @@ return (
       <TableHead>
         <TableRow>
           <TableCell sx={{textAlign: 'left'}}> Character </TableCell>
-          <TableCell sx={{textAlign: 'center'}}> WR </TableCell>
+          <TableCell sx={{textAlign: 'right'}}> WR </TableCell>
+          <TableCell sx={{textAlign: 'right'}}> Rounds </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {charStats.sort(stats => Number(stats[1])).reverse().map(stats => (
+        {charStats.sort((a, b) => (Number(b[1]) * Number(b[2])) - (Number(a[1]) * Number(a[2]))).map(stats => (
           <TableRow key={stats[0]}>
             <TableCell> {stats[0]}</TableCell>
             <TableCell
@@ -57,6 +58,16 @@ return (
               }}
             >
               {stats[1]}%
+            </TableCell>
+            <TableCell
+              sx={{
+                maxWidth: 40,
+                textAlign: 'right',
+                paddingRight: 2,
+                letterSpacing: '0.05em'
+              }}
+            >
+              {stats[2]}
             </TableCell>
           </TableRow>
         ))}
