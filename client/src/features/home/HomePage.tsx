@@ -17,18 +17,21 @@ export default function HomePage() {
         backgroundImage: 'linear-gradient(135deg, #182a73 0%, #218aae 69%, #20a78c 89%)',
       }}
     >
-      <Box sx={{display: 'flex', alignItems: 'center', alignContent: 'center', color: 'white', gap: 3}}>
-        <Group sx={{height: 110, width: 110}} />
-        <Typography variant="h1">
-          League of leagues
+      <Group sx={{ height: 50, width: 50 }} />
+      <Box sx={{ display: 'flex', alignItems: 'center', alignContent: 'center', color: 'white', gap: 3 }}>
+        <Typography variant="h3">
+          Smash Your Bros
         </Typography>
       </Box>
-      <Typography variant="h2">
-        Welcome to league of leagues
-      </Typography>
-      <Button component={Link} to='/leagues' size="large" variant="contained"
-        sx={{height: 80, borderRadius: 4, fontSize: '1.5rem'}}>
-        Take me to the leagues
-      </Button>
+      <Box>
+        <Typography variant="h5" textAlign={'center'} mb={3}>
+          Welcome to SYB 2.0
+        </Typography>
+        <Button component={Link} to='/leagues' size="large" variant="contained"
+          sx={{ height: 80, borderRadius: 4, fontSize: '1.0rem' }}>
+          Take me to the leagues
+        </Button>
+      </Box>
     </Paper>
-)};
+  )
+};
