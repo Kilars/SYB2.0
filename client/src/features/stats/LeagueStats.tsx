@@ -46,7 +46,7 @@ return (
         </TableRow>
       </TableHead>
       <TableBody>
-        {charStats.sort((a, b) => (Number(b[1]) * Number(b[2])) - (Number(a[1]) * Number(a[2]))).map(stats => (
+        {charStats.sort((a, b) => (Number(b[1])*0.8 + Number(b[2])*0.2) - (Number(a[1])*0.8 + Number(a[2])*0.2)).map(stats => (
           <TableRow key={stats[0]}>
             <TableCell> {stats[0]}</TableCell>
             <TableCell
