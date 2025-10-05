@@ -1,68 +1,13 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { Avatar, Box, Divider, ListItemIcon, ListItemText } from '@mui/material';
-import { useAccount } from '../../lib/hooks/useAccount';
+import { Box, Button, Typography } from '@mui/material';
 import { Link } from 'react-router';
-import { Add, Logout, Person } from '@mui/icons-material';
+import { Add, } from '@mui/icons-material';
 
 export default function UserMenu() {
-  const {currentUser, logoutUser} = useAccount();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-            <>
-                <Button
-                onClick={handleClick}
-                color='inherit'
-                size='large'
-                sx={{ fontSize: '1.1rem' }}
-            >
-                <Box display='flex' alignItems='center' gap={2}>
-                    <Avatar src={currentUser?.imageUrl} alt='current user image' />
-                    {currentUser?.displayName}
-                </Box>
-            </Button>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                slotProps={{
-                    list: {
-                        'aria-labelledby': 'basic-button',
-                    },
-                }}
-            >
-                <MenuItem component={Link} to='/createLeague' onClick={handleClose}>
-                    <ListItemIcon>
-                        <Add />
-                    </ListItemIcon>
-                    <ListItemText>Create League</ListItemText>
-                </MenuItem>
-                <MenuItem component={Link} to={`/profiles/${currentUser?.id}`} onClick={handleClose}>
-                    <ListItemIcon>
-                        <Person />
-                    </ListItemIcon>
-                    <ListItemText>My profile</ListItemText>
-                </MenuItem>
-                <Divider />
-                <MenuItem component={Link} to='/login' onClick={() => {
-                    logoutUser.mutate();
-                    handleClose();
-                }}>
-                    <ListItemIcon> <Logout /> </ListItemIcon>
-                    Logout
-                </MenuItem>
-            </Menu>
-        </>
+    return (
+        <Box component={Link} to='/createLeague' sx={{textDecoration: 'none'}}>
+            <Typography sx={{fontSize: '1.2rem', lineHeight: 1.5}} fontWeight='bold' component={Button} color='white' fontSize='medium'>Create League
+                <Add />
+            </Typography>
+        </Box>
     );
 }

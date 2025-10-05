@@ -1,5 +1,4 @@
-import { Group } from "@mui/icons-material";
-import { AppBar, Box, CircularProgress, Container, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, CircularProgress, Container, Toolbar } from "@mui/material";
 import MenuItemLink from "../shared/components/MenuItemLink";
 import { useStore } from "../../lib/hooks/useStore";
 import { observer } from "mobx-react-lite";
@@ -19,8 +18,6 @@ const NavBar = observer(function NavBar() {
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <MenuItemLink to='/'>
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2 }}>
-                <Group fontSize='large' />
-                <Typography variant="h4" fontWeight='bold'>Leagues</Typography>
                 {uiStore.isLoading && (
                   <CircularProgress
                     size={20}
@@ -40,9 +37,6 @@ const NavBar = observer(function NavBar() {
                   Leagues
                 </MenuItemLink>
               </Box>
-                <MenuItemLink to='/errors'>
-                  Errors
-                </MenuItemLink>
             </Box>
             <Box display='flex' alignItems='center'>
               {currentUser
