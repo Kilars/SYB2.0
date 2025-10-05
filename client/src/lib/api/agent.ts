@@ -13,11 +13,11 @@ const agent = axios.create({
 
 agent.interceptors.response.use(
     async res => {
-        await sleep(500);
+        if(import.meta.env.DEV) await sleep(500);
         return res
     },
     async error => {
-        await sleep(500);
+        if(import.meta.env.DEV) await sleep(500);
         const { status, data } = error.response;
         switch (status) {
             case 400:
