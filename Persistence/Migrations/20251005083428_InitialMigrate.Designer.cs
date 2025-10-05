@@ -11,14 +11,35 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250630134454_MapMemberToUser")]
-    partial class MapMemberToUser
+    [Migration("20251005083428_InitialMigrate")]
+    partial class InitialMigrate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
+
+            modelBuilder.Entity("Domain.Character", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ShorthandName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Characters");
+                });
 
             modelBuilder.Entity("Domain.League", b =>
                 {
@@ -70,6 +91,86 @@ namespace Persistence.Migrations
                     b.HasIndex("LeagueId");
 
                     b.ToTable("LeagueMembers");
+                });
+
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.Property<string>("LeagueId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MatchIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Split")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PlayerOneLeagueId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlayerOneUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlayerTwoLeagueId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlayerTwoUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("RegisteredTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WinnerUserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LeagueId", "MatchIndex", "Split");
+
+                    b.HasIndex("PlayerOneUserId", "PlayerOneLeagueId");
+
+                    b.HasIndex("PlayerTwoUserId", "PlayerTwoLeagueId");
+
+                    b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("Domain.Round", b =>
+                {
+                    b.Property<string>("LeagueId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MatchIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Split")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RoundNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PlayerOneCharacterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlayerTwoCharacterId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WinnerUserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LeagueId", "MatchIndex", "Split", "RoundNumber");
+
+                    b.HasIndex("PlayerOneCharacterId");
+
+                    b.HasIndex("PlayerTwoCharacterId");
+
+                    b.ToTable("Rounds");
                 });
 
             modelBuilder.Entity("Domain.User", b =>
@@ -292,6 +393,56 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.HasOne("Domain.League", "League")
+                        .WithMany("Matches")
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.LeagueMember", "PlayerOne")
+                        .WithMany("MatchesAsPlayerOne")
+                        .HasForeignKey("PlayerOneUserId", "PlayerOneLeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.LeagueMember", "PlayerTwo")
+                        .WithMany("MatchesAsPlayerTwo")
+                        .HasForeignKey("PlayerTwoUserId", "PlayerTwoLeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+
+                    b.Navigation("PlayerOne");
+
+                    b.Navigation("PlayerTwo");
+                });
+
+            modelBuilder.Entity("Domain.Round", b =>
+                {
+                    b.HasOne("Domain.Character", "PlayerOneCharacter")
+                        .WithMany("RoundsAsPlayerOne")
+                        .HasForeignKey("PlayerOneCharacterId");
+
+                    b.HasOne("Domain.Character", "PlayerTwoCharacter")
+                        .WithMany("RoundsAsPlayerTwo")
+                        .HasForeignKey("PlayerTwoCharacterId");
+
+                    b.HasOne("Domain.Match", "Match")
+                        .WithMany("Rounds")
+                        .HasForeignKey("LeagueId", "MatchIndex", "Split")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Match");
+
+                    b.Navigation("PlayerOneCharacter");
+
+                    b.Navigation("PlayerTwoCharacter");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -343,9 +494,30 @@ namespace Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Character", b =>
+                {
+                    b.Navigation("RoundsAsPlayerOne");
+
+                    b.Navigation("RoundsAsPlayerTwo");
+                });
+
             modelBuilder.Entity("Domain.League", b =>
                 {
+                    b.Navigation("Matches");
+
                     b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Domain.LeagueMember", b =>
+                {
+                    b.Navigation("MatchesAsPlayerOne");
+
+                    b.Navigation("MatchesAsPlayerTwo");
+                });
+
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.Navigation("Rounds");
                 });
 
             modelBuilder.Entity("Domain.User", b =>
