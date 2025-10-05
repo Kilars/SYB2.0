@@ -11,8 +11,8 @@ public class SeasonOneLeague
         var league = new League
         {
             Id = "season-one-league-id",
-            Title = "Syb Season One",
-            Description = "epic! Ble spilt V23/H24",
+            Title = "Syb Season One (Trondhomies)",
+            Description = "epic! Ble spilt V23/H24. Kjent som 'Sesong OPP B'",
             Status = LeagueStatus.Active,
             Members = [.. GetUsers().Select(u => new LeagueMember
             {
@@ -131,7 +131,7 @@ public class SeasonOneLeague
                 P2 = "bennern",
                 W = "bennern",
                 R = [
-                    ("villager", "min_mon", "bennern"),
+                    ("villager", "min_min", "bennern"),
                     ("link", "bowser_jr", "bennern"),
                 ]
             },
@@ -150,7 +150,7 @@ public class SeasonOneLeague
                 P2 = "bennern",
                 W = "bennern",
                 R = [
-                    ("byleth", "inling", "bennern"),
+                    ("byleth", "inkling", "bennern"),
                     ("luigi", "zelda", "sander"),
                     ("ness", "king_dededede", "bennern"),
                 ]
@@ -165,7 +165,7 @@ public class SeasonOneLeague
                     ("sora", "captain_falcon", "timmeehh"),
                 ]
             },
-            //10+ vvv
+            // 10+ vvv
             new() {
                 P1 = "eirik",
                 P2 = "oliver",
@@ -190,9 +190,9 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "sander",
                 R = [
-                    ("byleth", "dede", "sander"),
-                    ("donkey_kong", "dede", "cpu"),
-                    ("corrin", "dede", "sander"),
+                    ("byleth", "king_dededede", "sander"),
+                    ("donkey_kong", "king_dededede", "cpu"),
+                    ("corrin", "king_dededede", "sander"),
                 ]
             },
             new() {
@@ -218,9 +218,9 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "timmeehh",
                 R = [
-                    ("min_min", "dede", "cpu"),
-                    ("byleth", "dede", "timmeeh"),
-                    ("link", "dede", "timmeeh"),
+                    ("min_min", "king_dededede", "cpu"),
+                    ("byleth", "king_dededede", "timmeeh"),
+                    ("link", "king_dededede", "timmeeh"),
                 ]
             },
             new() {
@@ -228,8 +228,8 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "matias",
                 R = [
-                    ("king_k_rool", "dede", "matias"),
-                    ("piranha_plant", "plant", "matias"),
+                    ("king_k_rool", "king_dededede", "matias"),
+                    ("piranha_plant", "king_dededede", "matias"),
                 ]
             },
             new() {
@@ -237,17 +237,8 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "eirik",
                 R = [
-                    ("palutena", "dede", "eirik"),
-                    ("ridley", "plant", "eirik"),
-                ]
-            },
-            new() {
-                P1 = "denix",
-                P2 = "oliver",
-                W = "oliver",
-                R = [
-                    ("hero", "joker", "denix"),
-                    ("king_k_rool", "duck_hunt_do", "denix"),
+                    ("palutena", "king_dededede", "eirik"),
+                    ("ridley", "king_dededede", "eirik"),
                 ]
             },
             new() {
@@ -285,8 +276,8 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "larsengstad",
                 R = [
-                    ("link", "dede", "larsengstad"),
-                    ("donkey_kong", "dede", "larsengstad"),
+                    ("link", "king_dededede", "larsengstad"),
+                    ("donkey_kong", "king_dededede", "larsengstad"),
                 ]
             },
             new() {
@@ -416,8 +407,8 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "denix",
                 R = [
-                    ("king_k_rool", "dede", "denix"),
-                    ("incineroar", "dede", "denix"),
+                    ("king_k_rool", "king_dededede", "denix"),
+                    ("incineroar", "king_dededede", "denix"),
                 ]
             },
             new() {
@@ -425,9 +416,9 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "cpu",
                 R = [
-                    ("pyra_mythra", "dede", "larsski"),
-                    ("joker", "dede", "cpu"),
-                    ("captain_falcon", "dede", "cpu"),
+                    ("pyra_mythra", "king_dededede", "larsski"),
+                    ("joker", "king_dededede", "cpu"),
+                    ("captain_falcon", "king_dededede", "cpu"),
                 ]
             },
             new() {
@@ -444,9 +435,9 @@ public class SeasonOneLeague
                 P2 = "cpu",
                 W = "cpu",
                 R = [
-                    ("samus", "dede", "bh"),
-                    ("cloud", "dede", "cpu"),
-                    ("king_k_rool", "dede", "cpu"),
+                    ("samus", "king_dededede", "bh"),
+                    ("cloud", "king_dededede", "cpu"),
+                    ("king_k_rool", "king_dededede", "cpu"),
                 ]
             },
             //40+ vv
@@ -507,7 +498,7 @@ public class SeasonOneLeague
                 ]
             },
             new() {
-                P1 = "larsengsad",
+                P1 = "larsengstad",
                 P2 = "bennern",
                 W = "larsengstad",
                 R = [
@@ -545,6 +536,63 @@ public class SeasonOneLeague
                 ]
             },
             //50+ vv
+            new() {
+                P1 = "bennern",
+                P2 = "larsski",
+                W = "larsski",
+                R = [
+                    ("inkling", "king_k_rool", "bennern"),
+                    ("king_dededede", "joker", "larsski"),
+                    ("zelda", "pyra_mythra", "larsski"),
+                ]
+            },
+            new() {
+                P1 = "larsski",
+                P2 = "bh",
+                W = "bh",
+                R = [
+                    ("joker", "dark_pit", "bh"),
+                    ("pyra_mythra", "samus", "bh"),
+                ]
+            },
+            new() {
+                P1 = "hansemann",
+                P2 = "eirik",
+                W = "hansemann",
+                R = [
+                    ("yoshi", "mr_game_watch", "hansemann"),
+                    ("ness", "falco", "hansemann"),
+                ]
+            },
+            new() {
+                P1 = "denix",
+                P2 = "oliver",
+                W = "denix",
+                R = [
+                    ("hero", "joker", "denix"),
+                    ("king_k_rool", "duck_hunt_duo", "denix"),
+                ]
+            },
+            new() {
+                P1 = "denix",
+                P2 = "larsengstad",
+                W = "denix",
+                R = [
+                    ("incineroar", "isabelle", "denix"),
+                    ("king_k_rool", "captain_falcon", "larsengstad"),
+                    ("hero", "piranha_plant", "denix"),
+                ]
+            },
+            new() {
+                P1 = "sander",
+                P2 = "denix",
+                W = "denix",
+                R = [
+                    ("ness", "hero", "sander"),
+                    ("mario", "king_k_rool", "denix"),
+                    ("bowser", "mewtwo", "denix"),
+                ]
+            },
         };
         return matches;
     }
