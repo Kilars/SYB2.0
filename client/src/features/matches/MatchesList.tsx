@@ -31,7 +31,9 @@ export default function MatchesList() {
                   </Typography>
                 </Box>
                 <Box display='flex' flexDirection='column' justifyContent='flex-end'>
-                  <Button variant="contained" onClick={() => navigate(`/matches/${match.id}`)}>Register</Button>
+                  <Button variant="contained" onClick={() => navigate(`/matches/${match.id}`)}>
+                    {match.completed ? 'View' : 'Register'}
+                  </Button>
                 </Box>
               </Box>
             </Box>

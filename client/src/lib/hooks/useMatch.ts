@@ -16,17 +16,8 @@ export const useMatch = (id: string) => {
         mutationFn: async (rounds: Round[]) => {
             await agent.post(`matches/${id}/complete`, rounds);
         },
-        onMutate: async (rounds) => {
-            await queryClient.cancelQueries({ queryKey: ["match", id] });
-
-            const match = queryClient.getQueryData<Match>(["match", id]);
-            queryClient.setQueryData(["match", id], () => {
-                return {
-                    ...match,
-                    rounds: rounds,
-                    completed: true
-                }
-            });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["match", id] });
         }
     });
 
@@ -34,16 +25,8 @@ export const useMatch = (id: string) => {
         mutationFn: async () => {
             await agent.post(`matches/${id}/reopen`);
         },
-        onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey: ["match", id] });
-
-            const match = queryClient.getQueryData<Match>(["match", id]);
-            queryClient.setQueryData(["match", id], () => {
-                return {
-                    ...match,
-                    completed: false
-                }
-            });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["match", id] });
         }
     });
     return {
