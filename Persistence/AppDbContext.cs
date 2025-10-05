@@ -30,37 +30,44 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         builder.Entity<LeagueMember>()
             .HasOne(x => x.League)
             .WithMany(x => x.Members)
-            .HasForeignKey(x => x.LeagueId);
+            .HasForeignKey(x => x.LeagueId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Match>()
             .HasOne(x => x.League)
             .WithMany(x => x.Matches)
-            .HasForeignKey(x => x.LeagueId);
+            .HasForeignKey(x => x.LeagueId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Match>()
             .HasOne(x => x.PlayerOne)
             .WithMany(x => x.MatchesAsPlayerOne)
-            .HasForeignKey(x => new { x.PlayerOneUserId, x.PlayerOneLeagueId });
+            .HasForeignKey(x => new { x.PlayerOneUserId, x.PlayerOneLeagueId })
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Match>()
             .HasOne(x => x.PlayerTwo)
             .WithMany(x => x.MatchesAsPlayerTwo)
-            .HasForeignKey(x => new { x.PlayerTwoUserId, x.PlayerTwoLeagueId });
+            .HasForeignKey(x => new { x.PlayerTwoUserId, x.PlayerTwoLeagueId })
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Round>()
             .HasOne(x => x.Match)
             .WithMany(x => x.Rounds)
-            .HasForeignKey(x => new { x.LeagueId, x.MatchIndex, x.Split });
+            .HasForeignKey(x => new { x.LeagueId, x.MatchIndex, x.Split })
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Round>()
             .HasOne(x => x.PlayerOneCharacter)
             .WithMany(x => x.RoundsAsPlayerOne)
-            .HasForeignKey(x => x.PlayerOneCharacterId);
+            .HasForeignKey(x => x.PlayerOneCharacterId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Round>()
             .HasOne(x => x.PlayerTwoCharacter)
             .WithMany(x => x.RoundsAsPlayerTwo)
-            .HasForeignKey(x => x.PlayerTwoCharacterId);
+            .HasForeignKey(x => x.PlayerTwoCharacterId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),
