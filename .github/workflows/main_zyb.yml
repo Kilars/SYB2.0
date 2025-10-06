@@ -26,7 +26,6 @@ jobs:
       - name: Install deps and build react app
         run: |
           cd client
-          ulimit -n 65536
           npm install
           npm run build
 

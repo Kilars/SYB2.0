@@ -6,7 +6,8 @@ export default defineConfig({
   build: {
     outDir: '../API/wwwroot',
     chunkSizeWarningLimit: 1500,
-    emptyOutDir: true
+    emptyOutDir: true,
+    minify: 'esbuild'
   },
   server: {
     port: 3000,
