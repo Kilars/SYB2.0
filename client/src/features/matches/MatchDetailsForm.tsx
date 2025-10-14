@@ -8,7 +8,7 @@ import z from "zod";
 import { toast } from "react-toastify";
 
 export default function MatchDetailsForm() {
-  const { leagueId, matchId } = useParams();
+  const { matchId } = useParams();
   const { match, isMatchLoading, completeMatch } = useMatch(matchId || '');
   const [rounds, setRounds] = useState(match?.rounds)
 

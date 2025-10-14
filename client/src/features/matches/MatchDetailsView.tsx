@@ -4,7 +4,7 @@ import { useMatch } from "../../lib/hooks/useMatch";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 
 export default function MatchDetailsView() {
-  const { leagueId, matchId } = useParams();
+  const { matchId } = useParams();
   const { match, isMatchLoading, reopenMatch } = useMatch(matchId || '');
   const { characters } = useCharacters();
 
