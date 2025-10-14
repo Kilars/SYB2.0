@@ -20,7 +20,7 @@ export const router = createBrowserRouter([
                     { path: 'leagues/:id/leaderboard', element: <LeagueTabs key='leaderboard' tab='leaderboard' /> },
                     { path: 'leagues/:id/matches', element: <LeagueTabs key='matches' tab='matches' /> },
                     { path: 'leagues/:id/stats', element: <LeagueTabs key='stats' tab='stats' /> },
-                    { path: 'matches/:id', element: <MatchDetails /> },
+                    { path: 'leagues/:leagueId/matches/:matchId', element: <MatchDetails /> },
                 ]
             },
             { path: 'leagues', element: <LeagueList /> },

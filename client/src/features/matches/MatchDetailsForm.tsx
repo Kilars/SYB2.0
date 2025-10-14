@@ -8,8 +8,8 @@ import z from "zod";
 import { toast } from "react-toastify";
 
 export default function MatchDetailsForm() {
-  const { id } = useParams();
-  const { match, isMatchLoading, completeMatch } = useMatch(id || '');
+  const { leagueId, matchId } = useParams();
+  const { match, isMatchLoading, completeMatch } = useMatch(matchId || '');
   const [rounds, setRounds] = useState(match?.rounds)
 
   useEffect(() => {
@@ -19,14 +19,16 @@ export default function MatchDetailsForm() {
   const onSubmit = async () => {
     try {
       matchSchema.parse(rounds)
-      toast('Succes', {type: 'success'})
       if (rounds) await completeMatch.mutateAsync(rounds);
+      toast('Succes', {type: 'success'})
     } catch (error) {
       if (error instanceof z.ZodError) {
         for (const issue of error.issues) {
           toast(issue.message, {type: 'error'});
         }
-      }
+      } else (
+        toast('Server error', {type: 'error'})
+      )
     }
   }
 

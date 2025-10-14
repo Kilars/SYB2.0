@@ -5,8 +5,8 @@ import MatchDetailsView from "./MatchDetailsView";
 import MatchDetailsForm from "./MatchDetailsForm";
 
 export default function MatchDetails() {
-    const { id } = useParams();
-    const { match, isMatchLoading } = useMatch(id || '');
+    const { leagueId, matchId } = useParams();
+    const { match, isMatchLoading } = useMatch(matchId || '');
 
 
     if (isMatchLoading) return <Typography>Loading...</Typography>

@@ -30,7 +30,8 @@ public class CompleteMatchValidator : AbstractValidator<CompleteMatch.Command>
             .GroupBy(r => r.WinnerUserId)
             .Select(g => g.Count())
             .DefaultIfEmpty(0)
-            .Max() == Math.Ceiling(rounds.Count / 2.0)
+            .Max() == 2
+        //Assume Bo3 for now, need atleast two matches
         ).WithMessage("Not enough rounds played to be decisive");
     }
 

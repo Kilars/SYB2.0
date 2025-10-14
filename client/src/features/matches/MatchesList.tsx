@@ -17,7 +17,7 @@ export default function MatchesList() {
         :
         <Box display='flex' flexDirection='column' gap={2}>
           {league.matches.map(match => (
-            <Box component={Card} elevation={3} p={2} onClick={() => navigate(`/matches/${match.id}`)}>
+            <Box key={match.id} component={Card} elevation={3} p={2} onClick={() => navigate(match.id)}>
               <Box>
                 <Box display={'flex'} justifyContent='space-between' alignItems='center'>
                   <Typography variant="h4" fontFamily="monospace" fontStyle="italic">{match.playerOne.displayName}</Typography>
@@ -26,7 +26,7 @@ export default function MatchesList() {
                 <Box display= 'flex' flexDirection='row' justifyContent='space-between'>
                   <Box display='flex'>
                     {match.rounds.map(round => (
-                      <Box sx={{border: '2px solid', m: 1, borderColor: round.winnerUserId === match.playerOne.userId ? 'green' : 'red'}}>
+                      <Box key={round.id} sx={{border: '2px solid', m: 1, borderColor: round.winnerUserId === match.playerOne.userId ? 'green' : 'red'}}>
                         <img width='50' height='50' src={
                           characters.find(c => c.id === round.playerOneCharacterId)?.imageUrl
                         }
@@ -36,7 +36,7 @@ export default function MatchesList() {
                   </Box>
                   <Box display='flex'>
                     {match.rounds.map(round => (
-                      <Box sx={{border: '2px solid', m: 1, borderColor: round.winnerUserId === match.playerTwo.userId ? 'green' : 'red'}}>
+                      <Box key={round.id} sx={{border: '2px solid', m: 1, borderColor: round.winnerUserId === match.playerTwo.userId ? 'green' : 'red'}}>
                         <img width='50' height='50' src={
                           characters.find(c => c.id === round.playerTwoCharacterId)?.imageUrl
                         }
@@ -52,7 +52,7 @@ export default function MatchesList() {
                   <Typography> Split {match.split} </Typography>
                 </Box>
                 <Box display='flex' flexDirection='column' justifyContent='flex-end'>
-                  <Button variant="contained" onClick={() => navigate(`/matches/${match.id}`)}>
+                  <Button variant="contained">
                     {match.completed ? 'Change' : 'Register'}
                   </Button>
                 </Box>

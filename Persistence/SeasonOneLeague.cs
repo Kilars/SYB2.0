@@ -92,7 +92,7 @@ public class SeasonOneLeague
                 P2 = "larsski",
                 W = "hansemann",
                 R = [
-                    ("yoshi", "pyra_mythra", "king_k_rool"),
+                    ("yoshi", "pyra_mythra", "larsski"),
                     ("incineroar", "joker", "hansemann"),
                     ("ness", "king_k_rool", "hansemann"),
                 ]
