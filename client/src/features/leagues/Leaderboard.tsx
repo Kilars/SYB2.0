@@ -14,10 +14,10 @@ export default function Leaderboard() {
     else if (!league || !leaderboard) return <Typography>No league found</Typography>
     return (
         <Box>
-            <TableContainer>
+            <TableContainer sx={{height: '50vh'}}>
                 <Table>
                     <TableHead>
-                        <TableRow>
+                        <TableRow sx={{backgroundColor: '#c0defc', borderBottom: '3px solid black'}}>
                             <TableCell> Rank </TableCell>
                             <TableCell> Player </TableCell>
                             <TableCell> Points </TableCell>
@@ -30,7 +30,7 @@ export default function Leaderboard() {
 
                     <TableBody>
                         {leaderboard.map((leaderboardUser, i) => (
-                            <TableRow key={leaderboardUser.displayName}>
+                            <TableRow key={leaderboardUser.displayName} sx={{ backgroundColor: i % 2 == 0 ? 'white' : '#c0defc' }}>
                                 <TableCell variant="head"> {(i + 1) + "."} </TableCell>
                                 <TableCell> {leaderboardUser.displayName} </TableCell>
                                 <TableCell align="center"> {leaderboardUser.points} </TableCell>

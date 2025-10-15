@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useLeagues } from "../../lib/hooks/useLeagues"
-import { Box, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 
 export default function LeagueStats() {
@@ -11,7 +11,7 @@ export default function LeagueStats() {
   if (isLeagueLoading) return <div>Loading...</div>
   if (!league || !characters) return <div>No league stats</div>
 
-  const computeCharacterWinratesPercentage = (matches: Match[]) : (string | number)[][] => {
+  const computeCharacterWinratesPercentage = (matches: Match[]): (string | number)[][] => {
     const winsDict: { [key: string]: [wins: number, total: number] } = {};
     matches.flatMap(m => m.rounds).filter(round => round.completed).forEach(round => {
       const char1 = round.playerOneCharacterId;
@@ -33,46 +33,51 @@ export default function LeagueStats() {
     })
     return charDict;
   }
-const charStats = computeCharacterWinratesPercentage(league.matches);
+  const charStats = computeCharacterWinratesPercentage(league.matches);
 
-return (
-  <Box>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell sx={{textAlign: 'left'}}> Character </TableCell>
-          <TableCell sx={{textAlign: 'right'}}> WR </TableCell>
-          <TableCell sx={{textAlign: 'right'}}> Rounds </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {charStats.sort((a, b) => (Number(b[1])*0.8 + Number(b[2])*0.2) - (Number(a[1])*0.8 + Number(a[2])*0.2)).map(stats => (
-          <TableRow key={stats[0]}>
-            <TableCell> {stats[0]}</TableCell>
-            <TableCell
-              sx={{
-                maxWidth: 40,
-                textAlign: 'right',
-                paddingRight: 2,
-                letterSpacing: '0.05em'
-              }}
-            >
-              {stats[1]}%
-            </TableCell>
-            <TableCell
-              sx={{
-                maxWidth: 40,
-                textAlign: 'right',
-                paddingRight: 2,
-                letterSpacing: '0.05em'
-              }}
-            >
-              {stats[2]}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  </Box>
-)
+  return (
+    <Box>
+      <TableContainer sx={{height: '40vh'}}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{backgroundColor: '#c0defc', borderBottom: '3px solid black' }}>
+              <TableCell sx={{ textAlign: 'left' }}> Character </TableCell>
+              <TableCell sx={{ textAlign: 'right' }}> WR </TableCell>
+              <TableCell sx={{ textAlign: 'right' }}> Rounds </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {charStats
+              .sort((a, b) => Number(b[1]) - Number(a[1]))
+              .filter(a => Number(a[2]) >= 3)
+              .map((stats, i) => (
+                <TableRow key={stats[0]} sx={{ backgroundColor: i % 2 == 0 ? 'white' : '#c0defc' }}>
+                  <TableCell> {stats[0]}</TableCell>
+                  <TableCell
+                    sx={{
+                      maxWidth: 40,
+                      textAlign: 'right',
+                      paddingRight: 2,
+                      letterSpacing: '0.05em'
+                    }}
+                  >
+                    {stats[1]}%
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      maxWidth: 40,
+                      textAlign: 'right',
+                      paddingRight: 2,
+                      letterSpacing: '0.05em'
+                    }}
+                  >
+                    {stats[2]}
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  )
 }
