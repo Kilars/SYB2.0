@@ -8,6 +8,7 @@ import RequireAuth from "./RequireAuth";
 import MatchDetails from "../../features/matches/MatchDetails";
 import ServerError from "../../features/error/ServerError";
 import LeagueTabs from "../../features/leagues/LeagueTabs";
+import UserStats from "../../features/stats/UserStats";
 
 export const router = createBrowserRouter([
     {
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
                 element: <RequireAuth />, children: [
                     { path: 'createLeague', element: <LeagueForm key='create' /> },
                     { path: 'manage/:id', element: <LeagueForm /> },
+                    { path: 'user/:id', element: <UserStats /> },
                     { path: 'leagues/:id/description', element: <LeagueTabs key='description' tab='description' /> },
                     { path: 'leagues/:id/leaderboard', element: <LeagueTabs key='leaderboard' tab='leaderboard' /> },
                     { path: 'leagues/:id/matches', element: <LeagueTabs key='matches' tab='matches' /> },
