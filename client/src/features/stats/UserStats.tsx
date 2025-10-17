@@ -1,4 +1,4 @@
-import { Box, Button, Card, Divider, Typography } from "@mui/material";
+import { Box, Button, Card, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import { useUserMatches } from "../../lib/hooks/useUserMatches";
 import { useCharacters } from "../../lib/hooks/useCharacters";
