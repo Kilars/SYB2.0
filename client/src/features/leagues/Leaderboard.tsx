@@ -15,23 +15,21 @@ export default function Leaderboard() {
     return (
         <Box>
             <TableContainer sx={{height: '50vh'}}>
-                <Table>
+                <Table stickyHeader>
                     <TableHead>
-                        <TableRow sx={{backgroundColor: '#c0defc', borderBottom: '3px solid black'}}>
-                            <TableCell> Rank </TableCell>
-                            <TableCell> Player </TableCell>
-                            <TableCell> Points </TableCell>
-                            <TableCell> WR </TableCell>
-                            <TableCell> Wins </TableCell>
-                            <TableCell> Losses </TableCell>
-                            <TableCell> Flawless </TableCell>
+                        <TableRow >
+                            <TableCell sx={{backgroundColor: '#C0DEFA'}}> Player </TableCell>
+                            <TableCell sx={{backgroundColor: '#C0DEFA'}}> Points </TableCell>
+                            <TableCell sx={{backgroundColor: '#C0DEFA'}}> WR </TableCell>
+                            <TableCell sx={{backgroundColor: '#C0DEFA'}}> Wins </TableCell>
+                            <TableCell sx={{backgroundColor: '#C0DEFA'}}> Losses </TableCell>
+                            <TableCell sx={{backgroundColor: '#C0DEFA'}}>  Flawless </TableCell>
                         </TableRow>
                     </TableHead>
 
                     <TableBody>
                         {leaderboard.map((leaderboardUser, i) => (
-                            <TableRow key={leaderboardUser.displayName} sx={{ backgroundColor: i % 2 == 0 ? 'white' : '#c0defc' }}>
-                                <TableCell variant="head"> {(i + 1) + "."} </TableCell>
+                            <TableRow key={leaderboardUser.displayName} sx={{ backgroundColor: i % 2 == 0 ? '#E5EFF9' : '#D6E6F6' }}>
                                 <TableCell> {leaderboardUser.displayName} </TableCell>
                                 <TableCell align="center"> {leaderboardUser.points} </TableCell>
                                 <TableCell align="center"> {Math.round((leaderboardUser.wins * 100) / (leaderboardUser.wins + leaderboardUser.losses)) + "%"} </TableCell>

@@ -37,13 +37,13 @@ export default function LeagueStats() {
 
   return (
     <Box>
-      <TableContainer sx={{height: '40vh'}}>
-        <Table>
+      <TableContainer sx={{ height: '40vh' }}>
+        <Table stickyHeader>
           <TableHead>
-            <TableRow sx={{backgroundColor: '#c0defc', borderBottom: '3px solid black' }}>
-              <TableCell sx={{ textAlign: 'left' }}> Character </TableCell>
-              <TableCell sx={{ textAlign: 'right' }}> WR </TableCell>
-              <TableCell sx={{ textAlign: 'right' }}> Rounds </TableCell>
+            <TableRow>
+              <TableCell sx={{ textAlign: 'left', backgroundColor: '#C0DEFA' }}> Character </TableCell>
+              <TableCell sx={{ textAlign: 'right', backgroundColor: '#C0DEFA'}}> WR </TableCell>
+              <TableCell sx={{ textAlign: 'right', backgroundColor: '#C0DEFA' }}> Rounds </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -51,7 +51,7 @@ export default function LeagueStats() {
               .sort((a, b) => Number(b[1]) - Number(a[1]))
               .filter(a => Number(a[2]) >= 3)
               .map((stats, i) => (
-                <TableRow key={stats[0]} sx={{ backgroundColor: i % 2 == 0 ? 'white' : '#c0defc' }}>
+                <TableRow key={stats[0]} sx={{ backgroundColor: i % 2 == 0 ? '#E5EFF9' : '#D6E6F6' }}>
                   <TableCell> {stats[0]}</TableCell>
                   <TableCell
                     sx={{
