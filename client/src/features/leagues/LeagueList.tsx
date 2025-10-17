@@ -1,10 +1,10 @@
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Chip, Typography } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useNavigate } from "react-router";
-import { AccessTime, Edit, Group, Person, SportsEsports, Visibility } from "@mui/icons-material";
+import { AccessTime, Edit, Group, SportsEsports, Visibility } from "@mui/icons-material";
 import { formatDate } from "../../lib/util/util";
-import { Fragment } from "react/jsx-runtime";
 import { useAccount } from "../../lib/hooks/useAccount";
+import UserChip from "../../app/shared/components/UserChip";
 
 export default function LeagueList() {
     const navigate = useNavigate();
@@ -22,7 +22,7 @@ export default function LeagueList() {
         <>
             <Typography variant='h2'>Leagues</Typography>
             {leagues.map(league => (
-                <Card component={Box} key={league.id} p={3} m={1}>
+                <Card component={Box} key={league.id} p={1} m={1}>
                     <CardHeader title={league.title} action={
                         <Chip label={LEAGUE_STATUSES[league.status][0]} color={league.status === 0 ? 'warning' : league.status === 1 ? 'success' : 'info'} />
                     } />
@@ -46,10 +46,10 @@ export default function LeagueList() {
                                 <Group sx={{ mr: 2 }} />
                                 <Typography>{league.members.length}</Typography>
                             </Box>
-                            <Box display='flex' gap={2} mt={2}>
-                                {league.members.map(member => (<Fragment key={member.id}>
-                                    <Chip icon={<Person />} label={member.displayName} />
-                                </Fragment>))}
+                            <Box gap={1} mt={1} sx={{ display: 'grid', 'grid-template-columns': 'auto auto auto' }}>
+                                {league.members.map(member =>
+                                    <UserChip key={member.id} userId={member.id} displayName={member.displayName} />
+                                )}
                             </Box>
                         </Box>
                     </CardContent>

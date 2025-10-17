@@ -1,9 +1,10 @@
-import { Box, Button, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useNavigate, useParams } from "react-router";
-import { Edit, Person } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 import { useAccount } from "../../lib/hooks/useAccount";
 import StatusButton from "./StatusButton";
+import UserChip from "../../app/shared/components/UserChip";
 
 export default function Leaderboard() {
     const { id } = useParams();
@@ -45,15 +46,9 @@ export default function Leaderboard() {
                 Members
             </Typography>
 
-            <Box gap={1} sx={{display: 'grid', 'grid-template-columns': 'repeat(auto-fill, 100px)'}}>
+            <Box gap={1} sx={{display: 'grid', 'grid-template-columns': 'auto auto auto'}}>
                 {league.members.map(member => (
-                    <Chip
-                        key={member.id}
-                        icon={<Person />}
-                        label={member.displayName}
-                        color={member.isAdmin ? 'primary' : 'default'}
-                        sx={{width: '100px'}}
-                    />
+                    <UserChip key={member.id} userId={member.id} displayName={member.displayName} />
                 ))}
             </Box>
             <Box display='flex' width='100%' justifyContent='flex-end' pt={2}>
