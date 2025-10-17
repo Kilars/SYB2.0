@@ -15,6 +15,11 @@ public class MatchesController : BaseApiController
     {
         return HandleResult(await Mediator.Send(new GetMatchDetails.Query { Id = id }));
     }
+    [HttpGet("user/{id}")]
+    public async Task<ActionResult<MatchDto>> GetUserMatches(string id)
+    {
+        return HandleResult(await Mediator.Send(new GetUserMatches.Query { Id = id }));
+    }
 
     [HttpPost("{id}/complete")]
     [Authorize (Policy = "IsMatchEditable")]
