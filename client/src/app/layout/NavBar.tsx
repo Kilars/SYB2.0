@@ -39,10 +39,10 @@ const NavBar = observer(function NavBar() {
               {currentUser
                 ? <MenuItem component={NavLink} to={`/user/${currentUser.id}`}>My Profile</MenuItem>
                 : (
-                  <>
+                  <Box>
                     <MenuItem component={NavLink} to="/login">login</MenuItem>
                     <MenuItem component={NavLink} to="/register">register</MenuItem>
-                  </>
+                  </Box>
                 )}
               {currentUser && <MenuItem component={NavLink} to="/createLeague">Create League <Add /> </MenuItem>}
             </Menu>

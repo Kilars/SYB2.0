@@ -46,7 +46,7 @@ export default function LeagueList() {
                                 <Group sx={{ mr: 2 }} />
                                 <Typography>{league.members.length}</Typography>
                             </Box>
-                            <Box gap={1} mt={1} sx={{ display: 'grid', 'grid-template-columns': 'auto auto auto' }}>
+                            <Box gap={1} mt={1} sx={{ display: 'grid', 'gridTemplateColumns': 'auto auto auto' }}>
                                 {league.members.map(member =>
                                     <UserChip key={member.id} userId={member.id} displayName={member.displayName} />
                                 )}
