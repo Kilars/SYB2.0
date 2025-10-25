@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "color-hash": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/color-hash": "^2.0.0"
+  }
+}
