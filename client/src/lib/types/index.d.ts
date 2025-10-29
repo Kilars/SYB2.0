@@ -10,12 +10,12 @@ type League = {
 }
 
 type LeagueMember = {
-    id: string;
+    Leagueid: string;
     userId: string;
     displayName: string;
     dateJoined: Date;
     isAdmin: boolean;
-    imageUrl?: string
+    imageUrl?: string;
 }
 type User = {
     id: string
@@ -24,15 +24,15 @@ type User = {
     imageUrl?: string
 }
 type Match = {
-  id: string
-  completed: boolean
-  split: number
-  matchIndex: number
-  winnerUserId?: string
-  registeredTime?: Date
-  playerOne: Player
-  playerTwo: Player
-  rounds: Round[]
+  completed: boolean;
+  leagueId: string;
+  split: number;
+  matchNumber: number;
+  winnerUserId?: string;
+  registeredTime?: Date;
+  playerOne: Player;
+  playerTwo: Player;
+  rounds: Round[];
 }
 
 type Player = {
@@ -42,7 +42,9 @@ type Player = {
 }
 
 type Round = {
-  id: string
+  leagueId: string;
+  split: number;
+  matchNumber: number;
   roundNumber: number
   completed: boolean
   winnerUserId?: string

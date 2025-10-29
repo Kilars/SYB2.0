@@ -13,13 +13,9 @@ public class Round
     public Character? PlayerTwoCharacter { get; set; }
 
     //Nav properties
-    public required int MatchIndex { get; set; }
+    public required int MatchNumber { get; set; }
     public required string LeagueId { get; set; }
     public required int Split { get; set; }
     [JsonIgnore]
     public Match? Match { get; set; }
-}
-public record RoundId : MatchId
-{
-    public required int RoundNumber { get; set; }
 }

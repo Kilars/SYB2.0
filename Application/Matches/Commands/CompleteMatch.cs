@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Application.Core;
 using Application.Leagues.DTOs;
 using AutoMapper;
+using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -13,7 +14,9 @@ public class CompleteMatch
 {
     public class Command : IRequest<Result<Unit>>
     {
-        public required string MatchId { get; set; }
+        public required string LeagueId { get; set; }
+        public required int Split { get; set; }
+        public required int MatchNumber { get; set; }
         public required List<RoundDto> Rounds { get; set; }
     }
 
@@ -24,13 +27,13 @@ public class CompleteMatch
             foreach (var round in request.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)))
             {
                 var dbRound = await context.Rounds.FirstAsync(r =>
-                    r.LeagueId == round.RoundId.LeagueId
-                    && r.Split == round.RoundId.Split
-                    && r.MatchIndex == round.RoundId.MatchIndex
-                    && r.RoundNumber == round.RoundId.RoundNumber,
+                   r.LeagueId == round.LeagueId
+                    && r.Split == round.Split
+                    && r.MatchNumber == round.MatchNumber
+                    && r.RoundNumber == round.RoundNumber,
                     cancellationToken: cancellationToken);
 
-                if (dbRound == null) return Result<Unit>.Failure($"Round ({round.RoundId.LeagueId}, {round.RoundId.Split}, {round.RoundId.MatchIndex}, {round.RoundId.RoundNumber}) does not exist", 400);
+                if (dbRound == null) return Result<Unit>.Failure($"Round ({round.LeagueId}, {round.Split}, {round.MatchNumber}, {round.RoundNumber}) does not exist", 400);
 
                 round.Completed = true;
                 mapper.Map(round, dbRound);
@@ -38,14 +41,13 @@ public class CompleteMatch
             ;
 
             var matchWinnerUserId = request.Rounds.GroupBy(r => r.WinnerUserId).OrderByDescending(group => group.Count()).Select(g => g.Key).First();
-            var compositeIdSplit = request.MatchId.Split('_');
-            if (compositeIdSplit.Length != 3) return Result<Unit>.Failure("Match not found, invalid matchId", 404);
-            var leagueId = compositeIdSplit[0];
-            var split = compositeIdSplit[1];
-            var matchIndex = compositeIdSplit[2];
 
             var match = await context.Matches.FirstAsync(m =>
-                m.LeagueId == leagueId && m.Split.ToString() == split && m.MatchIndex.ToString() == matchIndex, cancellationToken: cancellationToken);
+                m.LeagueId == request.LeagueId
+                && m.Split == request.Split
+                && m.MatchNumber == request.MatchNumber,
+                cancellationToken: cancellationToken
+            );
 
             if (match == null) return Result<Unit>.Failure("Match not found, invalid matchId", 404);
 

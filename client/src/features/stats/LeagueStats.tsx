@@ -4,8 +4,8 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow }
 import { useCharacters } from "../../lib/hooks/useCharacters";
 
 export default function LeagueStats() {
-  const { id } = useParams();
-  const { league, isLeagueLoading } = useLeagues(id);
+  const { leagueId } = useParams();
+  const { league, isLeagueLoading } = useLeagues(leagueId);
   const { characters } = useCharacters();
 
   if (isLeagueLoading) return <div>Loading...</div>
@@ -22,7 +22,10 @@ export default function LeagueStats() {
       winsDict[char1][1] += 1;
       winsDict[char2][1] += 1;
 
-      const p1 = matches.find(m => m.rounds.some(r => r.id === round.id))?.playerOne.userId;
+      const p1 = matches.find(m => m.rounds.some(r =>
+        r.matchNumber === round.matchNumber
+        && r.split === round.split
+        && r.roundNumber === round.roundNumber))?.playerOne.userId;
       if (p1 === round.winnerUserId) winsDict[char1][0] += 1;
       else winsDict[char2][0] += 1;
     })

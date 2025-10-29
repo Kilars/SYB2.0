@@ -7,8 +7,8 @@ import StatusButton from "./StatusButton";
 import UserChip from "../../app/shared/components/UserChip";
 
 export default function Leaderboard() {
-    const { id } = useParams();
-    const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(id);
+    const { leagueId } = useParams();
+    const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(leagueId);
     const { currentUser } = useAccount();
     const navigate = useNavigate();
     if (isLeagueLoading || isLeaderboardLoading) return <Typography>Loading...</Typography>
@@ -48,7 +48,7 @@ export default function Leaderboard() {
 
             <Box gap={1} sx={{display: 'grid', 'grid-template-columns': 'auto auto auto'}}>
                 {league.members.map(member => (
-                    <UserChip key={member.id} userId={member.id} displayName={member.displayName} />
+                    <UserChip key={member.userId} userId={member.userId} displayName={member.displayName} />
                 ))}
             </Box>
             <Box display='flex' width='100%' justifyContent='flex-end' pt={2}>

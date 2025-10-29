@@ -78,9 +78,7 @@ public class ChangeLeagueStatus
                     {
                         LeagueId = league.Id,
                         PlayerOneUserId = flip ? p1! : p2!,
-                        PlayerOneLeagueId = league.Id,
                         PlayerTwoUserId = flip ? p2! : p1!,
-                        PlayerTwoLeagueId = league.Id,
                         Split = 1
                     });
 
@@ -88,9 +86,7 @@ public class ChangeLeagueStatus
                     {
                         LeagueId = league.Id,
                         PlayerOneUserId = flip ? p2! : p1!,
-                        PlayerOneLeagueId = league.Id,
                         PlayerTwoUserId = flip ? p1! : p2!,
-                        PlayerTwoLeagueId = league.Id,
                         Split = 2
                     });
 
@@ -102,14 +98,14 @@ public class ChangeLeagueStatus
             var index = 1;
             foreach (var match in firstSplit)
             {
-                match.MatchIndex = index;
+                match.MatchNumber = index;
                 index++;
                 for (int i = 0; i < 3; i++)
                 {
                     context.Rounds.Add(new Round
                     {
                         LeagueId = match.LeagueId,
-                        MatchIndex = match.MatchIndex,
+                        MatchNumber = match.MatchNumber,
                         Split = match.Split,
                         RoundNumber = i + 1
                     });
@@ -118,14 +114,14 @@ public class ChangeLeagueStatus
             index = 1;
             foreach (var match in secondSplit)
             {
-                match.MatchIndex = index;
+                match.MatchNumber = index;
                 index++;
                 for (int i = 0; i < 3; i++)
                 {
                     context.Rounds.Add(new Round
                     {
                         LeagueId = match.LeagueId,
-                        MatchIndex = match.MatchIndex,
+                        MatchNumber = match.MatchNumber,
                         Split = match.Split,
                         RoundNumber = i + 1
                     });

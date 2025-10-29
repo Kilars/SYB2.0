@@ -14,10 +14,10 @@ import DateTimeInput from "../../app/shared/components/DateTimeInput";
 import { useEffect } from "react";
 
 export default function LeagueForm() {
-    const { id } = useParams();
+    const { leagueId } = useParams();
     const { users } = useUsers();
     const { currentUser } = useAccount();
-    const { createLeague, updateLeague, league, isLeagueLoading } = useLeagues(id);
+    const { createLeague, updateLeague, league, isLeagueLoading } = useLeagues(leagueId);
     const navigate = useNavigate();
     const { control, handleSubmit, formState: { isValid, isSubmitting, isDirty }, reset } = useForm({
         mode: 'onTouched',
@@ -59,7 +59,7 @@ export default function LeagueForm() {
         >
             <Box display='flex' alignItems='center' justifyContent='center' gap={3} color='secondary.main'>
                 <Leaderboard fontSize="large" />
-                <Typography variant="h4">{id ? 'Edit' : 'Create'} League</Typography>
+                <Typography variant="h4">{leagueId ? 'Edit' : 'Create'} League</Typography>
             </Box>
             <Box display='flex' flexDirection='column' gap={3}>
                 <TextInput label='Title' control={control} name='title' />
@@ -83,7 +83,7 @@ export default function LeagueForm() {
                         disabled={!isDirty || !isValid || isSubmitting}
                         size="large"
                     >
-                        {id ? 'Save' : 'Create'}
+                        {leagueId ? 'Save' : 'Create'}
                     </Button>
                 </Box>
             </Box>

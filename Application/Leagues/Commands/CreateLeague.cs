@@ -32,7 +32,6 @@ public class CreateLeague
                 league.Members.Add(new LeagueMember
                 {
                     UserId = user.Id,
-                    DisplayName = user.DisplayName ?? "Admin",
                     IsAdmin = true
                 });
             }

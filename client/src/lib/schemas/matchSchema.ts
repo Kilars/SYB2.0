@@ -30,10 +30,6 @@ export const matchSchema = z.array(roundInputSchema).superRefine((rounds, ctx) =
   }, {});
   const winCounts = Object.values(winCountDict);
   const winDiff = Math.abs((winCounts?.[0] || 0) - (winCounts?.[1] || 0));
-  console.log(winCountDict);
-
-  console.log("windiff", winDiff);
-
   const roundsRemaining = rounds.length - playedRounds.length;
 
   const incompleteRoundIndex = rounds.findIndex(round => {

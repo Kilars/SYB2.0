@@ -8,13 +8,13 @@ import z from "zod";
 import { toast } from "react-toastify";
 
 export default function MatchDetailsForm() {
-  const { matchId } = useParams();
-  const { match, isMatchLoading, completeMatch } = useMatch(matchId || '');
-  const [rounds, setRounds] = useState(match?.rounds)
+  const { leagueId, split, match } = useParams();
+  const { match: matchData, isMatchLoading, completeMatch } = useMatch(leagueId || '', parseInt(split || ''), parseInt(match || ''));
+  const [rounds, setRounds] = useState(matchData?.rounds)
 
   useEffect(() => {
-    setRounds(match?.rounds)
-  }, [match])
+    setRounds(matchData?.rounds)
+  }, [matchData])
 
   const onSubmit = async () => {
     try {
@@ -33,19 +33,19 @@ export default function MatchDetailsForm() {
   }
 
   if (isMatchLoading) return <Typography>Loading...</Typography>
-  if (!match) return <Typography>Match not found...</Typography>
+  if (!match || !matchData) return <Typography>Match not found...</Typography>
   if (!rounds) return <Typography>Rounds not found...</Typography>
 
   return (
     <Box>
       <Typography variant="h4" mb={3}>Register Match Result</Typography>
       {rounds.map((round, i) => (
-        <Box key={round.id}>
+        <Box key={round.leagueId + round.split + round.matchNumber + round.roundNumber}>
           <Typography variant="h5" mt={2}> Round {round.roundNumber} </Typography>
           <Box>
             <Box sx={{ display: 'flex' }}>
               <Box sx={{ width: '50%' }}>
-                <Typography variant="h6">{match.playerOne.displayName}</Typography>
+                <Typography variant="h6">{matchData.playerOne.displayName}</Typography>
                 <CharacterSelect onChange={id =>
                   setRounds(originalRounds => {
                     return originalRounds?.map((round, index) => {
@@ -61,7 +61,7 @@ export default function MatchDetailsForm() {
                 } selectedId={round.playerOneCharacterId} />
                 <Box>Winner:
                   <Checkbox
-                    checked={round.winnerUserId === match.playerOne.userId}
+                    checked={round.winnerUserId === matchData.playerOne.userId}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                       const isChecking = event.target.checked;
                       setRounds(originalRounds => {
@@ -69,7 +69,7 @@ export default function MatchDetailsForm() {
                           if (index === i) {
                             return {
                               ...round,
-                              winnerUserId: isChecking ? match.playerOne.userId : undefined,
+                              winnerUserId: isChecking ? matchData.playerOne.userId : undefined,
                             };
                           }
                           return round;
@@ -80,7 +80,7 @@ export default function MatchDetailsForm() {
                 </Box>
               </Box>
               <Box sx={{ width: '50%'}}>
-                <Typography variant="h6">{match.playerTwo.displayName}</Typography>
+                <Typography variant="h6">{matchData.playerTwo.displayName}</Typography>
                 <CharacterSelect onChange={id =>
                   setRounds(originalRounds => {
                     return originalRounds?.map((round, index) => {
@@ -96,7 +96,7 @@ export default function MatchDetailsForm() {
                 } selectedId={round.playerTwoCharacterId} />
                 <Box>Winner:
                   <Checkbox
-                    checked={round.winnerUserId === match.playerTwo.userId}
+                    checked={round.winnerUserId === matchData.playerTwo.userId}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                       const isChecking = event.target.checked;
                       setRounds(originalRounds => {
@@ -104,7 +104,7 @@ export default function MatchDetailsForm() {
                           if (index === i) {
                             return {
                               ...round,
-                              winnerUserId: isChecking ? match.playerTwo.userId : undefined,
+                              winnerUserId: isChecking ? matchData.playerTwo.userId : undefined,
                             };
                           }
                           return round;

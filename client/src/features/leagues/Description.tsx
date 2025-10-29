@@ -10,8 +10,8 @@ export default function Description() {
         ['Started', "success"],
         ['Finished', "info"],
     ];
-    const { id } = useParams();
-    const { league, isLeagueLoading } = useLeagues(id);
+    const { leagueId } = useParams();
+    const { league, isLeagueLoading } = useLeagues(leagueId);
     if (isLeagueLoading) return <Typography>Loading...</Typography>
     if (!league) return <Typography>No leagues found</Typography>
     return (

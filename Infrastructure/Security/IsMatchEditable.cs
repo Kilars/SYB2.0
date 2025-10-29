@@ -1,7 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -18,21 +17,16 @@ public class IsMatchEditableHandler(AppDbContext dbContext, IHttpContextAccessor
     {
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("id") is not string matchId) return;
-
-        var compositeIdStrings = matchId.Split("_");
-
-        if (compositeIdStrings.Length != 3) return;
-        var leagueId = compositeIdStrings[0];
-        var split = compositeIdStrings[1];
-        var matchIndex = compositeIdStrings[2];
+        if (httpContext?.GetRouteValue("leagueId") is not string leagueId) return;
+        if (httpContext?.GetRouteValue("split") is not string split) return;
+        if (httpContext?.GetRouteValue("matchNumber") is not string matchNumber) return;
 
         var match = await dbContext.Matches
             .AsNoTracking()
             .SingleOrDefaultAsync(x =>
                 x.LeagueId == leagueId
-                && x.Split.ToString() == split
-                && x.MatchIndex.ToString() == matchIndex
+                && x.Split == int.Parse(split)
+                && x.MatchNumber == int.Parse(matchNumber)
             );
 
         if (match == null) return;

@@ -1,47 +1,52 @@
-import { Box, Button, Checkbox, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useParams } from "react-router";
 import { useMatch } from "../../lib/hooks/useMatch";
 import { useCharacters } from "../../lib/hooks/useCharacters";
+import { Check } from "@mui/icons-material";
 
 export default function MatchDetailsView() {
-  const { matchId } = useParams();
-  const { match, isMatchLoading, reopenMatch } = useMatch(matchId || '');
+  const { leagueId, split, match } = useParams();
+  const { match: matchData, isMatchLoading, reopenMatch } = useMatch(leagueId || '', parseInt(split || ''), parseInt(match || ''));
   const { characters } = useCharacters();
 
   if (isMatchLoading) return <Typography>Loading...</Typography>
-  if (!match || !characters) return <Typography>Match not found...</Typography>
+  if (!matchData || !characters) return <Typography>Match not found...</Typography>
   return (
     <Box>
-      {match.rounds.filter(r => !!r.winnerUserId).map((round) => (
-        <Box key={round.id}>
+      {matchData.rounds.filter(r => !!r.winnerUserId).map((round) => (
+        <Box key={round.leagueId + round.split + round.matchNumber + round.roundNumber}>
           <Typography variant="h5" mt={2}> Round {round.roundNumber} </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', flexGrow: 0.5 }}>
             <Box>
               <Box>
-                <Typography variant="h6">{match.playerOne.displayName}</Typography>
+                <Typography variant="h6">{matchData.playerOne.displayName}</Typography>
               </Box>
               <Box>
                 {round?.playerOneCharacter?.fullName}
               </Box>
-              <Box sx={{display: 'flex'}}>
-              <img width="50" height="50" src={
-                characters.find(c => c.id === round.playerOneCharacterId)?.imageUrl
-              } />
-                <Checkbox disabled color="success" checked={round.winnerUserId === match.playerOne.userId} />
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <img width="50" height="50" src={
+                  characters.find(c => c.id === round.playerOneCharacterId)?.imageUrl
+                } />
+                {round.winnerUserId === matchData.playerOne.userId &&
+                  <Check fontSize="large" color="success" />
+                }
               </Box>
             </Box>
             <Box>
               <Box>
-                <Typography variant="h6">{match.playerTwo.displayName}</Typography>
+                <Typography variant="h6">{matchData.playerTwo.displayName}</Typography>
               </Box>
               <Box>
                 {round?.playerTwoCharacter?.fullName}
               </Box>
-              <Box sx={{display: 'flex'}}>
-                <Checkbox disabled color="success" checked={round.winnerUserId === match.playerTwo.userId}></Checkbox>
-              <img width="50" height="50" src={
-                characters.find(c => c.id === round.playerTwoCharacterId)?.imageUrl
-              } />
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {round.winnerUserId === matchData.playerTwo.userId &&
+                  <Check fontSize="large" color="success" />
+                }
+                <img width="50" height="50" src={
+                  characters.find(c => c.id === round.playerTwoCharacterId)?.imageUrl
+                } />
               </Box>
             </Box>
           </Box>

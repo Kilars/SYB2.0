@@ -5,12 +5,11 @@ import MatchDetailsView from "./MatchDetailsView";
 import MatchDetailsForm from "./MatchDetailsForm";
 
 export default function MatchDetails() {
-    const { matchId } = useParams();
-    const { match, isMatchLoading } = useMatch(matchId || '');
-
+    const { leagueId, split, match } = useParams();
+    const { match: matchData, isMatchLoading } = useMatch(leagueId || '', parseInt(split || ''), parseInt(match || ''));
 
     if (isMatchLoading) return <Typography>Loading...</Typography>
-    if (!match) return <Typography>Match not found...</Typography>
-    if (match.completed) return <MatchDetailsView />
+    if (!matchData) return <Typography>Match not found...</Typography>
+    if (matchData.completed) return <MatchDetailsView />
     else return <MatchDetailsForm />
 }

@@ -17,7 +17,6 @@ public class SeasonOneLeague
             Members = [.. GetUsers().Select(u => new LeagueMember
             {
                 UserId = u.Id,
-                DisplayName = u.DisplayName!
             })],
             StartDate = new DateTime(2023, 11, 10),
             Matches = matches
@@ -35,17 +34,15 @@ public class SeasonOneLeague
             LeagueId = leagueId,
             Completed = true,
             PlayerOneUserId = mc.P1,
-            PlayerOneLeagueId = leagueId,
             PlayerTwoUserId = mc.P2,
-            PlayerTwoLeagueId = leagueId,
             WinnerUserId = mc.W,
             Split = split,
-            MatchIndex = index + 1,
+            MatchNumber = index + 1,
             RegisteredTime = DateTime.UtcNow,
             Rounds = [.. mc.R.Select((r, roundIndex) => new Round
             {
                 LeagueId = leagueId,
-                MatchIndex = index + 1,
+                MatchNumber = index + 1,
                 Split = split,
                 RoundNumber = roundIndex + 1,
                 PlayerOneCharacterId = r.Item1,

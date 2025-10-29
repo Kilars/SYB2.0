@@ -18,30 +18,21 @@ public class IsMatchCompleteHandler(AppDbContext dbContext, IHttpContextAccessor
     {
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("id") is not string matchId)
+        if (httpContext?.GetRouteValue("leagueId") is not string leagueId)
         {
-            context.Fail(new AuthorizationFailureReason(this, "Parameter id is not a string"));
+            context.Fail(new AuthorizationFailureReason(this, "LeaguId is not a string"));
             return;
         }
 
-        var compositeIdStrings = matchId.Split("_");
-
-        if (compositeIdStrings.Length != 3)
-        {
-            context.Fail(new AuthorizationFailureReason(this, "The id does not match the composite format"));
-            return;
-        }
-        //TODO: Remove composite idStrings
-        var leagueId = compositeIdStrings[0];
-        var split = compositeIdStrings[1];
-        var matchIndex = compositeIdStrings[2];
+        if (httpContext?.GetRouteValue("split") is not string split) return;
+        if (httpContext?.GetRouteValue("matchNumber") is not string matchNumber) return;
 
         var match = await dbContext.Matches
             .AsNoTracking()
             .SingleOrDefaultAsync(x =>
                 x.LeagueId == leagueId
-                && x.Split.ToString() == split
-                && x.MatchIndex.ToString() == matchIndex
+                && x.Split == int.Parse(split)
+                && x.MatchNumber == int.Parse(matchNumber)
             );
 
 

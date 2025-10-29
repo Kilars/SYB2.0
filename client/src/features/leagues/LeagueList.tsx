@@ -48,7 +48,7 @@ export default function LeagueList() {
                             </Box>
                             <Box gap={1} mt={1} sx={{ display: 'grid', 'gridTemplateColumns': 'auto auto auto' }}>
                                 {league.members.map(member =>
-                                    <UserChip key={member.id} userId={member.id} displayName={member.displayName} />
+                                    <UserChip key={member.userId} userId={member.userId} displayName={member.displayName} />
                                 )}
                             </Box>
                         </Box>

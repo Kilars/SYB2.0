@@ -19,8 +19,8 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         base.OnModelCreating(builder);
 
         builder.Entity<LeagueMember>(x => x.HasKey(m => new { m.UserId, m.LeagueId }));
-        builder.Entity<Match>(x => x.HasKey(m => new { m.LeagueId, m.MatchIndex, m.Split }));
-        builder.Entity<Round>(x => x.HasKey(m => new { m.LeagueId, m.MatchIndex, m.Split, m.RoundNumber }));
+        builder.Entity<Match>(x => x.HasKey(m => new { m.LeagueId, m.MatchNumber, m.Split }));
+        builder.Entity<Round>(x => x.HasKey(m => new { m.LeagueId, m.MatchNumber, m.Split, m.RoundNumber }));
 
         builder.Entity<LeagueMember>()
             .HasOne(x => x.User)
@@ -42,19 +42,19 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         builder.Entity<Match>()
             .HasOne(x => x.PlayerOne)
             .WithMany(x => x.MatchesAsPlayerOne)
-            .HasForeignKey(x => new { x.PlayerOneUserId, x.PlayerOneLeagueId })
+            .HasForeignKey(x => new { x.PlayerOneUserId, x.LeagueId })
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Match>()
             .HasOne(x => x.PlayerTwo)
             .WithMany(x => x.MatchesAsPlayerTwo)
-            .HasForeignKey(x => new { x.PlayerTwoUserId, x.PlayerTwoLeagueId })
+            .HasForeignKey(x => new { x.PlayerTwoUserId, x.LeagueId })
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Round>()
             .HasOne(x => x.Match)
             .WithMany(x => x.Rounds)
-            .HasForeignKey(x => new { x.LeagueId, x.MatchIndex, x.Split })
+            .HasForeignKey(x => new { x.LeagueId, x.MatchNumber, x.Split })
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Round>()

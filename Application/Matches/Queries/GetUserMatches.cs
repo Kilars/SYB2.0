@@ -27,7 +27,9 @@ public class GetUserMatches
                 )
                 .Include(m => m.Rounds)
                 .Include(m => m.PlayerOne)
+                .Include(m => m.PlayerOne!.User)
                 .Include(m => m.PlayerTwo)
+                .Include(m => m.PlayerTwo!.User)
                 .ToListAsync(cancellationToken: cancellationToken);
 
             var mapped = mapper.Map<List<MatchDto>>(matches);

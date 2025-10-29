@@ -16,13 +16,13 @@ export const router = createBrowserRouter([
             {
                 element: <RequireAuth />, children: [
                     { path: 'createLeague', element: <LeagueForm key='create' /> },
-                    { path: 'manage/:id', element: <LeagueForm /> },
-                    { path: 'user/:id', element: <UserStats /> },
-                    { path: 'leagues/:id/description', element: <LeagueTabs key='description' tab='description' /> },
-                    { path: 'leagues/:id/leaderboard', element: <LeagueTabs key='leaderboard' tab='leaderboard' /> },
-                    { path: 'leagues/:id/matches', element: <LeagueTabs key='matches' tab='matches' /> },
-                    { path: 'leagues/:id/stats', element: <LeagueTabs key='stats' tab='stats' /> },
-                    { path: 'leagues/:leagueId/matches/:matchId', element: <MatchDetails /> },
+                    { path: 'manage/:leagueId', element: <LeagueForm /> },
+                    { path: 'user/:userId', element: <UserStats /> },
+                    { path: 'leagues/:leagueId/description', element: <LeagueTabs key='description' tab='description' /> },
+                    { path: 'leagues/:leagueId/leaderboard', element: <LeagueTabs key='leaderboard' tab='leaderboard' /> },
+                    { path: 'leagues/:leagueId/matches', element: <LeagueTabs key='matches' tab='matches' /> },
+                    { path: 'leagues/:leagueId/stats', element: <LeagueTabs key='stats' tab='stats' /> },
+                    { path: 'leagues/:leagueId/split/:split/match/:match', element: <MatchDetails /> },
                 ]
             },
             { path: 'leagues', element: <LeagueList /> },

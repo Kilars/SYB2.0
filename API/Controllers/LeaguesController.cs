@@ -16,10 +16,10 @@ public class LeaguesController() : BaseApiController
     {
         return HandleResult(await Mediator.Send(new GetLeagueList.Query()));
     }
-    [HttpGet("{id}")]
-    public async Task<ActionResult<LeagueDto>> GetLeagueDetails(string id)
+    [HttpGet("{leagueId}")]
+    public async Task<ActionResult<LeagueDto>> GetLeagueDetails(string leagueId)
     {
-        return HandleResult(await Mediator.Send(new GetLeagueDetails.Query { Id = id }));
+        return HandleResult(await Mediator.Send(new GetLeagueDetails.Query { Id = leagueId }));
     }
 
     [HttpPost]
@@ -27,25 +27,25 @@ public class LeaguesController() : BaseApiController
     {
         return HandleResult(await Mediator.Send(new CreateLeague.Command { LeagueDto = leagueDto }));
     }
-    [HttpPut("{id}")]
+    [HttpPut("{leagueId}")]
     [Authorize(Policy = "IsLeagueAdmin")]
     [Authorize(Policy = "IsLeaguePlanned")]
-    public async Task<ActionResult> UpdateLeague(string id, UpdateLeagueDto leagueDto)
+    public async Task<ActionResult> UpdateLeague(string leagueId, UpdateLeagueDto leagueDto)
     {
-        leagueDto.Id = id;
+        leagueDto.Id = leagueId;
         return HandleResult(await Mediator.Send(new UpdateLeague.Command { UpdateLeagueDto = leagueDto }));
     }
-    [HttpPost("{id}/status")]
+    [HttpPost("{leagueId}/status")]
     [Authorize(Policy = "IsLeagueAdmin")]
-    public async Task<ActionResult> ChangeLeagueStatus(string id, LeagueStatus status)
+    public async Task<ActionResult> ChangeLeagueStatus(string leagueId, LeagueStatus status)
     {
-        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = id, NewStatus = status }));
+        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = leagueId, NewStatus = status }));
     }
-    [HttpGet("{id}/leaderboard")]
+    [HttpGet("{leagueId}/leaderboard")]
     [Authorize(Policy = "IsLeagueMember")]
-    public async Task<ActionResult> GetLeagueLeaderboard(string id)
+    public async Task<ActionResult> GetLeagueLeaderboard(string leagueId)
     {
-        return HandleResult(await Mediator.Send(new GetLeagueLeaderboard.Query { Id = id }));
+        return HandleResult(await Mediator.Send(new GetLeagueLeaderboard.Query { Id = leagueId }));
     }
 
 }

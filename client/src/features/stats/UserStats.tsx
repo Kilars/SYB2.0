@@ -4,26 +4,25 @@ import { useUserMatches } from "../../lib/hooks/useUserMatches";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 
 export default function UserStats() {
-    const { id } = useParams();
+    const { userId } = useParams();
     const { characters, charactersIsLoading } = useCharacters();
     const navigate = useNavigate();
-    const { userMatches, isUserMatchesLoading } = useUserMatches(id || '');
+    const { userMatches, isUserMatchesLoading } = useUserMatches(userId || '');
 
     if (isUserMatchesLoading || charactersIsLoading) return <Typography>Loading...</Typography>
-    if (!id || !userMatches || userMatches.length == 0 || !characters) return <Typography>No matches found</Typography>
+    if (!userId || !userMatches || userMatches.length == 0 || !characters) return <Typography>No matches found</Typography>
 
     const stats = userMatches
         .flatMap(match =>
             match.rounds
                 .map(round => {
-                    const charId = match.playerOne.userId === id ? round.playerOneCharacterId as string : round.playerTwoCharacterId as string;
-                    const won = round.winnerUserId === id;
+                    const charId = match.playerOne.userId === userId ? round.playerOneCharacterId as string : round.playerTwoCharacterId as string;
+                    const won = round.winnerUserId === userId;
                     return {
                         charId,
                         won
                     }
-                }
-                )
+                })
         );
     const charStats: Record<string, { wins: number; total: number; wr: number }> = {};
 
@@ -44,7 +43,7 @@ export default function UserStats() {
     return (
         <Box>
             <Typography variant="h4" mb={2}>Top characters</Typography>
-            <Box sx={{display: 'flex', justifyContent: 'space-evenly'}}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
                 {Object.entries(charStats)
                     .filter(entry => entry[1].total > 2)
                     .sort((entryA, entryB) => entryB[1].total - entryA[1].total)
@@ -63,7 +62,14 @@ export default function UserStats() {
             {userMatches
                 .filter(match => match.completed)
                 .map(match => (
-                    <Box key={match.id} component={Card} elevation={3} p={2} mb={1} onClick={() => navigate(`./leagues/${match.id.split('_')[0]}/matches/${match.id}`)}>
+                    <Box
+                        key={match.leagueId + match.matchNumber + match.split}
+                        component={Card}
+                        elevation={3}
+                        p={2}
+                        mb={1}
+                        onClick={() => navigate(`/leagues/${match.leagueId}/split/${match.split}/match/${match.matchNumber}`)}
+                    >
                         <Box>
                             <Box display={'flex'} justifyContent='space-between' alignItems='center'>
                                 <Typography variant="h4" fontFamily="monospace" fontStyle="italic">{match.playerOne.displayName}</Typography>
@@ -73,7 +79,7 @@ export default function UserStats() {
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', justifyItems: 'center', }}>
                                     {match.rounds.map((round, i) => (
                                         <Box
-                                            key={round.id}
+                                            key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
                                             sx={{
                                                 border: '2px solid',
                                                 borderColor: round.winnerUserId === match.playerOne.userId ? 'green' : 'red',
@@ -91,7 +97,7 @@ export default function UserStats() {
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', justifyItems: 'center' }}>
                                     {match.rounds.map((round, i) => (
                                         <Box
-                                            key={round.id}
+                                            key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
                                             sx={{
                                                 border: '2px solid',
                                                 borderColor: round.winnerUserId === match.playerTwo.userId ? 'green' : 'red',
@@ -110,7 +116,7 @@ export default function UserStats() {
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Box>
-                                <Typography> Match #{match.matchIndex} </Typography>
+                                <Typography> Match #{match.matchNumber} </Typography>
                                 <Typography> Split {match.split} </Typography>
                             </Box>
                             <Box display='flex' flexDirection='column' justifyContent='flex-end'>

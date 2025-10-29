@@ -29,9 +29,7 @@ public class GetLeagueDetails
 
             if (league == null) return Result<LeagueDto>.Failure("League not found", 404);
 
-            var leagueDto = mapper.Map<LeagueDto>(league);
-
-            return Result<LeagueDto>.Success(leagueDto);
+            return Result<LeagueDto>.Success(league);
         }
     }
 }

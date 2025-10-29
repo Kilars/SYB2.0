@@ -15,17 +15,9 @@ public class MappingProfiles : Profile
         CreateMap<User, UserDto>();
         CreateMap<League, LeagueDto>();
         CreateMap<LeagueMember, LeagueMemberDto>()
-            .ForMember(x => x.Id, o => o.MapFrom(
-                s => $"{s.UserId}_{s.LeagueId}"
-            ));
-        CreateMap<Match, MatchDto>()
-            .ForMember(x => x.Id, o => o.MapFrom(
-                s => $"{s.LeagueId}_{s.Split}_{s.MatchIndex}"
-            ));
-        CreateMap<Round, RoundDto>()
-            .ForMember(x => x.Id, o => o.MapFrom(
-                s => $"{s.LeagueId}_{s.Split}_{s.MatchIndex}_{s.RoundNumber}"
-            ));
+            .ForMember(x => x.DisplayName, o => o.MapFrom(s => s.User.DisplayName));
+        CreateMap<Match, MatchDto>();
+        CreateMap<Round, RoundDto>();
         CreateMap<RoundDto, Round>();
     }
 }
