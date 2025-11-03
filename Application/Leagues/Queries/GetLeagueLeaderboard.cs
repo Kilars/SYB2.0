@@ -30,6 +30,24 @@ public class GetLeagueLeaderboard
                 .Include(x => x.Rounds)
                 .ToListAsync(cancellationToken: cancellationToken);
 
+            var leaderboardUsersTwo = matches
+                .SelectMany(m => new[] {
+                    new {
+                        m.PlayerOne!.User.DisplayName,
+                        IsWin = m.WinnerUserId == m.PlayerOne.UserId,
+                        IsLoss = m.WinnerUserId == m.PlayerTwo!.UserId,
+                        IsFlawless = m.WinnerUserId == m.PlayerOne.UserId && (m.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)).Count() == 2)
+                    },
+                    new {
+                        m.PlayerTwo!.User.DisplayName,
+                        IsWin = m.WinnerUserId == m.PlayerTwo.UserId,
+                        IsLoss = m.WinnerUserId == m.PlayerOne.UserId,
+                        IsFlawless = m.WinnerUserId == m.PlayerTwo.UserId && (m.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)).Count() == 2)
+                    }
+                })
+                .GroupBy(m => m.DisplayName)
+                .ToList();
+
             var leaderboardUsers = matches
                 .SelectMany(m => new[] {
                     new {
@@ -39,7 +57,7 @@ public class GetLeagueLeaderboard
                         IsFlawless = m.WinnerUserId == m.PlayerOne.UserId && (m.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)).Count() == 2)
                     },
                     new {
-                        m.PlayerOne!.User.DisplayName,
+                        m.PlayerTwo!.User.DisplayName,
                         IsWin = m.WinnerUserId == m.PlayerTwo.UserId,
                         IsLoss = m.WinnerUserId == m.PlayerOne.UserId,
                         IsFlawless = m.WinnerUserId == m.PlayerTwo.UserId && (m.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)).Count() == 2)
