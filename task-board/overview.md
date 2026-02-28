@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-AI scaffolding setup complete. Ready for first backlog scan.
+Playwright E2E testing infrastructure — first task in backlog.
 
 ## Status
 
@@ -10,15 +10,15 @@ AI scaffolding setup complete. Ready for first backlog scan.
 |--------|-------|
 | Backlog | 0 |
 | In Progress | 0 |
-| Done | 0 |
+| Done | 1 |
 
 ## Top Priorities
 
-_No active priorities. Run `/backlog-scan` to discover tasks or `/feature-planning` to plan a specific feature._
+_Backlog is empty._
 
 ## Recently Completed
 
-_None yet._
+1. **001-FEATURE-playwright-e2e-testing** — Playwright E2E testing infrastructure (34 tests, 4 spec files). Completed 2026-02-27.
 
 ---
 

@@ -46,7 +46,7 @@ export default function Leaderboard() {
                 Members
             </Typography>
 
-            <Box gap={1} sx={{display: 'grid', 'grid-template-columns': 'auto auto auto'}}>
+            <Box gap={1} sx={{display: 'grid', gridTemplateColumns: 'auto auto auto'}}>
                 {league.members.map(member => (
                     <UserChip key={member.userId} userId={member.userId} displayName={member.displayName} />
                 ))}
