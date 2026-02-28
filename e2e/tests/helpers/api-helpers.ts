@@ -120,6 +120,19 @@ export async function completeMatchViaApi(
 }
 
 /**
+ * Delete a league via the API.
+ */
+export async function deleteLeagueViaApi(
+  context: BrowserContext,
+  leagueId: string
+): Promise<void> {
+  const res = await context.request.delete(`${BASE}/api/leagues/${leagueId}`);
+  if (!res.ok()) {
+    throw new Error(`deleteLeagueViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+}
+
+/**
  * Login via API and return an authenticated browser context.
  */
 export async function loginAsUser(

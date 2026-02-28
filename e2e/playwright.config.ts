@@ -19,6 +19,7 @@ export default defineConfig({
 
   // Global setup: authenticate once and cache storage state
   globalSetup: './global-setup.ts',
+  globalTeardown: './global-teardown.ts',
 
   use: {
     baseURL: 'http://localhost:3000',
