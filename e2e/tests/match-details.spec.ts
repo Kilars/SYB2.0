@@ -34,54 +34,66 @@ test.describe('Completed Match View', () => {
     await expect(page.getByText(/round/i).first()).toBeVisible({ timeout: 15000 });
   });
 
-  test('completed match renders round information', async ({ page }) => {
+  test('completed match renders round information', async ({ page, pageErrors }) => {
     // MatchDetailsView renders each completed round with "Round N" heading
     await expect(page.getByText('Round 1')).toBeVisible();
     await expect(page.getByText('Round 2')).toBeVisible();
+
+    expect(pageErrors).toEqual([]);
   });
 
-  test('completed match shows both player names', async ({ page }) => {
+  test('completed match shows both player names', async ({ page, pageErrors }) => {
     // MatchDetailsView renders matchData.playerOne.displayName and playerTwo.displayName
     await expect(page.getByText(/hansemann/i).first()).toBeVisible({ timeout: 10000 });
     await expect(page.getByText(/denix/i).first()).toBeVisible({ timeout: 10000 });
+
+    expect(pageErrors).toEqual([]);
   });
 
-  test('completed match shows Reopen Match button', async ({ page }) => {
+  test('completed match shows Reopen Match button', async ({ page, pageErrors }) => {
     // MatchDetailsView always shows a "Reopen match" button for league members
     await expect(page.getByRole('button', { name: /reopen match/i })).toBeVisible({
       timeout: 10000,
     });
+
+    expect(pageErrors).toEqual([]);
   });
 
-  test('match 2 shows 2 completed rounds (flawless 2-0)', async ({ page }) => {
+  test('match 2 shows 2 completed rounds (flawless 2-0)', async ({ page, pageErrors }) => {
     // Denix won 2-0 so only 2 rounds have winnerUserId set
     // MatchDetailsView filters: .filter(r => !!r.winnerUserId)
     const roundHeadings = page.getByRole('heading', { name: /round \d/i });
     await expect(roundHeadings).toHaveCount(2, { timeout: 10000 });
+
+    expect(pageErrors).toEqual([]);
   });
 });
 
 test.describe('Match 3 — Three-Round Match', () => {
-  test('match 3 shows 3 completed rounds (hansemann wins 2-1)', async ({ page }) => {
+  test('match 3 shows 3 completed rounds (hansemann wins 2-1)', async ({ page, pageErrors }) => {
     await page.goto(matchUrl(3));
     await expect(page.getByText(/round/i).first()).toBeVisible({ timeout: 15000 });
 
     // Match 3: hansemann vs larsski — 3 rounds played
     const roundHeadings = page.getByRole('heading', { name: /round \d/i });
     await expect(roundHeadings).toHaveCount(3, { timeout: 10000 });
+
+    expect(pageErrors).toEqual([]);
   });
 
-  test('match 3 shows both player names', async ({ page }) => {
+  test('match 3 shows both player names', async ({ page, pageErrors }) => {
     await page.goto(matchUrl(3));
     await expect(page.getByText(/round/i).first()).toBeVisible({ timeout: 15000 });
 
     await expect(page.getByText(/hansemann/i).first()).toBeVisible({ timeout: 10000 });
     await expect(page.getByText(/larsski/i).first()).toBeVisible({ timeout: 10000 });
+
+    expect(pageErrors).toEqual([]);
   });
 });
 
 test.describe('Match Navigation', () => {
-  test('navigating between matches via URL changes content', async ({ page }) => {
+  test('navigating between matches via URL changes content', async ({ page, pageErrors }) => {
     // Match 2: hansemann vs denix
     await page.goto(matchUrl(2));
     await expect(page.getByText(/denix/i).first()).toBeVisible({ timeout: 15000 });
@@ -91,9 +103,11 @@ test.describe('Match Navigation', () => {
     await expect(page.getByText(/round/i).first()).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/matias/i).first()).toBeVisible({ timeout: 10000 });
     await expect(page.getByText(/bh/i).first()).toBeVisible({ timeout: 10000 });
+
+    expect(pageErrors).toEqual([]);
   });
 
-  test('matches list navigates to match detail on click', async ({ page }) => {
+  test('matches list navigates to match detail on click', async ({ page, pageErrors }) => {
     await page.goto(`/leagues/${LEAGUE_ID}/matches`);
 
     // MatchesList renders match cards that are clickable
@@ -107,9 +121,11 @@ test.describe('Match Navigation', () => {
       new RegExp(`leagues/${LEAGUE_ID}/split/${SPLIT}/match/\\d+`),
       { timeout: 10000 }
     );
+
+    expect(pageErrors).toEqual([]);
   });
 
-  test('match detail page loads from matches list tab', async ({ page }) => {
+  test('match detail page loads from matches list tab', async ({ page, pageErrors }) => {
     await page.goto(`/leagues/${LEAGUE_ID}/matches`);
     await expect(page.locator('[class*="MuiCard"]').first()).toBeVisible({ timeout: 15000 });
 
@@ -118,5 +134,7 @@ test.describe('Match Navigation', () => {
     const cards = page.locator('[class*="MuiCard"]');
     const cardCount = await cards.count();
     expect(cardCount).toBeGreaterThan(0);
+
+    expect(pageErrors).toEqual([]);
   });
 });

@@ -38,9 +38,32 @@ public class CompleteMatch
                 round.Completed = true;
                 mapper.Map(round, dbRound);
             }
-            ;
 
-            var matchWinnerUserId = request.Rounds.GroupBy(r => r.WinnerUserId).OrderByDescending(group => group.Count()).Select(g => g.Key).First();
+            // Clear rounds without a winner (e.g., round 3 in a 2-0 result after reopening a 2-1)
+            foreach (var round in request.Rounds.Where(r => string.IsNullOrEmpty(r.WinnerUserId)))
+            {
+                var dbRound = await context.Rounds.FirstOrDefaultAsync(r =>
+                   r.LeagueId == request.LeagueId
+                    && r.Split == request.Split
+                    && r.MatchNumber == request.MatchNumber
+                    && r.RoundNumber == round.RoundNumber,
+                    cancellationToken: cancellationToken);
+
+                if (dbRound != null)
+                {
+                    dbRound.WinnerUserId = null;
+                    dbRound.PlayerOneCharacterId = null;
+                    dbRound.PlayerTwoCharacterId = null;
+                    dbRound.Completed = false;
+                }
+            }
+
+            var matchWinnerUserId = request.Rounds
+                .Where(r => !string.IsNullOrEmpty(r.WinnerUserId))
+                .GroupBy(r => r.WinnerUserId)
+                .OrderByDescending(group => group.Count())
+                .Select(g => g.Key)
+                .First();
 
             var match = await context.Matches.FirstAsync(m =>
                 m.LeagueId == request.LeagueId

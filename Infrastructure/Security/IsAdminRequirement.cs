@@ -23,7 +23,7 @@ public class IsAdminRequirementHandler(AppDbContext dbContext, IHttpContextAcces
 
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("id") is not string leagueId) return;
+        if (httpContext?.GetRouteValue("leagueId") is not string leagueId) return;
 
         var member = await dbContext.LeagueMembers
             .AsNoTracking()

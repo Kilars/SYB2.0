@@ -102,7 +102,7 @@ These rules MUST be checked before any domain-touching change:
 - Identity enrichment (adding email/password), NOT identity replacement
 
 ### 5. Authorization Consistency
-- `IsAdminRequirement` reads route param `"id"` (league endpoints use `{leagueId}` in route but the handler reads `"id"`)
+- `IsAdminRequirement` reads route param `"leagueId"`
 - `IsLeagueMember` reads route param `"leagueId"`
 - `IsMatchEditable` and `IsMatchComplete` read `"leagueId"`, `"split"`, `"matchNumber"`
 - Route param names in controllers MUST match what authorization handlers expect
@@ -178,10 +178,10 @@ docker-compose up -d
 
 | Policy | Requirement Class | Route Params Read |
 |--------|-------------------|-------------------|
-| IsLeagueAdmin | IsAdminRequirement | `"id"` |
+| IsLeagueAdmin | IsAdminRequirement | `"leagueId"` |
 | IsLeagueMember | IsLeagueMember | `"leagueId"` |
 | IsMatchEditable | IsMatchEditable | `"leagueId"`, `"split"`, `"matchNumber"` |
-| IsLeaguePlanned | IsPlannedRequirement | `"id"` |
+| IsLeaguePlanned | IsPlannedRequirement | `"leagueId"` |
 | IsMatchComplete | IsMatchComplete | `"leagueId"`, `"split"`, `"matchNumber"` |
 
 ---

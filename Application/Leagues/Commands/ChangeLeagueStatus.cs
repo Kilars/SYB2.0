@@ -42,7 +42,8 @@ public class ChangeLeagueStatus
                     //Unarchive all matches
                     break;
                 case (LeagueStatus.Active, LeagueStatus.Planned):
-                    //Delete all matches and set status to planned
+                    //Delete all rounds first (FK NoAction prevents cascade), then matches
+                    context.RemoveRange(context.Rounds.Where(r => r.LeagueId == league.Id));
                     context.RemoveRange(context.Matches.Where(m => m.LeagueId == league.Id));
                     league.Status = LeagueStatus.Planned;
                     break;

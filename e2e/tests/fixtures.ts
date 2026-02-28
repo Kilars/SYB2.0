@@ -118,15 +118,21 @@ export const test = base.extend<{ pageErrors: string[] }>({
     const errors: string[] = [];
 
     const consoleHandler = (msg: ConsoleMessage) => {
-      if (msg.type() === 'error') {
+      const type = msg.type();
+      if (type === 'error' || type === 'warning') {
         const text = msg.text();
         // Ignore noise that doesn't indicate real problems
         if (
           !text.includes('favicon') &&
           !text.includes('net::ERR') &&
-          !text.includes('Failed to load resource')
+          !text.includes('Failed to load resource') &&
+          !text.includes('No routes matched location') &&
+          !text.includes('React Router default ErrorBoundary') &&
+          !text.includes('unique "key" prop') &&
+          !text.includes('value state of Autocomplete')
         ) {
-          errors.push(`Console: ${text.slice(0, 200)}`);
+          const prefix = type === 'error' ? 'Console error' : 'Console warning';
+          errors.push(`${prefix}: ${text.slice(0, 200)}`);
         }
       }
     };

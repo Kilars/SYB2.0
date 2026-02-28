@@ -19,7 +19,7 @@ public class IsPlannerRequirementHandler(AppDbContext dbContext, IHttpContextAcc
     {
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("id") is not string leagueId) return;
+        if (httpContext?.GetRouteValue("leagueId") is not string leagueId) return;
 
         var league = await dbContext.Leagues.FindAsync(leagueId);
 
