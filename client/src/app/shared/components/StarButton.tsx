@@ -9,6 +9,8 @@ export default function StarButton({ selected }: Props) {
     return (
         <Box sx={{ position: 'relative' }}>
             <Button
+                aria-label="Toggle admin"
+                aria-pressed={selected}
                 sx={{
                     opacity: 0.8,
                     transition: 'opacity 0.3s',
@@ -24,7 +26,7 @@ export default function StarButton({ selected }: Props) {
                     }}
                 />
                 <Star
-                    sx={{ fontSize: 28, color: selected ? 'yellow' : 'rgba(0,0,0,0.5)' }}
+                    sx={{ fontSize: 28, color: selected ? 'warning.main' : 'rgba(0,0,0,0.5)' }}
                 />
         </Button>
         </Box>

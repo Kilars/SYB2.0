@@ -1,6 +1,7 @@
-import { Group } from "@mui/icons-material";
+import { SportsEsports, EmojiEvents } from "@mui/icons-material";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router";
+import { APP_GRADIENT } from "../../app/theme";
 
 export default function HomePage() {
   return (
@@ -14,22 +15,23 @@ export default function HomePage() {
         alignContent: 'center',
         justifyContent: 'center',
         height: '100vh',
-        backgroundImage: 'linear-gradient(135deg, #182a73 0%, #218aae 69%, #20a78c 89%)',
+        backgroundImage: APP_GRADIENT,
       }}
     >
-      <Group sx={{ height: 50, width: 50 }} />
+      <SportsEsports sx={{ fontSize: 80, color: 'white' }} />
       <Box sx={{ display: 'flex', alignItems: 'center', alignContent: 'center', color: 'white', gap: 3 }}>
-        <Typography variant="h3">
+        <Typography variant="h3" sx={{ fontSize: { xs: '1.75rem', sm: '3rem' } }}>
           Smash Your Bros
         </Typography>
       </Box>
       <Box>
-        <Typography variant="h5" textAlign={'center'} mb={3}>
-          Welcome to SYB 2.0
+        <Typography variant="h5" textAlign={'center'} mb={3} sx={{ opacity: 0.9 }}>
+          Track your league — matches, stats, and bragging rights
         </Typography>
         <Button component={Link} to='/leagues' size="large" variant="contained"
+          startIcon={<EmojiEvents />}
           sx={{ height: 80, borderRadius: 4, fontSize: '1.0rem' }}>
-          Take me to the leagues
+          View Leagues
         </Button>
       </Box>
     </Paper>

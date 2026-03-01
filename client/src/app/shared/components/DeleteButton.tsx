@@ -5,6 +5,7 @@ export default function DeleteButton() {
     return (
         <Box sx={{ position: 'relative' }}>
             <Button
+                aria-label="Delete"
                 sx={{
                     opacity: 0.8,
                     transition: 'opacity 0.3s',
@@ -20,7 +21,7 @@ export default function DeleteButton() {
                     }}
                 />
                 <Delete
-                    sx={{ fontSize: 28, color: 'red'}}
+                    sx={{ fontSize: 28, color: 'error.main' }}
                 />
             </Button>
         </Box>

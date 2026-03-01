@@ -4,8 +4,9 @@
  *
  * Status transitions:
  *   Planned (0) → "Start league" → Active (1)
- *   Active (1)  → "Set league to planning phase" → confirmation dialog → Planned (0)
- *   Complete (2) → "Reopen league" → Active (1)
+ *   Active (1)  → "Revert to Draft" → confirmation dialog → Planned (0)
+ *   Active (1)  → "Finish League" → Complete (2)
+ *   Complete (2) → "Reopen" → confirmation dialog → Active (1)
  */
 
 import { Page, expect } from '@playwright/test';
@@ -15,10 +16,15 @@ export class StatusButtonPage {
 
   async clickStartLeague() {
     await this.page.getByRole('button', { name: /start league/i }).click();
+    // Starting a league triggers a confirmation dialog — click "Yes" to confirm
+    await expect(
+      this.page.getByRole('dialog')
+    ).toBeVisible({ timeout: 5000 });
+    await this.page.getByRole('dialog').getByRole('button', { name: /yes/i }).click();
   }
 
   async clickRevertToPlanning() {
-    await this.page.getByRole('button', { name: /set league to planning phase/i }).click();
+    await this.page.getByRole('button', { name: /revert to draft/i }).click();
   }
 
   async confirmDeletion() {
@@ -53,7 +59,7 @@ export class StatusButtonPage {
 
   async expectRevertVisible() {
     await expect(
-      this.page.getByRole('button', { name: /set league to planning phase/i })
+      this.page.getByRole('button', { name: /revert to draft/i })
     ).toBeVisible({ timeout: 5000 });
   }
 }

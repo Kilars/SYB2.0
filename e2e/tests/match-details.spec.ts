@@ -62,8 +62,11 @@ test.describe('Completed Match View', () => {
   test('match 2 shows 2 completed rounds (flawless 2-0)', async ({ page, pageErrors }) => {
     // Denix won 2-0 so only 2 rounds have winnerUserId set
     // MatchDetailsView filters: .filter(r => !!r.winnerUserId)
-    const roundHeadings = page.getByRole('heading', { name: /round \d/i });
-    await expect(roundHeadings).toHaveCount(2, { timeout: 10000 });
+    // Each round is rendered as a Card with "Round N" text
+    await expect(page.getByText('Round 1')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Round 2')).toBeVisible();
+    // Round 3 should NOT be visible (only 2 rounds completed in a 2-0)
+    await expect(page.getByText('Round 3')).not.toBeVisible();
 
     expect(pageErrors).toEqual([]);
   });
@@ -75,8 +78,9 @@ test.describe('Match 3 — Three-Round Match', () => {
     await expect(page.getByText(/round/i).first()).toBeVisible({ timeout: 15000 });
 
     // Match 3: hansemann vs larsski — 3 rounds played
-    const roundHeadings = page.getByRole('heading', { name: /round \d/i });
-    await expect(roundHeadings).toHaveCount(3, { timeout: 10000 });
+    await expect(page.getByText('Round 1')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Round 2')).toBeVisible();
+    await expect(page.getByText('Round 3')).toBeVisible();
 
     expect(pageErrors).toEqual([]);
   });

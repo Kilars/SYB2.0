@@ -79,6 +79,12 @@ test.describe('Flawless Bonus Recalculation', () => {
 
     await page.getByRole('button', { name: /reopen match/i }).click();
 
+    // Confirmation dialog appears — click "Reopen" to confirm
+    await expect(
+      page.getByText(/this will allow editing of match results/i)
+    ).toBeVisible({ timeout: 5000 });
+    await page.getByRole('button', { name: /^reopen$/i }).click();
+
     // After reopening, the form should reappear
     await expect(
       page.getByRole('heading', { name: /register match result/i })

@@ -3,17 +3,20 @@ import { Box, Chip, Typography } from "@mui/material";
 import { useParams } from "react-router";
 import { formatDate } from "../../lib/util/util";
 import { useLeagues } from "../../lib/hooks/useLeagues";
+import { LEAGUE_STATUSES } from "../../lib/util/constants";
+import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
+import EmptyState from "../../app/shared/components/EmptyState";
 
 export default function Description() {
-    const LEAGUE_STATUSES = [
-        ['Planned', "warning"],
-        ['Started', "success"],
-        ['Finished', "info"],
-    ];
     const { leagueId } = useParams();
     const { league, isLeagueLoading } = useLeagues(leagueId);
-    if (isLeagueLoading) return <Typography>Loading...</Typography>
-    if (!league) return <Typography>No leagues found</Typography>
+    if (isLeagueLoading) return <LoadingSkeleton variant="detail" />
+    if (!league) return (
+        <EmptyState
+            icon={<SportsEsports sx={{ fontSize: 48 }} />}
+            message="League not found"
+        />
+    )
     return (
         <Box>
             <Box display='flex' width='100%' justifyContent='space-between' alignItems='center'>
@@ -27,7 +30,7 @@ export default function Description() {
                 {league.description}
             </Typography>
 
-            <Box display="flex" gap={3}>
+            <Box display="flex" gap={3} sx={{ flexWrap: 'wrap' }}>
                 <Box display="flex" alignItems="center" my={2}>
                     <SportsEsports sx={{ mr: 2 }} />
                     <Typography variant="body1">Super Smash Bros</Typography>

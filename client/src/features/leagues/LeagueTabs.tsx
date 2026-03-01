@@ -5,6 +5,10 @@ import LeagueStats from "../stats/LeagueStats";
 import { useNavigate, useParams } from "react-router";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import Description from "./Description";
+import { SportsEsports } from "@mui/icons-material";
+import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
+import EmptyState from "../../app/shared/components/EmptyState";
+import AppBreadcrumbs from "../../app/shared/components/AppBreadcrumbs";
 
 type Props = {
   tab: string
@@ -24,11 +28,18 @@ export default function LeagueTabs({ tab }: Props) {
     navigate(`/leagues/${leagueId}/${pathMap[newValue]}`)
   };
 
-  if (isLeagueLoading) return <Typography>Loading...</Typography>
-  if (!league) return <Typography>Could not find league</Typography>
+  if (isLeagueLoading) return <LoadingSkeleton variant="detail" />
+  if (!league) return (
+    <EmptyState
+      icon={<SportsEsports sx={{ fontSize: 48 }} />}
+      message="League not found"
+      action={{ label: "Back to leagues", href: "/leagues" }}
+    />
+  )
 
   return (
     <Box sx={{ width: '100%' }}>
+      <AppBreadcrumbs items={[{ label: 'Leagues', href: '/leagues' }, { label: league.title }]} />
       <Typography variant="h5">{league.title}</Typography>
       <Box display='flex' flexDirection='column' flexGrow={1}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3}}>

@@ -4,7 +4,7 @@ import { startOfToday } from "date-fns";
 import { leagueSchema, type LeagueSchema } from "../../lib/schemas/leagueSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLeagues } from "../../lib/hooks/useLeagues";
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography, CircularProgress } from "@mui/material";
 import { Leaderboard } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import UserSelectInput from "../../app/shared/components/UserSelectInput";
@@ -12,10 +12,11 @@ import { useUsers } from "../../lib/hooks/useUsers";
 import { useAccount } from "../../lib/hooks/useAccount";
 import DateTimeInput from "../../app/shared/components/DateTimeInput";
 import { useEffect } from "react";
+import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 
 export default function LeagueForm() {
     const { leagueId } = useParams();
-    const { users } = useUsers();
+    const { users, createGuest } = useUsers();
     const { currentUser } = useAccount();
     const { createLeague, updateLeague, league, isLeagueLoading } = useLeagues(leagueId);
     const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function LeagueForm() {
         if (league) reset(league)
     }, [reset, league])
 
-    if (isLeagueLoading) return <Typography>Loading...</Typography>
+    if (isLeagueLoading) return <LoadingSkeleton variant="detail" />
     return (
         <Paper
             component='form'
@@ -73,6 +74,7 @@ export default function LeagueForm() {
                         users={users}
                         currentUser={currentUser}
                         defaultValue={[{ userId: currentUser.id, displayName: currentUser.displayName }]}
+                        onCreateGuest={async (displayName) => await createGuest.mutateAsync(displayName)}
                     />
                 }
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
@@ -82,8 +84,9 @@ export default function LeagueForm() {
                         variant="contained"
                         disabled={!isDirty || !isValid || isSubmitting}
                         size="large"
+                        startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
                     >
-                        {leagueId ? 'Save' : 'Create'}
+                        {isSubmitting ? 'Saving...' : (leagueId ? 'Save' : 'Create')}
                     </Button>
                 </Box>
             </Box>

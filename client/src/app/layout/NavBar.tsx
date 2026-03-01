@@ -5,6 +5,7 @@ import { useAccount } from "../../lib/hooks/useAccount";
 import { Add, Menu as MenuIcon } from "@mui/icons-material";
 import { useState } from "react";
 import { NavLink } from "react-router";
+import { APP_GRADIENT } from "../theme";
 
 const NavBar = observer(function NavBar() {
   const { currentUser } = useAccount();
@@ -20,7 +21,7 @@ const NavBar = observer(function NavBar() {
   return (
     <Box sx={{ flexGrow: 1, width: '100%' }}>
       <AppBar position='fixed' sx={{
-        backgroundImage: 'linear-gradient(135deg, #182a73 0%, #218aae 69%, #20a78c 89%)',
+        backgroundImage: APP_GRADIENT,
       }}>
         <Container maxWidth='xl'>
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -28,7 +29,7 @@ const NavBar = observer(function NavBar() {
               <MenuItemLink to='/leagues'> Leagues </MenuItemLink>
             </Box>
             <Box>
-              <Button onClick={handleClick} sx={{ color: 'white' }}> <MenuIcon /> </Button>
+              <Button onClick={handleClick} sx={{ color: 'white' }} aria-label="Open navigation menu"> <MenuIcon /> </Button>
             </Box>
             <Menu
               open={open}

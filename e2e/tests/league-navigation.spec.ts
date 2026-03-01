@@ -60,8 +60,8 @@ test.describe('League Tab Navigation', () => {
   // Start on leaderboard (default tab from league list "View" button)
   test.beforeEach(async ({ page }) => {
     await page.goto(`/leagues/${SEEDED_LEAGUE.id}/leaderboard`);
-    // Wait for the league title to confirm the page loaded
-    await expect(page.getByText(SEEDED_LEAGUE.title)).toBeVisible({ timeout: 15000 });
+    // Wait for the league title heading (use heading role to avoid matching breadcrumb text)
+    await expect(page.getByRole('heading', { name: SEEDED_LEAGUE.title })).toBeVisible({ timeout: 15000 });
   });
 
   test('leaderboard tab is active when on /leaderboard route', async ({ page, pageErrors }) => {

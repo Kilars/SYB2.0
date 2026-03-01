@@ -2,14 +2,22 @@ import { useParams } from "react-router";
 import { useLeagues } from "../../lib/hooks/useLeagues"
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useCharacters } from "../../lib/hooks/useCharacters";
+import { BarChart } from "@mui/icons-material";
+import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
+import EmptyState from "../../app/shared/components/EmptyState";
 
 export default function LeagueStats() {
   const { leagueId } = useParams();
   const { league, isLeagueLoading } = useLeagues(leagueId);
   const { characters } = useCharacters();
 
-  if (isLeagueLoading) return <div>Loading...</div>
-  if (!league || !characters) return <div>No league stats</div>
+  if (isLeagueLoading) return <LoadingSkeleton variant="table" count={5} />
+  if (!league || !characters) return (
+    <EmptyState
+      icon={<BarChart sx={{ fontSize: 48 }} />}
+      message="No league stats yet"
+    />
+  )
 
   const computeCharacterWinratesPercentage = (matches: Match[]): (string | number)[][] => {
     const winsDict: { [key: string]: [wins: number, total: number] } = {};
@@ -40,13 +48,13 @@ export default function LeagueStats() {
 
   return (
     <Box>
-      <TableContainer sx={{ height: '40vh' }}>
+      <TableContainer sx={{ height: '40vh', overflowX: 'auto' }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ textAlign: 'left', backgroundColor: '#C0DEFA' }}> Character </TableCell>
-              <TableCell sx={{ textAlign: 'right', backgroundColor: '#C0DEFA'}}> WR </TableCell>
-              <TableCell sx={{ textAlign: 'right', backgroundColor: '#C0DEFA' }}> Rounds </TableCell>
+              <TableCell sx={{ textAlign: 'left', backgroundColor: 'primary.light' }}> Character </TableCell>
+              <TableCell sx={{ textAlign: 'right', backgroundColor: 'primary.light'}}> WR </TableCell>
+              <TableCell sx={{ textAlign: 'right', backgroundColor: 'primary.light' }}> Rounds </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -54,7 +62,7 @@ export default function LeagueStats() {
               .sort((a, b) => Number(b[1]) - Number(a[1]))
               .filter(a => Number(a[2]) >= 3)
               .map((stats, i) => (
-                <TableRow key={stats[0]} sx={{ backgroundColor: i % 2 == 0 ? '#E5EFF9' : '#D6E6F6' }}>
+                <TableRow key={stats[0]} sx={{ backgroundColor: i % 2 == 0 ? '#E5EFF9' : '#D6E6F6', borderBottom: '1px solid #bbb' }}>
                   <TableCell> {stats[0]}</TableCell>
                   <TableCell
                     sx={{

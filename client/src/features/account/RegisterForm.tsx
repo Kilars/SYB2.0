@@ -1,13 +1,13 @@
 import { useForm } from "react-hook-form";
 import { useAccount } from "../../lib/hooks/useAccount";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography, CircularProgress } from "@mui/material";
 import { LockOpen } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import { Link } from "react-router";
 import { registerSchema, type RegisterSchema } from "../../lib/schemas/registerSchema";
 
-export default function LoginForm() {
+export default function RegisterForm() {
     const {registerUser} = useAccount();
     const {control, handleSubmit, setError, formState: { isValid, isSubmitting }} = useForm<RegisterSchema>({
         mode: 'onTouched',
@@ -56,8 +56,9 @@ export default function LoginForm() {
                     variant="contained"
                     disabled={!isValid || isSubmitting}
                     size="large"
+                    startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
                     >
-                    Register
+                    {isSubmitting ? 'Registering...' : 'Register'}
                 </Button>
             </Box>
             <Typography sx={{textAlign: 'center'}}>

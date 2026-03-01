@@ -13,7 +13,9 @@ export default function MenuItemLink({children, to}: {children: ReactNode, to: s
             color: 'inherit',
             fontWeight: 'bold',
             '&.active': {
-                color: 'yellow'
+                color: '#90caf9',
+                borderLeft: '4px solid #90caf9',
+                paddingLeft: 'calc(1rem - 4px)'
             }
         }}
     >

@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import { styled } from '@mui/material/styles';
 import { useCharacters } from '../../lib/hooks/useCharacters';
-import { Typography } from '@mui/material';
+import { Skeleton, Typography } from '@mui/material';
 
 
 
@@ -13,7 +13,7 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   background: 'white',
   '&.MuiAutocomplete-option:hover': {
     fontWeight: theme.typography.fontWeightBold,
-    backgroundColor: '#ddd',
+    backgroundColor: theme.palette.grey[300],
     '.non-pop-out-box': {
       visibility: 'hidden',
     },
@@ -27,7 +27,7 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   },
   '&.MuiAutocomplete-option.MuiAutocomplete-option[aria-selected="true"]': {
     fontWeight: theme.typography.fontWeightBold,
-    backgroundColor: '#ddd',
+    backgroundColor: theme.palette.grey[300],
   }
 }));
 
@@ -54,8 +54,8 @@ type Props = {
 export default function CharacterSelect({ selectedId, onChange }: Props) {
   const { characters, charactersIsLoading } = useCharacters();
 
-  if (charactersIsLoading) return <Typography>Loading characters...</Typography>
-  if (!characters) return <Typography>No characters found...</Typography>
+  if (charactersIsLoading) return <Skeleton variant="rectangular" width={200} height={40} />
+  if (!characters) return <Typography variant="body2" color="text.secondary">No characters found</Typography>
 
   const selectedCharacter = characters.find(char => char.id === selectedId);
 
@@ -85,6 +85,10 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
                 input: {
                   ...params.InputProps, startAdornment: optionalCharacterImage
                 }
+              }}
+              inputProps={{
+                ...params.inputProps,
+                'aria-label': 'Select character',
               }}
               variant="outlined"
               placeholder="Select character..."

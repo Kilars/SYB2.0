@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useAccount } from "../../lib/hooks/useAccount";
 import { loginSchema, type LoginSchema } from "../../lib/schemas/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography, CircularProgress } from "@mui/material";
 import { LockOpen } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -42,14 +42,15 @@ export default function LoginForm() {
 
             <Box display='flex' flexDirection='column' gap={3}>
                 <TextInput label='Email' control={control} name='email' />
-                <TextInput label='Password' control={control} name='password' />
+                <TextInput label='Password' control={control} name='password' type="password" />
                 <Button
                     type="submit"
                     variant="contained"
                     disabled={!isValid || isSubmitting}
                     size="large"
+                    startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
                     >
-                    Login
+                    {isSubmitting ? 'Signing in...' : 'Login'}
                 </Button>
             </Box>
             <Typography sx={{textAlign: 'center'}}>

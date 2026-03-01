@@ -20,7 +20,7 @@ test.describe('Sanity Checks', () => {
     // Home page is public — should render without auth
     await page.goto('/');
     await expect(page.getByText('Smash Your Bros')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('Welcome to SYB 2.0')).toBeVisible();
+    await expect(page.getByText(/track your league/i)).toBeVisible();
 
     const healthErrors = await checkPageHealth(page);
     expect([...healthErrors, ...pageErrors]).toEqual([]);
@@ -69,6 +69,11 @@ test.describe('Sanity Checks', () => {
 
         // Page must have rendered something
         await expect(page.locator('body')).toBeVisible();
+
+        // Wait for async content to load
+        await page.waitForLoadState('networkidle').catch(() => {
+          // Ignore timeout — networkidle can be slow with async data loading
+        });
 
         const healthErrors = await checkPageHealth(page);
         const criticalErrors = healthErrors.filter(

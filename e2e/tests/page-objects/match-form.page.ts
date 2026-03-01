@@ -5,8 +5,10 @@
  * DOM structure per round:
  *   <h5>Round {n}</h5>
  *   <div> (flex container)
- *     <div 50%> P1 name (h6) → CharacterSelect (Autocomplete) → "Winner:" + Checkbox
- *     <div 50%> P2 name (h6) → CharacterSelect (Autocomplete) → "Winner:" + Checkbox
+ *     <div 50%> P1 name (h6) → CharacterSelect (Autocomplete)
+ *     <div 50%> P2 name (h6) → CharacterSelect (Autocomplete)
+ *   </div>
+ *   <div> "Winner" label → ToggleButtonGroup (P1 name | P2 name)
  */
 
 import { Page, Locator, expect } from '@playwright/test';
@@ -22,13 +24,14 @@ export class MatchFormPage {
 
   /**
    * Get the container for a specific round by round number.
-   * Finds the heading "Round {n}" and returns its parent Box.
+   * Finds the heading "Round {n}" and returns the round wrapper Box.
+   * The heading is inside a flex Box which is a child of the round wrapper.
+   * We go up two levels: heading → flex container → round wrapper.
    */
   private getRoundContainer(roundNumber: number): Locator {
-    // The round heading is inside a Box that also contains the player columns
     return this.page
       .getByRole('heading', { name: `Round ${roundNumber}`, exact: false })
-      .locator('..');
+      .locator('../..');
   }
 
   /**
@@ -54,29 +57,47 @@ export class MatchFormPage {
   }
 
   /**
-   * Set the winner for a round by checking the appropriate checkbox.
-   * player: 'p1' (first checkbox) or 'p2' (second checkbox)
+   * Set the winner for a round using the ToggleButtonGroup.
+   * The ToggleButtonGroup renders two ToggleButtons (P1 name | P2 name).
+   * player: 'p1' (first toggle button) or 'p2' (second toggle button)
+   *
+   * Note: We scope to the "Winner" label's parent to avoid matching
+   * MUI Autocomplete [role="group"] elements inside each character select.
    */
   async setWinner(roundNumber: number, player: 'p1' | 'p2') {
     const container = this.getRoundContainer(roundNumber);
-    const checkboxes = container.getByRole('checkbox');
+    // Find the Winner section wrapper (contains "Winner" text + ToggleButtonGroup)
+    const winnerSection = container.getByText('Winner').locator('..');
+    const toggleGroup = winnerSection.locator('[role="group"]');
+    const buttons = toggleGroup.getByRole('button');
     const index = player === 'p1' ? 0 : 1;
-    await checkboxes.nth(index).check();
+    const target = buttons.nth(index);
+
+    // Idempotent: only click if the button isn't already pressed.
+    // MUI ToggleButton deselects on re-click, so clicking an already-pressed
+    // button would unset the winner instead of keeping it.
+    const pressed = await target.getAttribute('aria-pressed');
+    if (pressed !== 'true') {
+      await target.click();
+    }
   }
 
   /**
-   * Clear all data in a round: uncheck winner checkbox + clear character autocompletes.
+   * Clear all data in a round: deselect winner toggle + clear character autocompletes.
    * Used when re-registering a match to remove stale round data.
    */
   async clearRound(roundNumber: number) {
     const container = this.getRoundContainer(roundNumber);
 
-    // Uncheck any checked winner checkboxes
-    const checkboxes = container.getByRole('checkbox');
-    const checkboxCount = await checkboxes.count();
-    for (let i = 0; i < checkboxCount; i++) {
-      if (await checkboxes.nth(i).isChecked()) {
-        await checkboxes.nth(i).uncheck();
+    // Deselect any selected winner toggle button (clicking a selected toggle deselects it)
+    const winnerSection = container.getByText('Winner').locator('..');
+    const toggleGroup = winnerSection.locator('[role="group"]');
+    const toggleButtons = toggleGroup.getByRole('button');
+    const toggleCount = await toggleButtons.count();
+    for (let i = 0; i < toggleCount; i++) {
+      const pressed = await toggleButtons.nth(i).getAttribute('aria-pressed');
+      if (pressed === 'true') {
+        await toggleButtons.nth(i).click();
       }
     }
 

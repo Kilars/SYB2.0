@@ -46,7 +46,7 @@ test.describe('League Lifecycle', () => {
 
     // Navigate to the description tab to verify league was created
     await page.goto(`/leagues/${leagueId}/description`);
-    await expect(page.getByText(leagueName)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: leagueName })).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/planned/i)).toBeVisible();
 
     expect(pageErrors).toEqual([]);
@@ -84,9 +84,12 @@ test.describe('League Lifecycle', () => {
     // Navigate to matches tab
     await page.goto(`/leagues/${leagueId}/matches`);
 
-    // Wait for match cards and click first "Register" button
-    await expect(page.getByRole('button', { name: /register/i }).first()).toBeVisible({ timeout: 15000 });
-    await page.getByRole('button', { name: /register/i }).first().click();
+    // Wait for match cards and click first unregistered match card
+    const cards = page.locator('[class*="MuiCard"]');
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
+    // Find a card with "Register result" text (incomplete match) and click it
+    const registerCard = cards.filter({ hasText: /register result/i }).first();
+    await registerCard.click();
     await page.waitForURL(/\/split\//, { timeout: 10000 });
 
     await matchForm.waitForForm();
@@ -126,9 +129,11 @@ test.describe('League Lifecycle', () => {
 
     await page.goto(`/leagues/${leagueId}/matches`);
 
-    // Click a "Register" button (skip any completed matches)
-    await expect(page.getByRole('button', { name: /register/i }).first()).toBeVisible({ timeout: 15000 });
-    await page.getByRole('button', { name: /register/i }).first().click();
+    // Click an unregistered match card (skip any completed matches)
+    const cards = page.locator('[class*="MuiCard"]');
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
+    const registerCard = cards.filter({ hasText: /register result/i }).first();
+    await registerCard.click();
     await page.waitForURL(/\/split\//, { timeout: 10000 });
 
     await matchForm.waitForForm();

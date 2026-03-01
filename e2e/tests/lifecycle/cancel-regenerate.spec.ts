@@ -57,8 +57,8 @@ test.describe('Cancel & Regenerate', () => {
     await expect(cards.first()).toBeVisible({ timeout: 15000 });
     await expect(cards).toHaveCount(6);
 
-    // At least one "Change" button (completed match)
-    await expect(page.getByRole('button', { name: /change/i }).first()).toBeVisible();
+    // At least one completed match (shows "Winner:" text)
+    await expect(page.getByText(/winner:/i).first()).toBeVisible();
 
     expect(pageErrors).toEqual([]);
   });
@@ -116,12 +116,12 @@ test.describe('Cancel & Regenerate', () => {
     const cards = page.locator('[class*="MuiCard"]');
     await expect(cards.first()).toBeVisible({ timeout: 15000 });
 
-    // All matches should show "Register" (none completed)
-    const registerButtons = page.getByRole('button', { name: /register/i });
-    const changeButtons = page.getByRole('button', { name: /change/i });
+    // All matches should show "Register result" text (none completed)
+    const registerTexts = page.getByText(/register result/i);
+    const winnerTexts = page.getByText(/winner:/i);
 
-    await expect(registerButtons.first()).toBeVisible();
-    expect(await changeButtons.count()).toBe(0);
+    await expect(registerTexts.first()).toBeVisible();
+    expect(await winnerTexts.count()).toBe(0);
 
     expect(pageErrors).toEqual([]);
   });

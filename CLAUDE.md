@@ -63,7 +63,7 @@ When implementing a new feature, follow this order:
 
 | Entity | Primary Key | Notes |
 |--------|-------------|-------|
-| User | Id (IdentityUser) | DisplayName, Bio, ImageUrl |
+| User | Id (IdentityUser) | DisplayName, Bio, ImageUrl, IsGuest |
 | League | Id (GUID string) | Title, Description, Status (Planned/Active/Complete) |
 | LeagueMember | (UserId, LeagueId) | IsAdmin, DateJoined |
 | Match | (LeagueId, MatchNumber, Split) | PlayerOneUserId, PlayerTwoUserId, WinnerUserId |
@@ -96,10 +96,11 @@ These rules MUST be checked before any domain-touching change:
 - Statistics are computed backend-only in `GetLeagueLeaderboard.Handler`
 - Frontend NEVER computes points or statistics — it only displays backend results
 
-### 4. Guest Upgrade Safety
-- When a guest upgrades to a full user, the same UserId is retained
-- All FK references (LeagueMember, Match.PlayerOneUserId, etc.) are preserved
-- Identity enrichment (adding email/password), NOT identity replacement
+### 4. Guest Merge Safety
+- When merging a guest into a registered user, all FK references (LeagueMember, Match.PlayerOneUserId, Match.PlayerTwoUserId, Match.WinnerUserId, Round.WinnerUserId) are migrated from the guest's UserId to the target user's UserId in a single transaction
+- The guest User record is deleted after migration
+- Conflict check: target user must not already be a member of any league the guest belongs to
+- New LeagueMember records for the target user must be inserted BEFORE Match FK updates (composite FK constraint)
 
 ### 5. Authorization Consistency
 - `IsAdminRequirement` reads route param `"leagueId"`

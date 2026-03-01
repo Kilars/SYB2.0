@@ -91,11 +91,15 @@ export async function loginViaForm(
 export async function checkPageHealth(page: Page): Promise<string[]> {
   const errors: string[] = [];
 
-  // Page must have meaningful content
+  // Page must have meaningful content (or be in a loading state)
   const body = page.locator('body');
   const content = await body.textContent();
   if (!content || content.trim().length < 20) {
-    errors.push('Page appears empty');
+    // Check for loading indicators (MUI Skeleton or CircularProgress)
+    const loadingIndicators = await page.locator('[role="progressbar"], .MuiSkeleton-root').count();
+    if (loadingIndicators === 0) {
+      errors.push('Page appears empty');
+    }
   }
 
   // No React error boundary crash text

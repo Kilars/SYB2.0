@@ -16,12 +16,14 @@ type LeagueMember = {
     dateJoined: Date;
     isAdmin: boolean;
     imageUrl?: string;
+    isGuest?: boolean;
 }
 type User = {
     id: string
-    email: string
+    email?: string
     displayName: string
     imageUrl?: string
+    isGuest?: boolean
 }
 type Match = {
   completed: boolean;
@@ -39,6 +41,7 @@ type Player = {
   userId: string
   displayName: string
   dateJoined: Date
+  isGuest?: boolean
 }
 
 type Round = {
@@ -68,4 +71,6 @@ type LeaderboardUser =
   flawless: number;
   points: number;
   displayName: string;
+  userId?: string;
+  isGuest?: boolean;
 }

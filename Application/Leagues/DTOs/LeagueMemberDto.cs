@@ -9,4 +9,5 @@ public class LeagueMemberDto
     public bool IsAdmin { get; set; }
     public required string DisplayName { get; set; }
     public DateTime DateJoined { get; set; }
+    public bool IsGuest { get; set; }
 }
