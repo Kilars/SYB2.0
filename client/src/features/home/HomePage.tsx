@@ -1,12 +1,14 @@
 import { SportsEsports, EmojiEvents, TrendingUp, CheckCircle, SportsKabaddi } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, Chip, Paper, Skeleton, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router";
-import { APP_GRADIENT, SMASH_COLORS } from "../../app/theme";
+import { SMASH_COLORS } from "../../app/theme";
 import { useAccount } from "../../lib/hooks/useAccount";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useUserMatches } from "../../lib/hooks/useUserMatches";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 function HeroSection() {
+  const { meta } = useAppTheme();
   return (
     <Paper
       sx={{
@@ -18,7 +20,7 @@ function HeroSection() {
         justifyContent: 'center',
         py: { xs: 8, sm: 12 },
         px: 3,
-        backgroundImage: APP_GRADIENT,
+        backgroundImage: meta.heroGradient,
         borderRadius: 2,
         mb: 4,
       }}
@@ -34,13 +36,11 @@ function HeroSection() {
         startIcon={<EmojiEvents />}
         sx={{
           height: { xs: 56, sm: 72 }, borderRadius: 4, fontSize: '1.0rem',
-          background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p3Yellow})`,
+          background: meta.accentGradient,
           color: 'white',
           fontWeight: 'bold',
           px: 4,
-          '&:hover': {
-            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}dd, ${SMASH_COLORS.p3Yellow}dd)`,
-          },
+          '&:hover': { opacity: 0.85 },
         }}>
         View Leagues
       </Button>

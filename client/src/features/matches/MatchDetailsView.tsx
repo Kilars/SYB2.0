@@ -21,8 +21,10 @@ import { useCharacters } from "../../lib/hooks/useCharacters";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function MatchDetailsView() {
+  const { meta } = useAppTheme();
   const { leagueId, split, match } = useParams();
   const { match: matchData, isMatchLoading, reopenMatch } = useMatch(
     leagueId || '',
@@ -101,7 +103,7 @@ export default function MatchDetailsView() {
           <Box sx={{
             px: 2, py: 0.5,
             borderRadius: 2,
-            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+            background: meta.accentGradient,
           }}>
             <Typography variant="h5" fontWeight="bold" color="white">
               {playerOneWins} — {playerTwoWins}
@@ -224,7 +226,7 @@ export default function MatchDetailsView() {
                   <Box sx={{
                     px: 1.5, py: 0.5,
                     borderRadius: 2,
-                    background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+                    background: meta.accentGradient,
                   }}>
                     <Typography variant="body2" fontWeight="bold" color="white">VS</Typography>
                   </Box>

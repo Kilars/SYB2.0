@@ -12,10 +12,12 @@ import { toast } from "react-toastify";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function MatchDetailsForm() {
   const { leagueId, split, match } = useParams();
   const { match: matchData, isMatchLoading, completeMatch } = useMatch(leagueId || '', parseInt(split || ''), parseInt(match || ''));
+  const { meta } = useAppTheme();
   const [rounds, setRounds] = useState(matchData?.rounds)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -110,7 +112,7 @@ export default function MatchDetailsForm() {
           <Box sx={{
             px: 2, py: 0.5,
             borderRadius: 2,
-            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+            background: meta.accentGradient,
           }}>
             <Typography variant="h5" fontWeight="bold" color="white">
               {playerOneScore} — {playerTwoScore}
@@ -276,8 +278,9 @@ export default function MatchDetailsForm() {
           py: 1.5,
           fontWeight: 'bold',
           fontSize: '1rem',
-          background: `linear-gradient(135deg, ${SMASH_COLORS.p4Green}, ${SMASH_COLORS.p2Blue})`,
-          '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p4Green}cc, ${SMASH_COLORS.p2Blue}cc)` },
+          background: meta.accentGradient,
+          color: 'white',
+          '&:hover': { opacity: 0.85 },
         }}
         disabled={isSubmitting}
         startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}

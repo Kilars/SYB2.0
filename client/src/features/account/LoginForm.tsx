@@ -6,12 +6,13 @@ import { Box, Button, Paper, Typography, CircularProgress } from "@mui/material"
 import { LockOpen, SportsEsports } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import { Link, useLocation, useNavigate } from "react-router";
-import { APP_GRADIENT, SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function LoginForm() {
     const {loginUser} = useAccount();
     const navigate = useNavigate();
     const location = useLocation();
+    const { meta } = useAppTheme();
     const {control, handleSubmit, formState: { isValid, isSubmitting }} = useForm<LoginSchema>({
         mode: 'onTouched',
         resolver: zodResolver(loginSchema)
@@ -27,7 +28,7 @@ export default function LoginForm() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundImage: APP_GRADIENT,
+            backgroundImage: meta.heroGradient,
             borderRadius: 3,
             p: 3,
         }}>
@@ -43,11 +44,11 @@ export default function LoginForm() {
                     width: '100%',
                     mx: 'auto',
                     borderRadius: 3,
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                 }}
             >
                 <Box display='flex' flexDirection='column' alignItems='center' gap={1}>
-                    <SportsEsports sx={{ fontSize: 48, color: SMASH_COLORS.p1Red }} />
+                    <SportsEsports sx={{ fontSize: 48, color: 'primary.main' }} />
                     <Box display='flex' alignItems='center' gap={1.5} color='secondary.main'>
                         <LockOpen fontSize="large" />
                         <Typography variant="h4" fontWeight="bold">Sign in</Typography>
@@ -64,10 +65,11 @@ export default function LoginForm() {
                         size="large"
                         startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
                         sx={{
-                            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+                            background: meta.accentGradient,
+                            color: 'white',
                             fontWeight: 'bold',
                             py: 1.5,
-                            '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}cc, ${SMASH_COLORS.p2Blue}cc)` },
+                            '&:hover': { opacity: 0.85 },
                             '&:focus-visible': { outline: '2px solid', outlineColor: 'secondary.main', outlineOffset: 2 },
                         }}
                     >

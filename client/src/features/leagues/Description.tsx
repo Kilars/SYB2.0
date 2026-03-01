@@ -7,12 +7,14 @@ import { LEAGUE_STATUSES } from "../../lib/util/constants";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 const STATUS_COLORS = [SMASH_COLORS.p3Yellow, SMASH_COLORS.p4Green, SMASH_COLORS.p2Blue];
 
 export default function Description() {
     const { leagueId } = useParams();
     const { league, isLeagueLoading } = useLeagues(leagueId);
+    const { meta } = useAppTheme();
     if (isLeagueLoading) return <LoadingSkeleton variant="detail" />
     if (!league) return (
         <EmptyState
@@ -40,15 +42,15 @@ export default function Description() {
 
             <Box display="flex" gap={3} sx={{ flexWrap: 'wrap' }}>
                 <Box display="flex" alignItems="center" my={2}>
-                    <SportsEsports sx={{ mr: 2, color: SMASH_COLORS.p1Red }} />
+                    <SportsEsports sx={{ mr: 2, color: 'error.main' }} />
                     <Typography variant="body1">Super Smash Bros</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" my={2}>
-                    <AccessTime sx={{ mr: 2, color: SMASH_COLORS.p2Blue }} />
+                    <AccessTime sx={{ mr: 2, color: 'info.main' }} />
                     <Typography variant="body1">{formatDate(league.startDate)}</Typography>
                 </Box>
                 <Box display="flex" alignItems="center" my={2}>
-                    <Group sx={{ mr: 2, color: SMASH_COLORS.p4Green }} />
+                    <Group sx={{ mr: 2, color: 'success.main' }} />
                     <Typography variant="body1">{league.members.length} players</Typography>
                 </Box>
             </Box>
@@ -77,10 +79,10 @@ export default function Description() {
                         sx={{
                             height: 10,
                             borderRadius: 5,
-                            backgroundColor: '#e0e0e0',
+                            backgroundColor: 'action.hover',
                             '& .MuiLinearProgress-bar': {
                                 borderRadius: 5,
-                                background: `linear-gradient(90deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p4Green})`,
+                                background: meta.accentGradient,
                             },
                         }}
                     />

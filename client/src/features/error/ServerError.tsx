@@ -1,11 +1,9 @@
 import { Divider, Paper, Typography } from "@mui/material";
 import { useLocation } from "react-router"
-import { SMASH_COLORS } from "../../app/theme";
-
 export default function ServerError() {
   const { state } = useLocation();
   return (
-    <Paper sx={{ borderTop: `4px solid ${SMASH_COLORS.p1Red}` }}>
+    <Paper sx={{ borderTop: '4px solid', borderColor: 'error.main' }}>
         {state?.error ?
     <>
         <Typography gutterBottom variant="h3" sx={{px: 4, pt: 2, fontSize: { xs: '1.5rem', sm: '3rem' }}} color="secondary">

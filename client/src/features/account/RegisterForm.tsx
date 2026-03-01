@@ -6,10 +6,11 @@ import { PersonAdd, SportsEsports } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import { Link } from "react-router";
 import { registerSchema, type RegisterSchema } from "../../lib/schemas/registerSchema";
-import { APP_GRADIENT, SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function RegisterForm() {
     const {registerUser} = useAccount();
+    const { meta } = useAppTheme();
     const {control, handleSubmit, setError, formState: { isValid, isSubmitting }} = useForm<RegisterSchema>({
         mode: 'onTouched',
         resolver: zodResolver(registerSchema)
@@ -34,7 +35,7 @@ export default function RegisterForm() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundImage: APP_GRADIENT,
+            backgroundImage: meta.heroGradient,
             borderRadius: 3,
             p: 3,
         }}>
@@ -50,11 +51,11 @@ export default function RegisterForm() {
                     width: '100%',
                     mx: 'auto',
                     borderRadius: 3,
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                 }}
             >
                 <Box display='flex' flexDirection='column' alignItems='center' gap={1}>
-                    <SportsEsports sx={{ fontSize: 48, color: SMASH_COLORS.p2Blue }} />
+                    <SportsEsports sx={{ fontSize: 48, color: 'primary.main' }} />
                     <Box display='flex' alignItems='center' gap={1.5} color='secondary.main'>
                         <PersonAdd fontSize="large" />
                         <Typography variant="h4" fontWeight="bold">Register</Typography>
@@ -72,10 +73,11 @@ export default function RegisterForm() {
                         size="large"
                         startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
                         sx={{
-                            background: `linear-gradient(135deg, ${SMASH_COLORS.p2Blue}, ${SMASH_COLORS.p4Green})`,
+                            background: meta.accentGradient,
+                            color: 'white',
                             fontWeight: 'bold',
                             py: 1.5,
-                            '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p2Blue}cc, ${SMASH_COLORS.p4Green}cc)` },
+                            '&:hover': { opacity: 0.85 },
                         }}
                     >
                         {isSubmitting ? 'Registering...' : 'Register'}

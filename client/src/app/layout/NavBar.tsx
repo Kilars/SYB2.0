@@ -1,14 +1,16 @@
-import { AppBar, Box, Button, Container, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Container, Divider, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
 import MenuItemLink from "../shared/components/MenuItemLink";
+import ThemeSelector from "../shared/components/ThemeSelector";
 import { observer } from "mobx-react-lite";
 import { useAccount } from "../../lib/hooks/useAccount";
 import { Add, Menu as MenuIcon, Person, SportsEsports } from "@mui/icons-material";
 import { useState } from "react";
 import { NavLink } from "react-router";
-import { APP_GRADIENT } from "../theme";
+import { useAppTheme } from "../context/ThemeContext";
 
 const NavBar = observer(function NavBar() {
   const { currentUser } = useAccount();
+  const { meta } = useAppTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,8 +23,10 @@ const NavBar = observer(function NavBar() {
   return (
     <Box sx={{ flexGrow: 1, width: '100%' }}>
       <AppBar position='fixed' sx={{
-        backgroundImage: APP_GRADIENT,
-        boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+        backgroundImage: meta.navGradient,
+        boxShadow: '0 2px 16px rgba(0,0,0,0.4)',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
       }}>
         <Container maxWidth='xl'>
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -52,20 +56,34 @@ const NavBar = observer(function NavBar() {
               open={open}
               anchorEl={anchorEl}
               onClose={handleClose}
-              sx={{textDecoration: 'none'}}
+              slotProps={{
+                paper: {
+                  sx: {
+                    minWidth: 220,
+                    borderRadius: 2,
+                    mt: 1,
+                  },
+                },
+              }}
             >
               {currentUser
-                ? <MenuItem component={NavLink} to={`/user/${currentUser.id}`}>
+                ? <MenuItem component={NavLink} to={`/user/${currentUser.id}`} onClick={handleClose}>
                     <Person sx={{ mr: 1 }} fontSize="small" />
                     My Profile
                   </MenuItem>
                 : (
                   <Box>
-                    <MenuItem component={NavLink} to="/login">Login</MenuItem>
-                    <MenuItem component={NavLink} to="/register">Register</MenuItem>
+                    <MenuItem component={NavLink} to="/login" onClick={handleClose}>Login</MenuItem>
+                    <MenuItem component={NavLink} to="/register" onClick={handleClose}>Register</MenuItem>
                   </Box>
                 )}
-              {currentUser && <MenuItem component={NavLink} to="/createLeague"><Add sx={{ mr: 1 }} fontSize="small" /> Create League</MenuItem>}
+              {currentUser && (
+                <MenuItem component={NavLink} to="/createLeague" onClick={handleClose}>
+                  <Add sx={{ mr: 1 }} fontSize="small" /> Create League
+                </MenuItem>
+              )}
+              <Divider sx={{ my: 1 }} />
+              <ThemeSelector />
             </Menu>
           </Toolbar>
         </Container>

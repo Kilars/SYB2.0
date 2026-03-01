@@ -6,12 +6,14 @@ import { SportsEsports, CheckCircle, Cancel } from "@mui/icons-material";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function MatchesList() {
   const { leagueId } = useParams();
   const { league, isLeagueLoading } = useLeagues(leagueId);
   const { characters } = useCharacters();
   const navigate = useNavigate();
+  const { meta } = useAppTheme();
   if (isLeagueLoading) return <LoadingSkeleton variant="card" count={3} />
   if (!league || !characters) return (
     <EmptyState
@@ -87,7 +89,7 @@ export default function MatchesList() {
                     : <Box sx={{
                         px: 1.5, py: 0.5,
                         borderRadius: 2,
-                        background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+                        background: meta.accentGradient,
                       }}>
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'white' }}>VS</Typography>
                       </Box>

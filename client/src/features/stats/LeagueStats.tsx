@@ -7,6 +7,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 const PIE_COLORS = [
   SMASH_COLORS.p1Red, SMASH_COLORS.p2Blue, SMASH_COLORS.p3Yellow, SMASH_COLORS.p4Green,
@@ -19,6 +20,7 @@ export default function LeagueStats() {
   const { leagueId } = useParams();
   const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(leagueId);
   const { characters } = useCharacters();
+  const { meta } = useAppTheme();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -296,7 +298,7 @@ export default function LeagueStats() {
                   <Box sx={{
                     px: 1.5, py: 0.5,
                     borderRadius: 2,
-                    background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+                    background: meta.accentGradient,
                   }}>
                     <Typography variant="body2" fontWeight="bold" color="white">VS</Typography>
                   </Box>
