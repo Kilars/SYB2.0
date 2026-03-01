@@ -5,7 +5,7 @@ import { leagueSchema, type LeagueSchema } from "../../lib/schemas/leagueSchema"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { Box, Button, Paper, Typography, CircularProgress } from "@mui/material";
-import { Leaderboard } from "@mui/icons-material";
+import { Leaderboard, Save, Add } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import UserSelectInput from "../../app/shared/components/UserSelectInput";
 import { useUsers } from "../../lib/hooks/useUsers";
@@ -50,8 +50,8 @@ export default function LeagueForm() {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                p: 3,
-                g: 3,
+                p: { xs: 2, sm: 3 },
+                gap: 3,
                 maxWidth: 'md',
                 mx: 'auto',
                 borderRadius: 3
@@ -77,16 +77,21 @@ export default function LeagueForm() {
                         onCreateGuest={async (displayName) => await createGuest.mutateAsync(displayName)}
                     />
                 }
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', gap: 1, flexWrap: 'wrap' }}>
                     <Button color="inherit" onClick={() => navigate(-1)}>Cancel</Button>
                     <Button
                         type="submit"
                         variant="contained"
                         disabled={!isDirty || !isValid || isSubmitting}
                         size="large"
-                        startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
+                        startIcon={isSubmitting ? <CircularProgress size={20} /> : (leagueId ? <Save /> : <Add />)}
+                        sx={{
+                            fontWeight: 'bold',
+                            px: 3,
+                            '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 },
+                        }}
                     >
-                        {isSubmitting ? 'Saving...' : (leagueId ? 'Save' : 'Create')}
+                        {isSubmitting ? 'Saving...' : (leagueId ? 'Save Changes' : 'Create League')}
                     </Button>
                 </Box>
             </Box>

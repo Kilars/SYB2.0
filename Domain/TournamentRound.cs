@@ -1,0 +1,20 @@
+using System.Text.Json.Serialization;
+
+namespace Domain;
+
+public class TournamentRound
+{
+    public required int RoundNumber { get; set; }
+    public bool Completed { get; set; } = false;
+    public string? WinnerUserId { get; set; }
+    public string? PlayerOneCharacterId { get; set; }
+    public Character? PlayerOneCharacter { get; set; }
+    public string? PlayerTwoCharacterId { get; set; }
+    public Character? PlayerTwoCharacter { get; set; }
+
+    // Nav properties
+    public required int MatchNumber { get; set; }
+    public required string TournamentId { get; set; }
+    [JsonIgnore]
+    public TournamentMatch? Match { get; set; }
+}

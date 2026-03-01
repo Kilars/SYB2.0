@@ -13,6 +13,10 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public required DbSet<Match> Matches { get; set; }
     public required DbSet<Round> Rounds { get; set; }
     public required DbSet<Character> Characters { get; set; }
+    public required DbSet<Tournament> Tournaments { get; set; }
+    public required DbSet<TournamentMember> TournamentMembers { get; set; }
+    public required DbSet<TournamentMatch> TournamentMatches { get; set; }
+    public required DbSet<TournamentRound> TournamentRounds { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -66,6 +70,58 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         builder.Entity<Round>()
             .HasOne(x => x.PlayerTwoCharacter)
             .WithMany(x => x.RoundsAsPlayerTwo)
+            .HasForeignKey(x => x.PlayerTwoCharacterId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Tournament entities
+        builder.Entity<TournamentMember>(x => x.HasKey(m => new { m.UserId, m.TournamentId }));
+        builder.Entity<TournamentMatch>(x => x.HasKey(m => new { m.TournamentId, m.MatchNumber }));
+        builder.Entity<TournamentRound>(x => x.HasKey(m => new { m.TournamentId, m.MatchNumber, m.RoundNumber }));
+
+        builder.Entity<TournamentMember>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.TournamentMembers)
+            .HasForeignKey(x => x.UserId);
+
+        builder.Entity<TournamentMember>()
+            .HasOne(x => x.Tournament)
+            .WithMany(x => x.Members)
+            .HasForeignKey(x => x.TournamentId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<TournamentMatch>()
+            .HasOne(x => x.Tournament)
+            .WithMany(x => x.Matches)
+            .HasForeignKey(x => x.TournamentId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<TournamentMatch>()
+            .HasOne(x => x.PlayerOne)
+            .WithMany()
+            .HasForeignKey(x => new { x.PlayerOneUserId, x.TournamentId })
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<TournamentMatch>()
+            .HasOne(x => x.PlayerTwo)
+            .WithMany()
+            .HasForeignKey(x => new { x.PlayerTwoUserId, x.TournamentId })
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<TournamentRound>()
+            .HasOne(x => x.Match)
+            .WithMany(x => x.Rounds)
+            .HasForeignKey(x => new { x.TournamentId, x.MatchNumber })
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<TournamentRound>()
+            .HasOne(x => x.PlayerOneCharacter)
+            .WithMany()
+            .HasForeignKey(x => x.PlayerOneCharacterId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<TournamentRound>()
+            .HasOne(x => x.PlayerTwoCharacter)
+            .WithMany()
             .HasForeignKey(x => x.PlayerTwoCharacterId)
             .OnDelete(DeleteBehavior.NoAction);
 

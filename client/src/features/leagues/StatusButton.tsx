@@ -1,5 +1,5 @@
 import { ArrowBack, CheckCircle, Delete, PlayArrow, Warning } from "@mui/icons-material";
-import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useState } from "react";
 import { SMASH_COLORS } from "../../app/theme";
@@ -41,7 +41,8 @@ export default function StatusButton({ leagueId, leagueStatus }: Props) {
                         color="success"
                         variant="contained"
                         onClick={() => onSubmit(2)}
-                        startIcon={<CheckCircle />}
+                        disabled={updateStatus.isPending}
+                        startIcon={updateStatus.isPending ? <CircularProgress size={18} /> : <CheckCircle />}
                         sx={{ fontWeight: 'bold' }}
                     >
                         <Typography variant="button">Finish League</Typography>
@@ -50,6 +51,7 @@ export default function StatusButton({ leagueId, leagueStatus }: Props) {
                         color="warning"
                         variant="contained"
                         onClick={() => handleClick(0)}
+                        disabled={updateStatus.isPending}
                         startIcon={<ArrowBack />}
                     >
                         <Typography variant="button">Revert to Draft</Typography>
@@ -106,8 +108,8 @@ export default function StatusButton({ leagueId, leagueStatus }: Props) {
 
     return (
         <>
-            <Button sx={{ ml: 2, fontWeight: 'bold' }} color={color} variant="contained" onClick={() => handleClick(changeStatusTo)}>
-                {icon}
+            <Button sx={{ ml: 2, fontWeight: 'bold' }} color={color} variant="contained" disabled={updateStatus.isPending} onClick={() => handleClick(changeStatusTo)}>
+                {updateStatus.isPending ? <CircularProgress size={18} sx={{ mr: 1 }} /> : icon}
                 <Typography variant="button" ml={1}>
                     {text}
                 </Typography>

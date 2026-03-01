@@ -9,6 +9,7 @@ import UserChip from "../../app/shared/components/UserChip";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 const STATUS_BORDERS = [SMASH_COLORS.p3Yellow, SMASH_COLORS.p4Green, SMASH_COLORS.p2Blue];
 
@@ -16,6 +17,7 @@ export default function LeagueList() {
     const navigate = useNavigate();
     const { leagues, isLeaguesLoading } = useLeagues();
     const { currentUser } = useAccount();
+    const { meta } = useAppTheme();
     if (isLeaguesLoading) return <LoadingSkeleton variant="list" count={3} />
     if (!leagues || leagues.length === 0) return (
         <EmptyState
@@ -36,8 +38,9 @@ export default function LeagueList() {
                         to="/createLeague"
                         startIcon={<Add />}
                         sx={{
-                            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
-                            '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}cc, ${SMASH_COLORS.p2Blue}cc)` },
+                            background: meta.accentGradient,
+                            color: 'white',
+                            '&:hover': { opacity: 0.85 },
                         }}
                     >
                         Create League
@@ -50,6 +53,8 @@ export default function LeagueList() {
                     key={league.id}
                     p={1}
                     m={1}
+                    role="article"
+                    aria-label={`League: ${league.title} — ${LEAGUE_STATUSES[league.status][0]}`}
                     sx={{
                         borderLeft: `4px solid ${STATUS_BORDERS[league.status]}`,
                         transition: 'transform 0.15s ease, box-shadow 0.15s ease',
@@ -79,15 +84,15 @@ export default function LeagueList() {
                                 {league.description}
                             </Typography>
                             <Box display='flex' alignItems='center'>
-                                <SportsEsports sx={{ mr: 2, color: SMASH_COLORS.p1Red }} />
+                                <SportsEsports sx={{ mr: 2, color: 'error.main' }} />
                                 <Typography>Super Smash Bros</Typography>
                             </Box>
                             <Box display='flex' alignItems='center'>
-                                <AccessTime sx={{ mr: 2, color: SMASH_COLORS.p2Blue }} />
+                                <AccessTime sx={{ mr: 2, color: 'info.main' }} />
                                 <Typography>{formatDate(league.startDate)}</Typography>
                             </Box>
                             <Box display='flex' alignItems='center'>
-                                <Group sx={{ mr: 2, color: SMASH_COLORS.p4Green }} />
+                                <Group sx={{ mr: 2, color: 'success.main' }} />
                                 <Typography>{league.members.length} players</Typography>
                             </Box>
                             <Box gap={1} mt={1} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' } }}>
@@ -98,7 +103,7 @@ export default function LeagueList() {
                         </Box>
                     </CardContent>
                     <CardActions>
-                        <Box gap={2} display='flex' justifyContent='flex-end' width='100%'>
+                        <Box gap={1} display='flex' justifyContent='flex-end' width='100%' flexWrap='wrap'>
                             {currentUser && league.members.filter(m => m.isAdmin).map(x => x.userId).includes(currentUser.id) && league.status == 0 &&
                                 <Button variant="contained" color="secondary" onClick={() => navigate(`/manage/${league.id}/leaderboard`)}>
                                     <Edit />

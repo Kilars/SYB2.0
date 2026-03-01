@@ -13,4 +13,5 @@ public class User : IdentityUser
 
     // Nav properties
     public ICollection<LeagueMember> LeagueMembers { get; set; } = [];
+    public ICollection<TournamentMember> TournamentMembers { get; set; } = [];
 }

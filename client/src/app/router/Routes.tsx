@@ -9,6 +9,10 @@ import MatchDetails from "../../features/matches/MatchDetails";
 import ServerError from "../../features/error/ServerError";
 import LeagueTabs from "../../features/leagues/LeagueTabs";
 import UserStats from "../../features/stats/UserStats";
+import TournamentList from "../../features/tournaments/TournamentList";
+import TournamentForm from "../../features/tournaments/TournamentForm";
+import BracketView from "../../features/tournaments/BracketView";
+import TournamentMatchDetails from "../../features/tournaments/TournamentMatchDetails";
 
 export const router = createBrowserRouter([
     {
@@ -23,9 +27,13 @@ export const router = createBrowserRouter([
                     { path: 'leagues/:leagueId/matches', element: <LeagueTabs key='matches' tab='matches' /> },
                     { path: 'leagues/:leagueId/stats', element: <LeagueTabs key='stats' tab='stats' /> },
                     { path: 'leagues/:leagueId/split/:split/match/:match', element: <MatchDetails /> },
+                    { path: 'createTournament', element: <TournamentForm /> },
+                    { path: 'tournaments/:tournamentId', element: <BracketView /> },
+                    { path: 'tournaments/:tournamentId/match/:matchNumber', element: <TournamentMatchDetails /> },
                 ]
             },
             { path: 'leagues', element: <LeagueList /> },
+            { path: 'tournaments', element: <TournamentList /> },
             { path: 'login', element: <LoginForm /> },
             { path: 'register', element: <RegisterForm /> },
             { path: 'server-error', element: <ServerError /> },

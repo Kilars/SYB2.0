@@ -58,6 +58,15 @@ export const useLeagues = (id?: string) => {
         }
     })
 
+    const deleteLeague = useMutation({
+        mutationFn: async () => {
+            await agent.delete(`/leagues/${id}`);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ['leagues']})
+        }
+    })
+
     return {
         leagues,
         league,
@@ -67,6 +76,7 @@ export const useLeagues = (id?: string) => {
         isLeaguesLoading,
         createLeague,
         updateLeague,
-        updateStatus
+        updateStatus,
+        deleteLeague,
     }
 }

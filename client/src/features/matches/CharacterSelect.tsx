@@ -9,8 +9,8 @@ import { Skeleton, Typography } from '@mui/material';
 
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
-  borderBottom: '1px solid black',
-  background: 'white',
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  background: theme.palette.background.paper,
   '&.MuiAutocomplete-option:hover': {
     fontWeight: theme.typography.fontWeightBold,
     backgroundColor: theme.palette.grey[300],
@@ -31,17 +31,18 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   }
 }));
 
-const CustomTextField = styled(TextField)(() => ({
+const CustomTextField = styled(TextField)(({ theme }) => ({
   width: '100%',
   '& .MuiOutlinedInput-root': {
-    '& fieldset': {  // This targets the notched outline specifically
+    '& fieldset': {
       border: 'none',
     },
     '&:hover fieldset': {
       border: 'none',
     },
-    '&.Mui-focused fieldset': { // This ensures the border stays removed even when focused
-      border: 'none',
+    '&.Mui-focused fieldset': {
+      border: `2px solid ${theme.palette.primary.main}`,
+      borderRadius: 4,
     },
   },
 }));
@@ -54,7 +55,7 @@ type Props = {
 export default function CharacterSelect({ selectedId, onChange }: Props) {
   const { characters, charactersIsLoading } = useCharacters();
 
-  if (charactersIsLoading) return <Skeleton variant="rectangular" width={200} height={40} />
+  if (charactersIsLoading) return <Skeleton variant="rectangular" width="100%" height={40} />
   if (!characters) return <Typography variant="body2" color="text.secondary">No characters found</Typography>
 
   const selectedCharacter = characters.find(char => char.id === selectedId);
@@ -76,7 +77,7 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
         },
       }}
       renderInput={(params) => {
-        const optionalCharacterImage = selectedCharacter && (<img src={selectedCharacter.imageUrl} alt={selectedCharacter.shorthandName} width="50" height="50" />)
+        const optionalCharacterImage = selectedCharacter && (<img src={selectedCharacter.imageUrl} alt={selectedCharacter.shorthandName} style={{ width: 'clamp(32px, 8vw, 50px)', height: 'clamp(32px, 8vw, 50px)' }} />)
         return (
           <>
             <CustomTextField

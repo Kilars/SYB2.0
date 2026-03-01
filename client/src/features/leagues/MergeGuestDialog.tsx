@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -68,8 +69,9 @@ export default function MergeGuestDialog({ guestUserId, guestDisplayName, open, 
                     variant="contained"
                     color="warning"
                     disabled={!targetUserId || mergeGuest.isPending}
+                    startIcon={mergeGuest.isPending ? <CircularProgress size={18} /> : undefined}
                 >
-                    Merge
+                    {mergeGuest.isPending ? 'Merging...' : 'Merge'}
                 </Button>
             </DialogActions>
         </Dialog>

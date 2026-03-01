@@ -7,6 +7,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 const PIE_COLORS = [
   SMASH_COLORS.p1Red, SMASH_COLORS.p2Blue, SMASH_COLORS.p3Yellow, SMASH_COLORS.p4Green,
@@ -19,6 +20,7 @@ export default function LeagueStats() {
   const { leagueId } = useParams();
   const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(leagueId);
   const { characters } = useCharacters();
+  const { meta } = useAppTheme();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -117,15 +119,15 @@ export default function LeagueStats() {
                     outerRadius={isMobile ? 80 : 110}
                     innerRadius={isMobile ? 30 : 40}
                     paddingAngle={2}
-                    label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                    labelLine={true}
+                    label={isMobile ? false : ({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                    labelLine={!isMobile}
                   >
                     {charPicks.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="#fff" strokeWidth={2} />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => [`${value} picks`]}
+                    formatter={(value, name) => [`${value} picks`, name]}
                     contentStyle={{ borderRadius: 8, border: '1px solid #ddd' }}
                   />
                 </PieChart>
@@ -201,12 +203,12 @@ export default function LeagueStats() {
         Character Win Rates
       </Typography>
       <TableContainer sx={{ maxHeight: '40vh', overflowX: 'auto' }}>
-        <Table stickyHeader>
+        <Table stickyHeader aria-label="Character win rates table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }}> Character </TableCell>
-              <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="right"> WR </TableCell>
-              <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="right"> Rounds </TableCell>
+              <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }}> Character </TableCell>
+              <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="right"> WR </TableCell>
+              <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="right"> Rounds </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -214,7 +216,7 @@ export default function LeagueStats() {
               .sort((a, b) => b.winRate - a.winRate)
               .filter(a => a.total >= 3)
               .map((stats, i) => (
-                <TableRow key={stats.name} sx={{ backgroundColor: i % 2 === 0 ? '#E8EAF6' : '#E3F2FD', borderBottom: '1px solid #bbb' }}>
+                <TableRow key={stats.name} sx={{ backgroundColor: i % 2 === 0 ? 'primary.light' : 'info.light', borderBottom: '1px solid', borderColor: 'divider' }}>
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={1}>
                       {stats.imageUrl && (
@@ -230,7 +232,7 @@ export default function LeagueStats() {
                       paddingRight: 2,
                       letterSpacing: '0.05em',
                       fontWeight: 600,
-                      color: stats.winRate >= 60 ? '#43A047' : stats.winRate <= 40 ? '#E53935' : 'text.primary',
+                      color: stats.winRate >= 60 ? 'success.main' : stats.winRate <= 40 ? 'error.main' : 'text.primary',
                     }}
                   >
                     {stats.winRate}%
@@ -286,25 +288,25 @@ export default function LeagueStats() {
                   }}
                 >
                   <Box textAlign="center" flex={1}>
-                    <Typography fontWeight="bold" sx={{ color: record.p1Wins > record.p2Wins ? SMASH_COLORS.p4Green : 'text.primary' }}>
+                    <Typography fontWeight="bold" noWrap sx={{ color: record.p1Wins > record.p2Wins ? SMASH_COLORS.p4Green : 'text.primary', fontSize: { xs: '0.85rem', sm: '1rem' } }}>
                       {record.p1}
                     </Typography>
-                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p1Red }}>
+                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p1Red, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
                       {record.p1Wins}
                     </Typography>
                   </Box>
                   <Box sx={{
                     px: 1.5, py: 0.5,
                     borderRadius: 2,
-                    background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+                    background: meta.accentGradient,
                   }}>
                     <Typography variant="body2" fontWeight="bold" color="white">VS</Typography>
                   </Box>
                   <Box textAlign="center" flex={1}>
-                    <Typography fontWeight="bold" sx={{ color: record.p2Wins > record.p1Wins ? SMASH_COLORS.p4Green : 'text.primary' }}>
+                    <Typography fontWeight="bold" noWrap sx={{ color: record.p2Wins > record.p1Wins ? SMASH_COLORS.p4Green : 'text.primary', fontSize: { xs: '0.85rem', sm: '1rem' } }}>
                       {record.p2}
                     </Typography>
-                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p2Blue }}>
+                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p2Blue, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
                       {record.p2Wins}
                     </Typography>
                   </Box>
@@ -333,8 +335,8 @@ export default function LeagueStats() {
                   outerRadius={isMobile ? 70 : 100}
                   innerRadius={isMobile ? 25 : 35}
                   paddingAngle={2}
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                  labelLine={true}
+                  label={isMobile ? false : ({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  labelLine={!isMobile}
                 >
                   {(leaderboard || []).map((_, index) => (
                     <Cell key={`pts-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="#fff" strokeWidth={2} />

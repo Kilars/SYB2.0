@@ -1,6 +1,6 @@
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router";
-import { SMASH_COLORS } from "../../theme";
+import { useAppTheme } from "../../context/ThemeContext";
 
 type ActionProps = {
     label: string;
@@ -15,6 +15,15 @@ type Props = {
 }
 
 export default function EmptyState({ icon, message, action }: Props) {
+    const { meta } = useAppTheme();
+
+    const buttonSx = {
+        mt: 1,
+        background: meta.accentGradient,
+        color: 'white',
+        '&:hover': { opacity: 0.85 },
+    };
+
     return (
         <Paper
             elevation={0}
@@ -29,15 +38,26 @@ export default function EmptyState({ icon, message, action }: Props) {
                 borderRadius: 3,
                 border: '2px dashed',
                 borderColor: 'divider',
-                background: `linear-gradient(180deg, transparent 0%, ${SMASH_COLORS.p2Blue}08 100%)`,
+                bgcolor: meta.surfaceTint,
+                '@keyframes fadeInUp': {
+                    from: { opacity: 0, transform: 'translateY(16px)' },
+                    to: { opacity: 1, transform: 'translateY(0)' },
+                },
+                animation: 'fadeInUp 0.4s ease-out',
             }}
         >
             <Box sx={{
                 fontSize: 48,
                 display: 'flex',
                 alignItems: 'center',
-                color: SMASH_COLORS.p2Blue,
+                color: 'primary.main',
                 opacity: 0.6,
+                '@keyframes bounceIn': {
+                    '0%': { transform: 'scale(0.5)', opacity: 0 },
+                    '60%': { transform: 'scale(1.1)' },
+                    '100%': { transform: 'scale(1)', opacity: 0.6 },
+                },
+                animation: 'bounceIn 0.5s ease-out',
             }}>
                 {icon}
             </Box>
@@ -46,28 +66,11 @@ export default function EmptyState({ icon, message, action }: Props) {
             </Typography>
             {action && (
                 action.href ? (
-                    <Button
-                        variant="contained"
-                        component={Link}
-                        to={action.href}
-                        sx={{
-                            mt: 1,
-                            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
-                            '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}cc, ${SMASH_COLORS.p2Blue}cc)` },
-                        }}
-                    >
+                    <Button variant="contained" component={Link} to={action.href} sx={buttonSx}>
                         {action.label}
                     </Button>
                 ) : (
-                    <Button
-                        variant="contained"
-                        onClick={action.onClick}
-                        sx={{
-                            mt: 1,
-                            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
-                            '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}cc, ${SMASH_COLORS.p2Blue}cc)` },
-                        }}
-                    >
+                    <Button variant="contained" onClick={action.onClick} sx={buttonSx}>
                         {action.label}
                     </Button>
                 )

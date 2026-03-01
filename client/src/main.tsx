@@ -12,16 +12,13 @@ import { router } from './app/router/Routes';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { nb } from 'date-fns/locale/nb';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { theme } from './app/theme';
+import { AppThemeProvider } from './app/context/ThemeContext';
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <AppThemeProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={nb}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
@@ -29,6 +26,6 @@ createRoot(document.getElementById('root')!).render(
         <ToastContainer position='bottom-right' hideProgressBar theme='colored' aria-label='toast popup' />
       </QueryClientProvider>
       </LocalizationProvider>
-    </ThemeProvider>
+    </AppThemeProvider>
   </StrictMode>,
 )

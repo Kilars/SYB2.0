@@ -12,10 +12,12 @@ import { toast } from "react-toastify";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function MatchDetailsForm() {
   const { leagueId, split, match } = useParams();
   const { match: matchData, isMatchLoading, completeMatch } = useMatch(leagueId || '', parseInt(split || ''), parseInt(match || ''));
+  const { meta } = useAppTheme();
   const [rounds, setRounds] = useState(matchData?.rounds)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -28,7 +30,7 @@ export default function MatchDetailsForm() {
     try {
       matchSchema.parse(rounds)
       if (rounds) await completeMatch.mutateAsync(rounds);
-      toast('Succes', {type: 'success'})
+      toast('Match completed successfully!', {type: 'success'})
     } catch (error) {
       if (error instanceof z.ZodError) {
         for (const issue of error.issues) {
@@ -83,7 +85,7 @@ export default function MatchDetailsForm() {
 
   return (
     <Box>
-      <Typography variant="h4" mb={2} fontWeight="bold">Register Match Result</Typography>
+      <Typography variant="h4" mb={2} fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>Register Match Result</Typography>
 
       {/* Match score indicator */}
       <Paper
@@ -91,20 +93,26 @@ export default function MatchDetailsForm() {
         sx={{
           p: 2, mb: 3, textAlign: 'center',
           background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}15 0%, transparent 40%, ${SMASH_COLORS.p2Blue}15 100%)`,
+          overflow: 'hidden',
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="center" gap={2}>
+        <Box display="flex" alignItems="center" justifyContent="center" gap={{ xs: 1, sm: 2 }} flexWrap="wrap">
           <Typography
             variant="h5"
             fontWeight="bold"
-            sx={{ color: playerOneScore > playerTwoScore ? SMASH_COLORS.p1Red : 'text.primary' }}
+            noWrap
+            sx={{
+              color: playerOneScore > playerTwoScore ? SMASH_COLORS.p1Red : 'text.primary',
+              fontSize: { xs: '1rem', sm: '1.5rem' },
+              maxWidth: { xs: '30vw', sm: 'none' },
+            }}
           >
             {getDisplayName(matchData.playerOne)}
           </Typography>
           <Box sx={{
             px: 2, py: 0.5,
             borderRadius: 2,
-            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+            background: meta.accentGradient,
           }}>
             <Typography variant="h5" fontWeight="bold" color="white">
               {playerOneScore} — {playerTwoScore}
@@ -113,7 +121,12 @@ export default function MatchDetailsForm() {
           <Typography
             variant="h5"
             fontWeight="bold"
-            sx={{ color: playerTwoScore > playerOneScore ? SMASH_COLORS.p2Blue : 'text.primary' }}
+            noWrap
+            sx={{
+              color: playerTwoScore > playerOneScore ? SMASH_COLORS.p2Blue : 'text.primary',
+              fontSize: { xs: '1rem', sm: '1.5rem' },
+              maxWidth: { xs: '30vw', sm: 'none' },
+            }}
           >
             {getDisplayName(matchData.playerTwo)}
           </Typography>
@@ -203,7 +216,9 @@ export default function MatchDetailsForm() {
 
               {/* Single winner toggle spanning full width */}
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: 600 }}>Winner</Typography>
+                <Typography variant="body2" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: 600 }}>
+                  Who won Round {round.roundNumber}?
+                </Typography>
                 <ToggleButtonGroup
                   exclusive
                   fullWidth
@@ -215,6 +230,7 @@ export default function MatchDetailsForm() {
                       )
                     );
                   }}
+                  aria-label={`Round ${round.roundNumber} winner selection`}
                   sx={{
                     '& .Mui-selected': {
                       fontWeight: 'bold',
@@ -223,6 +239,7 @@ export default function MatchDetailsForm() {
                 >
                   <ToggleButton
                     value={matchData.playerOne.userId}
+                    aria-label={`${getDisplayName(matchData.playerOne)} wins round ${round.roundNumber}`}
                     sx={{
                       '&.Mui-selected': {
                         backgroundColor: `${SMASH_COLORS.p1Red}22`,
@@ -235,6 +252,7 @@ export default function MatchDetailsForm() {
                   </ToggleButton>
                   <ToggleButton
                     value={matchData.playerTwo.userId}
+                    aria-label={`${getDisplayName(matchData.playerTwo)} wins round ${round.roundNumber}`}
                     sx={{
                       '&.Mui-selected': {
                         backgroundColor: `${SMASH_COLORS.p2Blue}22`,
@@ -260,8 +278,9 @@ export default function MatchDetailsForm() {
           py: 1.5,
           fontWeight: 'bold',
           fontSize: '1rem',
-          background: `linear-gradient(135deg, ${SMASH_COLORS.p4Green}, ${SMASH_COLORS.p2Blue})`,
-          '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p4Green}cc, ${SMASH_COLORS.p2Blue}cc)` },
+          background: meta.accentGradient,
+          color: 'white',
+          '&:hover': { opacity: 0.85 },
         }}
         disabled={isSubmitting}
         startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}

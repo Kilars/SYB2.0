@@ -68,12 +68,22 @@ builder.Services.AddAuthorization(opt =>
     {
         policy.Requirements.Add(new IsMatchComplete());
     });
+    opt.AddPolicy("IsTournamentAdmin", policy =>
+    {
+        policy.Requirements.Add(new IsTournamentAdmin());
+    });
+    opt.AddPolicy("IsTournamentMember", policy =>
+    {
+        policy.Requirements.Add(new IsTournamentMember());
+    });
 });
 builder.Services.AddTransient<IAuthorizationHandler, IsAdminRequirementHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsPlannerRequirementHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsMatchEditableHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsLeagueMemberHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsMatchCompleteHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsTournamentAdminHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsTournamentMemberHandler>();
 
 var app = builder.Build();
 
