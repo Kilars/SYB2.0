@@ -1,7 +1,7 @@
 import { SportsEsports, EmojiEvents } from "@mui/icons-material";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router";
-import { APP_GRADIENT } from "../../app/theme";
+import { APP_GRADIENT, SMASH_COLORS } from "../../app/theme";
 
 export default function HomePage() {
   return (
@@ -30,7 +30,15 @@ export default function HomePage() {
         </Typography>
         <Button component={Link} to='/leagues' size="large" variant="contained"
           startIcon={<EmojiEvents />}
-          sx={{ height: 80, borderRadius: 4, fontSize: '1.0rem' }}>
+          sx={{
+            height: 80, borderRadius: 4, fontSize: '1.0rem',
+            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p3Yellow})`,
+            color: 'white',
+            fontWeight: 'bold',
+            '&:hover': {
+              background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}dd, ${SMASH_COLORS.p3Yellow}dd)`,
+            },
+          }}>
           View Leagues
         </Button>
       </Box>

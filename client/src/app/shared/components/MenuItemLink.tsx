@@ -1,6 +1,7 @@
 import { MenuItem } from "@mui/material";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router";
+import { SMASH_COLORS } from "../../theme";
 
 export default function MenuItemLink({children, to}: {children: ReactNode, to: string}) {
   return (
@@ -12,11 +13,17 @@ export default function MenuItemLink({children, to}: {children: ReactNode, to: s
             textTransform: 'uppercase',
             color: 'inherit',
             fontWeight: 'bold',
+            borderRadius: 1,
+            transition: 'all 0.2s ease',
             '&.active': {
-                color: '#90caf9',
-                borderLeft: '4px solid #90caf9',
-                paddingLeft: 'calc(1rem - 4px)'
-            }
+                color: SMASH_COLORS.p3Yellow,
+                borderLeft: `4px solid ${SMASH_COLORS.p3Yellow}`,
+                paddingLeft: 'calc(1rem - 4px)',
+                background: 'rgba(255,255,255,0.08)',
+            },
+            '&:hover': {
+                background: 'rgba(255,255,255,0.12)',
+            },
         }}
     >
         {children}
