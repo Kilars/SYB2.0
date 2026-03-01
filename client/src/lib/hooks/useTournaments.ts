@@ -48,6 +48,15 @@ export const useTournaments = (id?: string) => {
         }
     });
 
+    const deleteTournament = useMutation({
+        mutationFn: async () => {
+            await agent.delete(`/tournaments/${id}`);
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['tournaments'] });
+        }
+    });
+
     return {
         tournaments,
         tournament,
@@ -56,5 +65,6 @@ export const useTournaments = (id?: string) => {
         createTournament,
         startTournament,
         shuffleBracket,
+        deleteTournament,
     };
 };

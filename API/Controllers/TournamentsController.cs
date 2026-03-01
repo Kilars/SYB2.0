@@ -28,6 +28,13 @@ public class TournamentsController() : BaseApiController
         return HandleResult(await Mediator.Send(new CreateTournament.Command { TournamentDto = tournamentDto }));
     }
 
+    [HttpDelete("{tournamentId}")]
+    [Authorize(Policy = "IsTournamentAdmin")]
+    public async Task<ActionResult> DeleteTournament(string tournamentId)
+    {
+        return HandleResult(await Mediator.Send(new DeleteTournament.Command { TournamentId = tournamentId }));
+    }
+
     [HttpPost("{tournamentId}/start")]
     [Authorize(Policy = "IsTournamentAdmin")]
     public async Task<ActionResult> StartTournament(string tournamentId)

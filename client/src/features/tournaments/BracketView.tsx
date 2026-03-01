@@ -1,7 +1,8 @@
-import { Box, Button, Card, Chip, Paper, Typography, CircularProgress } from "@mui/material";
+import { Box, Button, Card, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Typography, CircularProgress } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import { useTournaments } from "../../lib/hooks/useTournaments";
-import { EmojiEvents, Shuffle, PlayArrow } from "@mui/icons-material";
+import { Delete, EmojiEvents, Shuffle, PlayArrow } from "@mui/icons-material";
+import { toast } from "react-toastify";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
@@ -122,12 +123,14 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
 
 export default function BracketView() {
     const { tournamentId } = useParams();
-    const { tournament, isTournamentLoading, startTournament, shuffleBracket } = useTournaments(tournamentId);
+    const { tournament, isTournamentLoading, startTournament, shuffleBracket, deleteTournament } = useTournaments(tournamentId);
     const { currentUser } = useAccount();
     const { meta } = useAppTheme();
     const navigate = useNavigate();
     const [isStarting, setIsStarting] = useState(false);
     const [isShuffling, setIsShuffling] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     if (isTournamentLoading) return <LoadingSkeleton variant="detail" />;
     if (!tournament) return (
@@ -166,6 +169,20 @@ export default function BracketView() {
             await shuffleBracket.mutateAsync();
         } finally {
             setIsShuffling(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            await deleteTournament.mutateAsync();
+            toast('Tournament deleted successfully', { type: 'success' });
+            navigate('/tournaments');
+        } catch {
+            toast('Failed to delete tournament', { type: 'error' });
+        } finally {
+            setIsDeleting(false);
+            setDeleteDialogOpen(false);
         }
     };
 
@@ -219,6 +236,16 @@ export default function BracketView() {
                             onClick={handleShuffle}
                         >
                             {isShuffling ? 'Shuffling...' : 'Shuffle Bracket'}
+                        </Button>
+                    )}
+                    {isAdmin && (
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            startIcon={<Delete />}
+                            onClick={() => setDeleteDialogOpen(true)}
+                        >
+                            Delete
                         </Button>
                     )}
                 </Box>
@@ -326,6 +353,30 @@ export default function BracketView() {
                     </Box>
                 </Box>
             )}
+
+            {/* Delete confirmation dialog */}
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>Delete Tournament</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete <strong>{tournament.title}</strong>? This will permanently delete all bracket data, matches, and rounds. This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleDelete}
+                        color="error"
+                        variant="contained"
+                        disabled={isDeleting}
+                        startIcon={isDeleting ? <CircularProgress size={20} /> : <Delete />}
+                    >
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
