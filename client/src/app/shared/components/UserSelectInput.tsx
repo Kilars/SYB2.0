@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar, Box, Button, Chip, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField, Typography, type SelectChangeEvent, type SelectProps } from "@mui/material";
+import { Avatar, Box, Button, Chip, CircularProgress, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField, Typography, type SelectChangeEvent, type SelectProps } from "@mui/material";
 import { useController, type UseControllerProps, type FieldValues } from "react-hook-form"
 import { PersonAdd } from "@mui/icons-material";
 
@@ -63,6 +63,7 @@ export default function UserSelectInput<T extends FieldValues>(props: Props<T>) 
                     disabled={availableUsersList.length === 0}
                     label={props.label}
                     onChange={addMember}
+                    inputProps={{ 'aria-label': `Select a user to add as member` }}
                     sx={{
                         height: 'unset',
                         '& .MuiSelect-select': {
@@ -92,6 +93,7 @@ export default function UserSelectInput<T extends FieldValues>(props: Props<T>) 
                         label="Guest name"
                         value={guestName}
                         onChange={(e) => setGuestName(e.target.value)}
+                        inputProps={{ 'aria-label': 'Enter guest player name' }}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 e.preventDefault();
@@ -104,11 +106,11 @@ export default function UserSelectInput<T extends FieldValues>(props: Props<T>) 
                     <Button
                         variant="outlined"
                         size="small"
-                        startIcon={<PersonAdd />}
+                        startIcon={isCreatingGuest ? <CircularProgress size={16} /> : <PersonAdd />}
                         onClick={handleCreateGuest}
                         disabled={!guestName.trim() || isCreatingGuest}
                     >
-                        Add Guest
+                        {isCreatingGuest ? 'Adding...' : 'Add Guest'}
                     </Button>
                 </Box>
             )}

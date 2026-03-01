@@ -214,7 +214,9 @@ export default function MatchDetailsForm() {
 
               {/* Single winner toggle spanning full width */}
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: 600 }}>Winner</Typography>
+                <Typography variant="body2" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: 600 }}>
+                  Who won Round {round.roundNumber}?
+                </Typography>
                 <ToggleButtonGroup
                   exclusive
                   fullWidth
@@ -226,6 +228,7 @@ export default function MatchDetailsForm() {
                       )
                     );
                   }}
+                  aria-label={`Round ${round.roundNumber} winner selection`}
                   sx={{
                     '& .Mui-selected': {
                       fontWeight: 'bold',
@@ -234,6 +237,7 @@ export default function MatchDetailsForm() {
                 >
                   <ToggleButton
                     value={matchData.playerOne.userId}
+                    aria-label={`${getDisplayName(matchData.playerOne)} wins round ${round.roundNumber}`}
                     sx={{
                       '&.Mui-selected': {
                         backgroundColor: `${SMASH_COLORS.p1Red}22`,
@@ -246,6 +250,7 @@ export default function MatchDetailsForm() {
                   </ToggleButton>
                   <ToggleButton
                     value={matchData.playerTwo.userId}
+                    aria-label={`${getDisplayName(matchData.playerTwo)} wins round ${round.roundNumber}`}
                     sx={{
                       '&.Mui-selected': {
                         backgroundColor: `${SMASH_COLORS.p2Blue}22`,

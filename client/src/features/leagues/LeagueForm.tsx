@@ -5,7 +5,7 @@ import { leagueSchema, type LeagueSchema } from "../../lib/schemas/leagueSchema"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { Box, Button, Paper, Typography, CircularProgress } from "@mui/material";
-import { Leaderboard } from "@mui/icons-material";
+import { Leaderboard, Save, Add } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import UserSelectInput from "../../app/shared/components/UserSelectInput";
 import { useUsers } from "../../lib/hooks/useUsers";
@@ -84,9 +84,14 @@ export default function LeagueForm() {
                         variant="contained"
                         disabled={!isDirty || !isValid || isSubmitting}
                         size="large"
-                        startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
+                        startIcon={isSubmitting ? <CircularProgress size={20} /> : (leagueId ? <Save /> : <Add />)}
+                        sx={{
+                            fontWeight: 'bold',
+                            px: 3,
+                            '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 },
+                        }}
                     >
-                        {isSubmitting ? 'Saving...' : (leagueId ? 'Save' : 'Create')}
+                        {isSubmitting ? 'Saving...' : (leagueId ? 'Save Changes' : 'Create League')}
                     </Button>
                 </Box>
             </Box>

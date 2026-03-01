@@ -201,12 +201,12 @@ export default function LeagueStats() {
         Character Win Rates
       </Typography>
       <TableContainer sx={{ maxHeight: '40vh', overflowX: 'auto' }}>
-        <Table stickyHeader>
+        <Table stickyHeader aria-label="Character win rates table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }}> Character </TableCell>
-              <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="right"> WR </TableCell>
-              <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="right"> Rounds </TableCell>
+              <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }}> Character </TableCell>
+              <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="right"> WR </TableCell>
+              <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="right"> Rounds </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -214,7 +214,7 @@ export default function LeagueStats() {
               .sort((a, b) => b.winRate - a.winRate)
               .filter(a => a.total >= 3)
               .map((stats, i) => (
-                <TableRow key={stats.name} sx={{ backgroundColor: i % 2 === 0 ? '#E8EAF6' : '#E3F2FD', borderBottom: '1px solid #bbb' }}>
+                <TableRow key={stats.name} sx={{ backgroundColor: i % 2 === 0 ? 'primary.light' : 'info.light', borderBottom: '1px solid', borderColor: 'divider' }}>
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={1}>
                       {stats.imageUrl && (
@@ -230,7 +230,7 @@ export default function LeagueStats() {
                       paddingRight: 2,
                       letterSpacing: '0.05em',
                       fontWeight: 600,
-                      color: stats.winRate >= 60 ? '#43A047' : stats.winRate <= 40 ? '#E53935' : 'text.primary',
+                      color: stats.winRate >= 60 ? 'success.main' : stats.winRate <= 40 ? 'error.main' : 'text.primary',
                     }}
                   >
                     {stats.winRate}%

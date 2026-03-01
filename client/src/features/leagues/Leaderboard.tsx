@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useNavigate, useParams } from "react-router";
 import { AutoAwesome, Edit, EmojiEvents } from "@mui/icons-material";
@@ -33,7 +33,7 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
             sx={{
                 p: 2,
                 backgroundImage: rankStyle?.bg,
-                backgroundColor: rankStyle ? undefined : (rank % 2 === 0 ? '#E8EAF6' : '#E3F2FD'),
+                backgroundColor: rankStyle ? undefined : (rank % 2 === 0 ? 'primary.light' : 'info.light'),
                 border: rankStyle ? `2px solid ${rankStyle.border}` : 'none',
             }}
         >
@@ -45,7 +45,7 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
                         borderRadius: '50%',
                         background: rankStyle
                             ? `linear-gradient(135deg, ${rankStyle.border}, ${rankStyle.color})`
-                            : 'linear-gradient(135deg, #0f3460, #1E88E5)',
+                            : `linear-gradient(135deg, ${SMASH_COLORS.p2Blue}, #0f3460)`,
                         border: `2px solid ${rankStyle?.border || '#1E88E5'}`,
                         display: 'flex',
                         alignItems: 'center',
@@ -90,7 +90,7 @@ function RankBadge({ rank }: { rank: number }) {
         return (
             <Box sx={{
                 width: 32, height: 32, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #0f3460, #1E88E5)',
+                background: `linear-gradient(135deg, ${SMASH_COLORS.p2Blue}, #0f3460)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
                 <Typography variant="body2" fontWeight="bold" color="white">{rank}</Typography>
@@ -140,16 +140,16 @@ export default function Leaderboard() {
                 overflowX: 'auto',
                 WebkitOverflowScrolling: 'touch',
             }}>
-                <Table stickyHeader>
+                <Table stickyHeader aria-label="League leaderboard">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }}> # </TableCell>
-                            <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }}> Player </TableCell>
-                            <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="center"> Points </TableCell>
-                            <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="center"> WR </TableCell>
-                            <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="center"> Wins </TableCell>
-                            <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="center"> Losses </TableCell>
-                            <TableCell sx={{ backgroundColor: '#0f3460', color: 'white', fontWeight: 'bold' }} align="center"> Flawless </TableCell>
+                            <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }}> # </TableCell>
+                            <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }}> Player </TableCell>
+                            <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="center"> Points </TableCell>
+                            <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="center"> WR </TableCell>
+                            <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="center"> Wins </TableCell>
+                            <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="center"> Losses </TableCell>
+                            <TableCell sx={{ backgroundColor: 'primary.main', color: 'white', fontWeight: 'bold' }} align="center"> Flawless </TableCell>
                         </TableRow>
                     </TableHead>
 
@@ -159,14 +159,15 @@ export default function Leaderboard() {
                             const rankStyle = RANK_STYLES[rank];
                             const rowBg = rankStyle
                                 ? rankStyle.bg
-                                : (i % 2 === 0 ? '#E8EAF6' : '#E3F2FD');
+                                : undefined;
                             return (
                                 <TableRow
                                     key={leaderboardUser.displayName}
                                     sx={{
                                         backgroundImage: rankStyle ? rowBg : 'none',
-                                        backgroundColor: rankStyle ? undefined : rowBg,
-                                        borderBottom: '1px solid #bbb',
+                                        backgroundColor: rankStyle ? undefined : (i % 2 === 0 ? 'primary.light' : 'info.light'),
+                                        borderBottom: '1px solid',
+                                        borderColor: 'divider',
                                         ...(rankStyle && {
                                             borderLeft: `4px solid ${rankStyle.border}`,
                                         }),
@@ -176,7 +177,9 @@ export default function Leaderboard() {
                                         <RankBadge rank={rank} />
                                     </TableCell>
                                     <TableCell sx={{ fontWeight: rankStyle ? 'bold' : 'normal' }}>
-                                        {leaderboardUser.displayName}{leaderboardUser.isGuest ? ' (guest)' : ''}
+                                        <Tooltip title={`${leaderboardUser.displayName} — W: ${leaderboardUser.wins}, L: ${leaderboardUser.losses}, Pts: ${leaderboardUser.points}`} enterDelay={300}>
+                                            <span>{leaderboardUser.displayName}{leaderboardUser.isGuest ? ' (guest)' : ''}</span>
+                                        </Tooltip>
                                     </TableCell>
                                     <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: rankStyle ? '1.1rem' : 'inherit' }}>
                                         {leaderboardUser.points}
@@ -184,13 +187,13 @@ export default function Leaderboard() {
                                     <TableCell align="center">
                                         {(leaderboardUser.wins + leaderboardUser.losses) === 0 ? 0 : Math.round((leaderboardUser.wins * 100) / (leaderboardUser.wins + leaderboardUser.losses)) + "%"}
                                     </TableCell>
-                                    <TableCell align="center" sx={{ color: '#43A047', fontWeight: 600 }}>
+                                    <TableCell align="center" sx={{ color: 'success.main', fontWeight: 600 }}>
                                         {leaderboardUser.wins}
                                     </TableCell>
-                                    <TableCell align="center" sx={{ color: '#E53935', fontWeight: 600 }}>
+                                    <TableCell align="center" sx={{ color: 'error.main', fontWeight: 600 }}>
                                         {leaderboardUser.losses}
                                     </TableCell>
-                                    <TableCell align="center" sx={{ color: '#1E88E5', fontWeight: 600 }}>
+                                    <TableCell align="center" sx={{ color: 'info.main', fontWeight: 600 }}>
                                         <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
                                             {leaderboardUser.flawless}
                                             {leaderboardUser.flawless > 0 && (

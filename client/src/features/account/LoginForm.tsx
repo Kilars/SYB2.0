@@ -68,6 +68,7 @@ export default function LoginForm() {
                             fontWeight: 'bold',
                             py: 1.5,
                             '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}cc, ${SMASH_COLORS.p2Blue}cc)` },
+                            '&:focus-visible': { outline: '2px solid', outlineColor: 'secondary.main', outlineOffset: 2 },
                         }}
                     >
                         {isSubmitting ? 'Signing in...' : 'Login'}

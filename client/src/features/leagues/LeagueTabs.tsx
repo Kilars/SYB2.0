@@ -70,7 +70,14 @@ export default function LeagueTabs({ tab }: Props) {
             <Tab icon={<BarChart fontSize="small" />} iconPosition="start" label="Stats" />
           </Tabs>
         </Box>
-        <Box>
+        <Box sx={{
+          '@keyframes tabFadeIn': {
+            from: { opacity: 0, transform: 'translateY(8px)' },
+            to: { opacity: 1, transform: 'translateY(0)' },
+          },
+          animation: 'tabFadeIn 0.25s ease-out',
+          key: tab,
+        }}>
           {tab === 'description' && <Description />}
           {tab === 'leaderboard' && <Leaderboard />}
           {tab === 'matches' && <MatchesList />}

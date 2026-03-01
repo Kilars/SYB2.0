@@ -50,6 +50,8 @@ export default function LeagueList() {
                     key={league.id}
                     p={1}
                     m={1}
+                    role="article"
+                    aria-label={`League: ${league.title} — ${LEAGUE_STATUSES[league.status][0]}`}
                     sx={{
                         borderLeft: `4px solid ${STATUS_BORDERS[league.status]}`,
                         transition: 'transform 0.15s ease, box-shadow 0.15s ease',

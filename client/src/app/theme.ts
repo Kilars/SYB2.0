@@ -28,11 +28,27 @@ export const theme = createTheme({
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
   components: {
-    MuiCard: { defaultProps: { elevation: 2 } },
+    MuiCard: {
+      defaultProps: { elevation: 2 },
+      styleOverrides: {
+        root: {
+          transition: 'box-shadow 0.2s ease, transform 0.15s ease',
+        },
+      },
+    },
     MuiChip: {
       styleOverrides: {
         root: {
           fontWeight: 600,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          '&:focus-visible': {
+            outlineOffset: 2,
+          },
         },
       },
     },

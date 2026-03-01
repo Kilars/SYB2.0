@@ -30,6 +30,11 @@ export default function EmptyState({ icon, message, action }: Props) {
                 border: '2px dashed',
                 borderColor: 'divider',
                 background: `linear-gradient(180deg, transparent 0%, ${SMASH_COLORS.p2Blue}08 100%)`,
+                '@keyframes fadeInUp': {
+                    from: { opacity: 0, transform: 'translateY(16px)' },
+                    to: { opacity: 1, transform: 'translateY(0)' },
+                },
+                animation: 'fadeInUp 0.4s ease-out',
             }}
         >
             <Box sx={{
@@ -38,6 +43,12 @@ export default function EmptyState({ icon, message, action }: Props) {
                 alignItems: 'center',
                 color: SMASH_COLORS.p2Blue,
                 opacity: 0.6,
+                '@keyframes bounceIn': {
+                    '0%': { transform: 'scale(0.5)', opacity: 0 },
+                    '60%': { transform: 'scale(1.1)' },
+                    '100%': { transform: 'scale(1)', opacity: 0.6 },
+                },
+                animation: 'bounceIn 0.5s ease-out',
             }}>
                 {icon}
             </Box>

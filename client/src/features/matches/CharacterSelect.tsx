@@ -9,8 +9,8 @@ import { Skeleton, Typography } from '@mui/material';
 
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
-  borderBottom: '1px solid black',
-  background: 'white',
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  background: theme.palette.background.paper,
   '&.MuiAutocomplete-option:hover': {
     fontWeight: theme.typography.fontWeightBold,
     backgroundColor: theme.palette.grey[300],
@@ -31,17 +31,18 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   }
 }));
 
-const CustomTextField = styled(TextField)(() => ({
+const CustomTextField = styled(TextField)(({ theme }) => ({
   width: '100%',
   '& .MuiOutlinedInput-root': {
-    '& fieldset': {  // This targets the notched outline specifically
+    '& fieldset': {
       border: 'none',
     },
     '&:hover fieldset': {
       border: 'none',
     },
-    '&.Mui-focused fieldset': { // This ensures the border stays removed even when focused
-      border: 'none',
+    '&.Mui-focused fieldset': {
+      border: `2px solid ${theme.palette.primary.main}`,
+      borderRadius: 4,
     },
   },
 }));

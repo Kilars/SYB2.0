@@ -8,9 +8,16 @@ export default function DeleteButton() {
                 aria-label="Delete"
                 sx={{
                     opacity: 0.8,
-                    transition: 'opacity 0.3s',
+                    transition: 'opacity 0.3s, transform 0.2s',
                     position: 'relative',
                     cursor: 'pointer',
+                    '&:hover': { opacity: 1, transform: 'scale(1.1)' },
+                    '&:focus-visible': {
+                        outline: '2px solid',
+                        outlineColor: 'error.main',
+                        outlineOffset: 2,
+                        opacity: 1,
+                    },
                 }}
             >
                 <DeleteOutline

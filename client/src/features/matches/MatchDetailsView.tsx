@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,7 +14,7 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { SportsEsports } from "@mui/icons-material";
+import { EmojiEvents, SportsEsports, Warning } from "@mui/icons-material";
 import { useParams } from "react-router";
 import { useMatch } from "../../lib/hooks/useMatch";
 import { useCharacters } from "../../lib/hooks/useCharacters";
@@ -46,6 +47,7 @@ export default function MatchDetailsView() {
   const playerTwoWins = completedRounds.filter(r => r.winnerUserId === matchData.playerTwo.userId).length;
   const playerOneIsWinner = matchData.winnerUserId === matchData.playerOne.userId;
   const playerTwoIsWinner = matchData.winnerUserId === matchData.playerTwo.userId;
+  const isFlawless = (playerOneWins === 2 && playerTwoWins === 0) || (playerTwoWins === 2 && playerOneWins === 0);
 
   const handleConfirmReopen = async () => {
     await reopenMatch.mutateAsync();
@@ -58,17 +60,41 @@ export default function MatchDetailsView() {
       <Paper
         elevation={3}
         sx={{
-          p: 3, mb: 3, textAlign: 'center',
+          p: { xs: 2, sm: 3 }, mb: 3, textAlign: 'center',
           background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}15 0%, transparent 40%, ${SMASH_COLORS.p2Blue}15 100%)`,
           border: '1px solid',
           borderColor: 'divider',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="center" gap={2} flexWrap="wrap">
+        {/* Winner banner */}
+        {matchData.winnerUserId && (
+          <Box sx={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2,
+          }}>
+            <EmojiEvents sx={{ color: isFlawless ? SMASH_COLORS.gold : SMASH_COLORS.p4Green, fontSize: 28 }} />
+            <Typography variant="body1" fontWeight="bold" sx={{ color: SMASH_COLORS.p4Green }}>
+              {getDisplayName(playerOneIsWinner ? matchData.playerOne : matchData.playerTwo)} wins!
+              {isFlawless && (
+                <Typography component="span" sx={{ color: SMASH_COLORS.gold, ml: 1, fontWeight: 'bold' }}>
+                  Flawless
+                </Typography>
+              )}
+            </Typography>
+          </Box>
+        )}
+
+        <Box display="flex" alignItems="center" justifyContent="center" gap={{ xs: 1, sm: 2 }} flexWrap="wrap">
           <Typography
             variant="h5"
             fontWeight={playerOneIsWinner ? 'bold' : 'normal'}
-            sx={{ color: playerOneIsWinner ? SMASH_COLORS.p1Red : 'text.primary' }}
+            noWrap
+            sx={{
+              color: playerOneIsWinner ? SMASH_COLORS.p1Red : 'text.primary',
+              fontSize: { xs: '1rem', sm: '1.5rem' },
+              maxWidth: { xs: '30vw', sm: 'none' },
+            }}
           >
             {getDisplayName(matchData.playerOne)}
           </Typography>
@@ -84,12 +110,36 @@ export default function MatchDetailsView() {
           <Typography
             variant="h5"
             fontWeight={playerTwoIsWinner ? 'bold' : 'normal'}
-            sx={{ color: playerTwoIsWinner ? SMASH_COLORS.p2Blue : 'text.primary' }}
+            noWrap
+            sx={{
+              color: playerTwoIsWinner ? SMASH_COLORS.p2Blue : 'text.primary',
+              fontSize: { xs: '1rem', sm: '1.5rem' },
+              maxWidth: { xs: '30vw', sm: 'none' },
+            }}
           >
             {getDisplayName(matchData.playerTwo)}
           </Typography>
         </Box>
       </Paper>
+
+      {/* Round progress dots */}
+      <Box display="flex" justifyContent="center" gap={1} mb={3}>
+        {matchData.rounds.map((round, i) => {
+          const hasWinner = !!round.winnerUserId;
+          const p1Won = round.winnerUserId === matchData.playerOne.userId;
+          return (
+            <Box
+              key={i}
+              sx={{
+                width: 14, height: 14, borderRadius: '50%',
+                backgroundColor: hasWinner ? (p1Won ? SMASH_COLORS.p1Red : SMASH_COLORS.p2Blue) : 'transparent',
+                border: `2px solid ${hasWinner ? (p1Won ? SMASH_COLORS.p1Red : SMASH_COLORS.p2Blue) : '#ccc'}`,
+                transition: 'all 0.3s ease',
+              }}
+            />
+          );
+        })}
+      </Box>
 
       {/* Round cards */}
       {completedRounds.map((round) => {
@@ -102,7 +152,12 @@ export default function MatchDetailsView() {
           <Card
             key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
             variant="outlined"
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 2,
+              borderLeft: `4px solid ${p1IsRoundWinner ? SMASH_COLORS.p1Red : SMASH_COLORS.p2Blue}`,
+              transition: 'box-shadow 0.2s ease',
+              '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.1)' },
+            }}
           >
             <CardContent>
               <Typography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -129,9 +184,14 @@ export default function MatchDetailsView() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: 0.5,
+                    transition: 'border-color 0.2s ease',
                   }}
                 >
-                  <Typography variant="h6" sx={{ color: p1IsRoundWinner ? SMASH_COLORS.p1Red : 'text.primary' }}>
+                  <Typography variant="h6" noWrap sx={{
+                    color: p1IsRoundWinner ? SMASH_COLORS.p1Red : 'text.primary',
+                    fontSize: { xs: '0.95rem', sm: '1.25rem' },
+                    maxWidth: '100%',
+                  }}>
                     {getDisplayName(matchData.playerOne)}
                   </Typography>
                   {p1Char && (
@@ -183,9 +243,14 @@ export default function MatchDetailsView() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: 0.5,
+                    transition: 'border-color 0.2s ease',
                   }}
                 >
-                  <Typography variant="h6" sx={{ color: p2IsRoundWinner ? SMASH_COLORS.p2Blue : 'text.primary' }}>
+                  <Typography variant="h6" noWrap sx={{
+                    color: p2IsRoundWinner ? SMASH_COLORS.p2Blue : 'text.primary',
+                    fontSize: { xs: '0.95rem', sm: '1.25rem' },
+                    maxWidth: '100%',
+                  }}>
                     {getDisplayName(matchData.playerTwo)}
                   </Typography>
                   {p2Char && (
@@ -220,10 +285,15 @@ export default function MatchDetailsView() {
         variant="contained"
         color="warning"
         fullWidth
-        sx={{ mt: 3 }}
+        sx={{
+          mt: 3, py: 1.5, fontWeight: 'bold',
+          '&:focus-visible': { outline: '2px solid', outlineColor: 'warning.main', outlineOffset: 2 },
+        }}
+        disabled={reopenMatch.isPending}
+        startIcon={reopenMatch.isPending ? <CircularProgress size={18} /> : <Warning />}
         onClick={() => setConfirmOpen(true)}
       >
-        Reopen match
+        {reopenMatch.isPending ? 'Reopening...' : 'Reopen match'}
       </Button>
 
       {/* Confirmation dialog */}
@@ -233,7 +303,10 @@ export default function MatchDetailsView() {
         aria-labelledby="reopen-dialog-title"
         aria-describedby="reopen-dialog-description"
       >
-        <DialogTitle id="reopen-dialog-title">Reopen Match?</DialogTitle>
+        <DialogTitle id="reopen-dialog-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Warning sx={{ color: SMASH_COLORS.p3Yellow }} />
+          Reopen Match?
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="reopen-dialog-description">
             This will allow editing of match results. Are you sure?
@@ -246,8 +319,9 @@ export default function MatchDetailsView() {
             color="warning"
             variant="contained"
             disabled={reopenMatch.isPending}
+            startIcon={reopenMatch.isPending ? <CircularProgress size={16} /> : undefined}
           >
-            Reopen
+            {reopenMatch.isPending ? 'Reopening...' : 'Reopen'}
           </Button>
         </DialogActions>
       </Dialog>
