@@ -5,6 +5,9 @@ import { useCharacters } from "../../lib/hooks/useCharacters";
 import { BarChart, CheckCircle, Cancel } from "@mui/icons-material";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
+import { SMASH_COLORS } from "../../app/theme";
+
+const PODIUM_COLORS = [SMASH_COLORS.gold, SMASH_COLORS.silver, SMASH_COLORS.bronze];
 
 export default function UserStats() {
     const { userId } = useParams();
@@ -67,16 +70,33 @@ export default function UserStats() {
                 }
                 return (
                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
-                        {topChars.map(([charId, stats]) => {
+                        {topChars.map(([charId, stats], i) => {
                             const character = characters.find(c => c.id === charId);
                             return (
-                                <Card key={charId}>
+                                <Card key={charId} sx={{
+                                    border: `2px solid ${PODIUM_COLORS[i] || 'transparent'}`,
+                                    boxShadow: i === 0 ? `0 0 12px ${SMASH_COLORS.gold}44` : undefined,
+                                }}>
                                     <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                        <Avatar src={character?.imageUrl} alt={character?.fullName ?? 'Unknown'} sx={{ width: 56, height: 56 }} />
+                                        <Avatar
+                                            src={character?.imageUrl}
+                                            alt={character?.fullName ?? 'Unknown'}
+                                            sx={{
+                                                width: 64, height: 64,
+                                                border: `3px solid ${PODIUM_COLORS[i] || SMASH_COLORS.p2Blue}`,
+                                            }}
+                                        />
                                         <Box>
                                             <Typography fontWeight="bold">{character?.fullName ?? 'Unknown'}</Typography>
-                                            <Typography variant="body2">Wins: {stats.wins} / Total: {stats.total}</Typography>
-                                            <Typography variant="body2">Win rate: {stats.wr}%</Typography>
+                                            <Typography variant="body2">
+                                                Wins: <Box component="span" sx={{ color: SMASH_COLORS.p4Green, fontWeight: 600 }}>{stats.wins}</Box> / Total: {stats.total}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                Win rate: <Box component="span" sx={{
+                                                    color: stats.wr >= 60 ? SMASH_COLORS.p4Green : stats.wr <= 40 ? SMASH_COLORS.p1Red : 'text.primary',
+                                                    fontWeight: 600,
+                                                }}>{stats.wr}%</Box>
+                                            </Typography>
                                         </Box>
                                     </CardContent>
                                 </Card>
@@ -97,11 +117,32 @@ export default function UserStats() {
                         p={2}
                         mb={1}
                         onClick={() => navigate(`/leagues/${match.leagueId}/split/${match.split}/match/${match.matchNumber}`)}
+                        sx={{
+                            cursor: 'pointer',
+                            transition: 'transform 0.15s ease',
+                            '&:hover': { transform: 'translateY(-2px)' },
+                        }}
                     >
                         <Box>
                             <Box display={'flex'} justifyContent='space-between' alignItems='center'>
-                                <Typography variant="h4" fontFamily="monospace" fontStyle="italic" sx={{ fontSize: { xs: '1.25rem', sm: '2.125rem' } }}>{match.playerOne.displayName}</Typography>
-                                <Typography variant="h4" fontFamily="monospace" fontStyle="italic" sx={{ fontSize: { xs: '1.25rem', sm: '2.125rem' } }}>{match.playerTwo.displayName}</Typography>
+                                <Typography
+                                    variant="h4" fontFamily="monospace" fontStyle="italic"
+                                    sx={{
+                                        fontSize: { xs: '1.25rem', sm: '2.125rem' },
+                                        color: match.winnerUserId === match.playerOne.userId ? SMASH_COLORS.p1Red : 'text.primary',
+                                    }}
+                                >
+                                    {match.playerOne.displayName}
+                                </Typography>
+                                <Typography
+                                    variant="h4" fontFamily="monospace" fontStyle="italic"
+                                    sx={{
+                                        fontSize: { xs: '1.25rem', sm: '2.125rem' },
+                                        color: match.winnerUserId === match.playerTwo.userId ? SMASH_COLORS.p2Blue : 'text.primary',
+                                    }}
+                                >
+                                    {match.playerTwo.displayName}
+                                </Typography>
                             </Box>
                             <Box display='flex' flexDirection='row' justifyContent='space-between'>
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', justifyItems: 'center', }}>
@@ -111,24 +152,29 @@ export default function UserStats() {
                                         <Box
                                             key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
                                             sx={{
-                                                border: '2px solid',
-                                                borderColor: isWin ? 'success.main' : 'error.main',
-                                                m: 1,
+                                                border: '3px solid',
+                                                borderRadius: 1,
+                                                borderColor: isWin ? SMASH_COLORS.p4Green : SMASH_COLORS.p1Red,
+                                                m: 0.5,
                                                 gridColumn: i == 2 ? 'span 2' : 'span 1',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                position: 'relative'
+                                                position: 'relative',
+                                                boxShadow: isWin ? `0 0 6px ${SMASH_COLORS.p4Green}66` : 'none',
                                             }}
                                         >
                                             <img
                                                 alt={characters.find(c => c.id === round.playerOneCharacterId)?.fullName || 'Character'}
-                                                style={{ width: 'clamp(35px, 8vw, 50px)', height: 'clamp(35px, 8vw, 50px)' }}
+                                                style={{ width: 'clamp(40px, 10vw, 56px)', height: 'clamp(40px, 10vw, 56px)' }}
                                                 src={
                                                     characters.find(c => c.id === round.playerOneCharacterId)?.imageUrl
                                                 }
                                             />
-                                            <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-                                                {isWin ? <CheckCircle color="success" fontSize="small" /> : <Cancel color="error" fontSize="small" />}
+                                            <Box sx={{ position: 'absolute', bottom: -2, right: -2 }}>
+                                                {isWin
+                                                    ? <CheckCircle sx={{ color: SMASH_COLORS.p4Green, fontSize: 18 }} />
+                                                    : <Cancel sx={{ color: SMASH_COLORS.p1Red, fontSize: 18 }} />
+                                                }
                                             </Box>
                                         </Box>
                                     );
@@ -141,24 +187,29 @@ export default function UserStats() {
                                         <Box
                                             key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
                                             sx={{
-                                                border: '2px solid',
-                                                borderColor: isWin ? 'success.main' : 'error.main',
-                                                m: 1,
+                                                border: '3px solid',
+                                                borderRadius: 1,
+                                                borderColor: isWin ? SMASH_COLORS.p4Green : SMASH_COLORS.p1Red,
+                                                m: 0.5,
                                                 gridColumn: i == 2 ? 'span 2' : 'span 1',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                position: 'relative'
+                                                position: 'relative',
+                                                boxShadow: isWin ? `0 0 6px ${SMASH_COLORS.p4Green}66` : 'none',
                                             }}
                                         >
                                             <img
                                                 alt={characters.find(c => c.id === round.playerTwoCharacterId)?.fullName || 'Character'}
-                                                style={{ width: 'clamp(35px, 8vw, 50px)', height: 'clamp(35px, 8vw, 50px)' }}
+                                                style={{ width: 'clamp(40px, 10vw, 56px)', height: 'clamp(40px, 10vw, 56px)' }}
                                                 src={
                                                     characters.find(c => c.id === round.playerTwoCharacterId)?.imageUrl
                                                 }
                                             />
-                                            <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-                                                {isWin ? <CheckCircle color="success" fontSize="small" /> : <Cancel color="error" fontSize="small" />}
+                                            <Box sx={{ position: 'absolute', bottom: -2, right: -2 }}>
+                                                {isWin
+                                                    ? <CheckCircle sx={{ color: SMASH_COLORS.p4Green, fontSize: 18 }} />
+                                                    : <Cancel sx={{ color: SMASH_COLORS.p1Red, fontSize: 18 }} />
+                                                }
                                             </Box>
                                         </Box>
                                     );
