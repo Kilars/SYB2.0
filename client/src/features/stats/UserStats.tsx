@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Card, CardContent, Paper, Typography } from "@mui/
 import { useNavigate, useParams } from "react-router";
 import { useUserMatches } from "../../lib/hooks/useUserMatches";
 import { useCharacters } from "../../lib/hooks/useCharacters";
-import { BarChart, CheckCircle, Cancel, EmojiEvents, SportsMma, AutoAwesome } from "@mui/icons-material";
+import { BarChart, CheckCircle, Cancel, EmojiEvents, SportsMma, AutoAwesome, ThumbUp, ThumbDown } from "@mui/icons-material";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
@@ -184,6 +184,110 @@ export default function UserStats() {
                     </Box>
                 </Box>
             )}
+
+            {/* Best & Worst Character Matchups */}
+            {(() => {
+                const opponentCharStats: Record<string, { wins: number; total: number }> = {};
+                userMatches.flatMap(match =>
+                    match.rounds.filter(round => round.completed).map(round => {
+                        const isPlayerOne = match.playerOne.userId === userId;
+                        const opponentCharId = isPlayerOne ? round.playerTwoCharacterId : round.playerOneCharacterId;
+                        const won = round.winnerUserId === userId;
+                        return { opponentCharId, won };
+                    })
+                ).forEach(({ opponentCharId, won }) => {
+                    if (!opponentCharId) return;
+                    if (!opponentCharStats[opponentCharId]) opponentCharStats[opponentCharId] = { wins: 0, total: 0 };
+                    opponentCharStats[opponentCharId].total += 1;
+                    if (won) opponentCharStats[opponentCharId].wins += 1;
+                });
+
+                const matchups = Object.entries(opponentCharStats)
+                    .filter(([, s]) => s.total >= 3)
+                    .map(([charId, s]) => {
+                        const char = characters.find(c => c.id === charId);
+                        return {
+                            charId,
+                            name: char?.fullName || 'Unknown',
+                            shortName: char?.shorthandName || '??',
+                            imageUrl: char?.imageUrl || '',
+                            wins: s.wins,
+                            losses: s.total - s.wins,
+                            total: s.total,
+                            wr: Math.round((s.wins * 100) / s.total),
+                        };
+                    });
+
+                const best = [...matchups].sort((a, b) => b.wr - a.wr || b.total - a.total).slice(0, 3);
+                const worst = [...matchups].sort((a, b) => a.wr - b.wr || b.total - a.total).slice(0, 3);
+
+                if (matchups.length === 0) return null;
+
+                const MatchupCard = ({ mu, type }: { mu: typeof matchups[number]; type: 'best' | 'worst' }) => {
+                    const accentColor = type === 'best' ? SMASH_COLORS.p4Green : SMASH_COLORS.p1Red;
+                    return (
+                        <Paper
+                            elevation={2}
+                            sx={{
+                                p: 2,
+                                borderRadius: 2,
+                                borderLeft: `4px solid ${accentColor}`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                            }}
+                        >
+                            <Avatar
+                                src={mu.imageUrl}
+                                alt={mu.name}
+                                sx={{ width: 52, height: 52, border: `2px solid ${accentColor}` }}
+                            />
+                            <Box flex={1} minWidth={0}>
+                                <Typography fontWeight="bold" noWrap>{mu.name}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {mu.wins}W - {mu.losses}L ({mu.total} rounds)
+                                </Typography>
+                            </Box>
+                            <Box textAlign="right">
+                                <Typography variant="h5" fontWeight="bold" sx={{ color: accentColor }}>
+                                    {mu.wr}%
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">win rate</Typography>
+                            </Box>
+                        </Paper>
+                    );
+                };
+
+                return (
+                    <Box mb={3}>
+                        <Typography variant="h5" mb={2} fontWeight="bold">Character Matchups</Typography>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                            <Box>
+                                <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+                                    <ThumbUp sx={{ color: SMASH_COLORS.p4Green }} />
+                                    <Typography variant="h6" fontWeight="bold" sx={{ color: SMASH_COLORS.p4Green }}>
+                                        Best Against
+                                    </Typography>
+                                </Box>
+                                <Box display="flex" flexDirection="column" gap={1.5}>
+                                    {best.map(mu => <MatchupCard key={mu.charId} mu={mu} type="best" />)}
+                                </Box>
+                            </Box>
+                            <Box>
+                                <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+                                    <ThumbDown sx={{ color: SMASH_COLORS.p1Red }} />
+                                    <Typography variant="h6" fontWeight="bold" sx={{ color: SMASH_COLORS.p1Red }}>
+                                        Worst Against
+                                    </Typography>
+                                </Box>
+                                <Box display="flex" flexDirection="column" gap={1.5}>
+                                    {worst.map(mu => <MatchupCard key={mu.charId} mu={mu} type="worst" />)}
+                                </Box>
+                            </Box>
+                        </Box>
+                    </Box>
+                );
+            })()}
 
             <Typography variant="h4" mb={2}>Match History</Typography>
             {userMatches
