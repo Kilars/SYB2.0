@@ -55,15 +55,18 @@ export default function MatchesList() {
                 }}
               >
               <Box>
-                <Box display='flex' justifyContent='space-between' alignItems='center'>
+                <Box display='flex' justifyContent='space-between' alignItems='center' gap={1} overflow="hidden">
                   <Typography
                     variant="h4"
                     fontFamily="monospace"
                     fontStyle="italic"
+                    noWrap
                     sx={{
-                      fontSize: { xs: '1.25rem', sm: '2.125rem' },
+                      fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
                       color: match.winnerUserId === match.playerOne.userId ? SMASH_COLORS.p1Red : 'text.primary',
                       fontWeight: match.winnerUserId === match.playerOne.userId ? 'bold' : 'normal',
+                      flex: 1,
+                      minWidth: 0,
                     }}
                   >
                     {match.playerOne.displayName}{match.playerOne.isGuest ? ' (guest)' : ''}
@@ -93,10 +96,14 @@ export default function MatchesList() {
                     variant="h4"
                     fontFamily="monospace"
                     fontStyle="italic"
+                    noWrap
                     sx={{
-                      fontSize: { xs: '1.25rem', sm: '2.125rem' },
+                      fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
                       color: match.winnerUserId === match.playerTwo.userId ? SMASH_COLORS.p2Blue : 'text.primary',
                       fontWeight: match.winnerUserId === match.playerTwo.userId ? 'bold' : 'normal',
+                      flex: 1,
+                      minWidth: 0,
+                      textAlign: 'right',
                     }}
                   >
                     {match.playerTwo.displayName}{match.playerTwo.isGuest ? ' (guest)' : ''}

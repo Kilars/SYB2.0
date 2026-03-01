@@ -117,15 +117,15 @@ export default function LeagueStats() {
                     outerRadius={isMobile ? 80 : 110}
                     innerRadius={isMobile ? 30 : 40}
                     paddingAngle={2}
-                    label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                    labelLine={true}
+                    label={isMobile ? false : ({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                    labelLine={!isMobile}
                   >
                     {charPicks.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="#fff" strokeWidth={2} />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => [`${value} picks`]}
+                    formatter={(value, name) => [`${value} picks`, name]}
                     contentStyle={{ borderRadius: 8, border: '1px solid #ddd' }}
                   />
                 </PieChart>
@@ -286,10 +286,10 @@ export default function LeagueStats() {
                   }}
                 >
                   <Box textAlign="center" flex={1}>
-                    <Typography fontWeight="bold" sx={{ color: record.p1Wins > record.p2Wins ? SMASH_COLORS.p4Green : 'text.primary' }}>
+                    <Typography fontWeight="bold" noWrap sx={{ color: record.p1Wins > record.p2Wins ? SMASH_COLORS.p4Green : 'text.primary', fontSize: { xs: '0.85rem', sm: '1rem' } }}>
                       {record.p1}
                     </Typography>
-                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p1Red }}>
+                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p1Red, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
                       {record.p1Wins}
                     </Typography>
                   </Box>
@@ -301,10 +301,10 @@ export default function LeagueStats() {
                     <Typography variant="body2" fontWeight="bold" color="white">VS</Typography>
                   </Box>
                   <Box textAlign="center" flex={1}>
-                    <Typography fontWeight="bold" sx={{ color: record.p2Wins > record.p1Wins ? SMASH_COLORS.p4Green : 'text.primary' }}>
+                    <Typography fontWeight="bold" noWrap sx={{ color: record.p2Wins > record.p1Wins ? SMASH_COLORS.p4Green : 'text.primary', fontSize: { xs: '0.85rem', sm: '1rem' } }}>
                       {record.p2}
                     </Typography>
-                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p2Blue }}>
+                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p2Blue, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
                       {record.p2Wins}
                     </Typography>
                   </Box>
@@ -333,8 +333,8 @@ export default function LeagueStats() {
                   outerRadius={isMobile ? 70 : 100}
                   innerRadius={isMobile ? 25 : 35}
                   paddingAngle={2}
-                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                  labelLine={true}
+                  label={isMobile ? false : ({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  labelLine={!isMobile}
                 >
                   {(leaderboard || []).map((_, index) => (
                     <Cell key={`pts-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="#fff" strokeWidth={2} />

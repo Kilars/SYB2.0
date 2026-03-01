@@ -50,8 +50,8 @@ export default function LeagueForm() {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                p: 3,
-                g: 3,
+                p: { xs: 2, sm: 3 },
+                gap: 3,
                 maxWidth: 'md',
                 mx: 'auto',
                 borderRadius: 3
@@ -77,7 +77,7 @@ export default function LeagueForm() {
                         onCreateGuest={async (displayName) => await createGuest.mutateAsync(displayName)}
                     />
                 }
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', gap: 1, flexWrap: 'wrap' }}>
                     <Button color="inherit" onClick={() => navigate(-1)}>Cancel</Button>
                     <Button
                         type="submit"

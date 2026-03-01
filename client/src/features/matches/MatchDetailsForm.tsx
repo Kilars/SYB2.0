@@ -28,7 +28,7 @@ export default function MatchDetailsForm() {
     try {
       matchSchema.parse(rounds)
       if (rounds) await completeMatch.mutateAsync(rounds);
-      toast('Succes', {type: 'success'})
+      toast('Match completed successfully!', {type: 'success'})
     } catch (error) {
       if (error instanceof z.ZodError) {
         for (const issue of error.issues) {
@@ -83,7 +83,7 @@ export default function MatchDetailsForm() {
 
   return (
     <Box>
-      <Typography variant="h4" mb={2} fontWeight="bold">Register Match Result</Typography>
+      <Typography variant="h4" mb={2} fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>Register Match Result</Typography>
 
       {/* Match score indicator */}
       <Paper
@@ -91,13 +91,19 @@ export default function MatchDetailsForm() {
         sx={{
           p: 2, mb: 3, textAlign: 'center',
           background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}15 0%, transparent 40%, ${SMASH_COLORS.p2Blue}15 100%)`,
+          overflow: 'hidden',
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="center" gap={2}>
+        <Box display="flex" alignItems="center" justifyContent="center" gap={{ xs: 1, sm: 2 }} flexWrap="wrap">
           <Typography
             variant="h5"
             fontWeight="bold"
-            sx={{ color: playerOneScore > playerTwoScore ? SMASH_COLORS.p1Red : 'text.primary' }}
+            noWrap
+            sx={{
+              color: playerOneScore > playerTwoScore ? SMASH_COLORS.p1Red : 'text.primary',
+              fontSize: { xs: '1rem', sm: '1.5rem' },
+              maxWidth: { xs: '30vw', sm: 'none' },
+            }}
           >
             {getDisplayName(matchData.playerOne)}
           </Typography>
@@ -113,7 +119,12 @@ export default function MatchDetailsForm() {
           <Typography
             variant="h5"
             fontWeight="bold"
-            sx={{ color: playerTwoScore > playerOneScore ? SMASH_COLORS.p2Blue : 'text.primary' }}
+            noWrap
+            sx={{
+              color: playerTwoScore > playerOneScore ? SMASH_COLORS.p2Blue : 'text.primary',
+              fontSize: { xs: '1rem', sm: '1.5rem' },
+              maxWidth: { xs: '30vw', sm: 'none' },
+            }}
           >
             {getDisplayName(matchData.playerTwo)}
           </Typography>

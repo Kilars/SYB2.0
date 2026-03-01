@@ -135,7 +135,11 @@ export default function Leaderboard() {
                     ))}
                 </Stack>
             ) : (
-            <TableContainer sx={{ height: '50vh', overflowX: 'auto' }}>
+            <TableContainer sx={{
+                height: '50vh',
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+            }}>
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>

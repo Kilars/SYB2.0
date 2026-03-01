@@ -54,7 +54,7 @@ type Props = {
 export default function CharacterSelect({ selectedId, onChange }: Props) {
   const { characters, charactersIsLoading } = useCharacters();
 
-  if (charactersIsLoading) return <Skeleton variant="rectangular" width={200} height={40} />
+  if (charactersIsLoading) return <Skeleton variant="rectangular" width="100%" height={40} />
   if (!characters) return <Typography variant="body2" color="text.secondary">No characters found</Typography>
 
   const selectedCharacter = characters.find(char => char.id === selectedId);
@@ -76,7 +76,7 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
         },
       }}
       renderInput={(params) => {
-        const optionalCharacterImage = selectedCharacter && (<img src={selectedCharacter.imageUrl} alt={selectedCharacter.shorthandName} width="50" height="50" />)
+        const optionalCharacterImage = selectedCharacter && (<img src={selectedCharacter.imageUrl} alt={selectedCharacter.shorthandName} style={{ width: 'clamp(32px, 8vw, 50px)', height: 'clamp(32px, 8vw, 50px)' }} />)
         return (
           <>
             <CustomTextField

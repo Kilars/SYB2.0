@@ -98,7 +98,7 @@ export default function LeagueList() {
                         </Box>
                     </CardContent>
                     <CardActions>
-                        <Box gap={2} display='flex' justifyContent='flex-end' width='100%'>
+                        <Box gap={1} display='flex' justifyContent='flex-end' width='100%' flexWrap='wrap'>
                             {currentUser && league.members.filter(m => m.isAdmin).map(x => x.userId).includes(currentUser.id) && league.status == 0 &&
                                 <Button variant="contained" color="secondary" onClick={() => navigate(`/manage/${league.id}/leaderboard`)}>
                                     <Edit />

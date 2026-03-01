@@ -130,14 +130,14 @@ export default function UserStats() {
                     { label: 'Flawless', value: flawless, icon: <AutoAwesome />, color: SMASH_COLORS.gold },
                 ];
                 return (
-                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr 1fr 1fr' }, gap: 2, mb: 3 }}>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr 1fr 1fr' }, gap: { xs: 1, sm: 2 }, mb: 3 }}>
                         {statCards.map(card => (
                             <Paper key={card.label} elevation={2} sx={{
-                                p: 2, textAlign: 'center', borderRadius: 2,
+                                p: { xs: 1.5, sm: 2 }, textAlign: 'center', borderRadius: 2,
                                 borderTop: `3px solid ${card.color}`,
                             }}>
                                 <Box sx={{ color: card.color, mb: 0.5 }}>{card.icon}</Box>
-                                <Typography variant="h5" fontWeight="bold">{card.value}</Typography>
+                                <Typography variant="h5" fontWeight="bold" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>{card.value}</Typography>
                                 <Typography variant="caption" color="text.secondary">{card.label}</Typography>
                             </Paper>
                         ))}
@@ -240,7 +240,7 @@ export default function UserStats() {
                             <Avatar
                                 src={mu.imageUrl}
                                 alt={mu.name}
-                                sx={{ width: 52, height: 52, border: `2px solid ${accentColor}` }}
+                                sx={{ width: { xs: 40, sm: 52 }, height: { xs: 40, sm: 52 }, border: `2px solid ${accentColor}` }}
                             />
                             <Box flex={1} minWidth={0}>
                                 <Typography fontWeight="bold" noWrap>{mu.name}</Typography>
@@ -248,8 +248,8 @@ export default function UserStats() {
                                     {mu.wins}W - {mu.losses}L ({mu.total} rounds)
                                 </Typography>
                             </Box>
-                            <Box textAlign="right">
-                                <Typography variant="h5" fontWeight="bold" sx={{ color: accentColor }}>
+                            <Box textAlign="right" flexShrink={0}>
+                                <Typography variant="h5" fontWeight="bold" sx={{ color: accentColor, fontSize: { xs: '1.2rem', sm: '1.5rem' } }}>
                                     {mu.wr}%
                                 </Typography>
                                 <Typography variant="caption" color="text.secondary">win rate</Typography>
@@ -307,21 +307,23 @@ export default function UserStats() {
                         }}
                     >
                         <Box>
-                            <Box display={'flex'} justifyContent='space-between' alignItems='center'>
+                            <Box display={'flex'} justifyContent='space-between' alignItems='center' gap={1} overflow="hidden">
                                 <Typography
-                                    variant="h4" fontFamily="monospace" fontStyle="italic"
+                                    variant="h4" fontFamily="monospace" fontStyle="italic" noWrap
                                     sx={{
-                                        fontSize: { xs: '1.25rem', sm: '2.125rem' },
+                                        fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
                                         color: match.winnerUserId === match.playerOne.userId ? SMASH_COLORS.p1Red : 'text.primary',
+                                        flex: 1, minWidth: 0,
                                     }}
                                 >
                                     {match.playerOne.displayName}
                                 </Typography>
                                 <Typography
-                                    variant="h4" fontFamily="monospace" fontStyle="italic"
+                                    variant="h4" fontFamily="monospace" fontStyle="italic" noWrap
                                     sx={{
-                                        fontSize: { xs: '1.25rem', sm: '2.125rem' },
+                                        fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
                                         color: match.winnerUserId === match.playerTwo.userId ? SMASH_COLORS.p2Blue : 'text.primary',
+                                        flex: 1, minWidth: 0, textAlign: 'right',
                                     }}
                                 >
                                     {match.playerTwo.displayName}
