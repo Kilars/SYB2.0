@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { SMASH_COLORS } from "../../app/theme";
 import { useAccount } from "../../lib/hooks/useAccount";
 import { useLeagues } from "../../lib/hooks/useLeagues";
+import { useTournaments } from "../../lib/hooks/useTournaments";
 import { useUserMatches } from "../../lib/hooks/useUserMatches";
 import { useAppTheme } from "../../app/context/ThemeContext";
 
@@ -237,6 +238,66 @@ function ActiveLeagues() {
   );
 }
 
+function ActiveTournaments() {
+  const { tournaments, isTournamentsLoading } = useTournaments();
+  const navigate = useNavigate();
+
+  if (isTournamentsLoading) {
+    return (
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" fontWeight="bold" mb={2}>Active Tournaments</Typography>
+        {Array.from({ length: 2 }).map((_, i) => (
+          <Skeleton key={i} variant="rectangular" height={50} sx={{ borderRadius: 1, mb: 1 }} />
+        ))}
+      </Box>
+    );
+  }
+
+  const activeTournaments = tournaments?.filter(t => t.status === 1) ?? [];
+  if (activeTournaments.length === 0) return null;
+
+  return (
+    <Box sx={{ mb: 4 }}>
+      <Typography variant="h6" fontWeight="bold" mb={2}>Active Tournaments</Typography>
+      <Box display="flex" flexDirection="column" gap={1}>
+        {activeTournaments.map(tournament => {
+          const completedMatches = tournament.matches.filter(m => m.completed).length;
+          const totalMatches = tournament.matches.length;
+
+          return (
+            <Card
+              key={tournament.id}
+              sx={{
+                cursor: 'pointer',
+                borderLeft: `4px solid ${SMASH_COLORS.p3Yellow}`,
+                transition: 'transform 0.15s ease',
+                '&:hover': { transform: 'translateX(4px)' },
+              }}
+              onClick={() => navigate(`/tournaments/${tournament.id}`)}
+            >
+              <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography fontWeight="bold" noWrap sx={{ flex: 1, minWidth: 0 }}>{tournament.title}</Typography>
+                  <Chip
+                    label={`${completedMatches}/${totalMatches}`}
+                    size="small"
+                    sx={{
+                      fontWeight: 'bold',
+                      backgroundColor: `${SMASH_COLORS.p3Yellow}15`,
+                      color: SMASH_COLORS.p3Yellow,
+                      border: `1px solid ${SMASH_COLORS.p3Yellow}`,
+                    }}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
 export default function HomePage() {
   const { currentUser, loadingUserInfo } = useAccount();
 
@@ -264,6 +325,7 @@ export default function HomePage() {
         <Box>
           <QuickStats userId={currentUser.id} />
           <ActiveLeagues />
+          <ActiveTournaments />
         </Box>
         <Box>
           <RecentMatches userId={currentUser.id} />

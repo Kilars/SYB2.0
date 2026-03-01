@@ -3,7 +3,7 @@ import MenuItemLink from "../shared/components/MenuItemLink";
 import ThemeSelector from "../shared/components/ThemeSelector";
 import { observer } from "mobx-react-lite";
 import { useAccount } from "../../lib/hooks/useAccount";
-import { Add, Menu as MenuIcon, Person, SportsEsports } from "@mui/icons-material";
+import { Add, EmojiEvents, Menu as MenuIcon, Person, SportsEsports } from "@mui/icons-material";
 import { useState } from "react";
 import { NavLink } from "react-router";
 import { useAppTheme } from "../context/ThemeContext";
@@ -48,6 +48,7 @@ const NavBar = observer(function NavBar() {
                 SYB
               </Typography>
               <MenuItemLink to='/leagues'> Leagues </MenuItemLink>
+              <MenuItemLink to='/tournaments'> Tournaments </MenuItemLink>
             </Box>
             <Box>
               <Button onClick={handleClick} sx={{ color: 'white' }} aria-label="Open navigation menu"> <MenuIcon /> </Button>
@@ -80,6 +81,11 @@ const NavBar = observer(function NavBar() {
               {currentUser && (
                 <MenuItem component={NavLink} to="/createLeague" onClick={handleClose}>
                   <Add sx={{ mr: 1 }} fontSize="small" /> Create League
+                </MenuItem>
+              )}
+              {currentUser && (
+                <MenuItem component={NavLink} to="/createTournament" onClick={handleClose}>
+                  <EmojiEvents sx={{ mr: 1 }} fontSize="small" /> Create Tournament
                 </MenuItem>
               )}
               <Divider sx={{ my: 1 }} />
