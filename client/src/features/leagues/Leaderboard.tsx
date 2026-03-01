@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useNavigate, useParams } from "react-router";
-import { Edit, EmojiEvents } from "@mui/icons-material";
+import { AutoAwesome, Edit, EmojiEvents } from "@mui/icons-material";
 import { useAccount } from "../../lib/hooks/useAccount";
 import StatusButton from "./StatusButton";
 import UserChip from "../../app/shared/components/UserChip";
@@ -67,11 +67,16 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
                     </Typography>
                 </Box>
                 <Box textAlign="right" flexShrink={0}>
-                    <Typography variant="h5" fontWeight="bold" sx={{ color: rankStyle ? rankStyle.color : 'primary.main' }}>
-                        {entry.points}
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={0.5} justifyContent="flex-end">
+                        <Typography variant="h5" fontWeight="bold" sx={{ color: rankStyle ? rankStyle.color : 'primary.main' }}>
+                            {entry.points}
+                        </Typography>
+                        {entry.flawless > 0 && (
+                            <AutoAwesome sx={{ color: SMASH_COLORS.gold, fontSize: 18 }} />
+                        )}
+                    </Box>
                     <Typography variant="caption" color="text.secondary">
-                        pts
+                        pts{entry.flawless > 0 ? ` (${entry.flawless} flawless)` : ''}
                     </Typography>
                 </Box>
             </Box>
@@ -182,7 +187,12 @@ export default function Leaderboard() {
                                         {leaderboardUser.losses}
                                     </TableCell>
                                     <TableCell align="center" sx={{ color: '#1E88E5', fontWeight: 600 }}>
-                                        {leaderboardUser.flawless}
+                                        <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
+                                            {leaderboardUser.flawless}
+                                            {leaderboardUser.flawless > 0 && (
+                                                <AutoAwesome sx={{ color: SMASH_COLORS.gold, fontSize: 16 }} />
+                                            )}
+                                        </Box>
                                     </TableCell>
                                 </TableRow>
                             );

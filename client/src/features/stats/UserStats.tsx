@@ -1,11 +1,17 @@
-import { Avatar, Box, Button, Card, CardContent, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardContent, Paper, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import { useUserMatches } from "../../lib/hooks/useUserMatches";
 import { useCharacters } from "../../lib/hooks/useCharacters";
-import { BarChart, CheckCircle, Cancel } from "@mui/icons-material";
+import { BarChart, CheckCircle, Cancel, EmojiEvents, SportsMma, AutoAwesome } from "@mui/icons-material";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
 import { SMASH_COLORS } from "../../app/theme";
+
+const CHAR_COLORS = [
+  SMASH_COLORS.p1Red, SMASH_COLORS.p2Blue, SMASH_COLORS.p3Yellow, SMASH_COLORS.p4Green,
+  '#AB47BC', '#FF7043', '#26C6DA', '#8D6E63',
+];
 
 const PODIUM_COLORS = [SMASH_COLORS.gold, SMASH_COLORS.silver, SMASH_COLORS.bronze];
 
@@ -105,6 +111,79 @@ export default function UserStats() {
                     </Box>
                 );
             })()}
+
+            {/* Overall Stats Summary */}
+            {(() => {
+                const totalWins = userMatches.filter(m => m.completed && m.winnerUserId === userId).length;
+                const totalLosses = userMatches.filter(m => m.completed && m.winnerUserId && m.winnerUserId !== userId).length;
+                const totalPlayed = totalWins + totalLosses;
+                const overallWR = totalPlayed === 0 ? 0 : Math.round((totalWins * 100) / totalPlayed);
+                const flawless = userMatches.filter(m => {
+                    if (!m.completed || m.winnerUserId !== userId) return false;
+                    const roundsWithWinner = m.rounds.filter(r => r.winnerUserId);
+                    return roundsWithWinner.length === 2;
+                }).length;
+                const statCards = [
+                    { label: 'Wins', value: totalWins, icon: <EmojiEvents />, color: SMASH_COLORS.p4Green },
+                    { label: 'Losses', value: totalLosses, icon: <SportsMma />, color: SMASH_COLORS.p1Red },
+                    { label: 'Win Rate', value: `${overallWR}%`, icon: <BarChart />, color: SMASH_COLORS.p2Blue },
+                    { label: 'Flawless', value: flawless, icon: <AutoAwesome />, color: SMASH_COLORS.gold },
+                ];
+                return (
+                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr 1fr 1fr' }, gap: 2, mb: 3 }}>
+                        {statCards.map(card => (
+                            <Paper key={card.label} elevation={2} sx={{
+                                p: 2, textAlign: 'center', borderRadius: 2,
+                                borderTop: `3px solid ${card.color}`,
+                            }}>
+                                <Box sx={{ color: card.color, mb: 0.5 }}>{card.icon}</Box>
+                                <Typography variant="h5" fontWeight="bold">{card.value}</Typography>
+                                <Typography variant="caption" color="text.secondary">{card.label}</Typography>
+                            </Paper>
+                        ))}
+                    </Box>
+                );
+            })()}
+
+            {/* Character Usage Pie Chart */}
+            {Object.keys(charStats).length > 0 && (
+                <Box mb={3}>
+                    <Typography variant="h5" mb={2} fontWeight="bold">Character Usage</Typography>
+                    <Box sx={{ width: '100%', height: 250 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={Object.entries(charStats)
+                                        .sort((a, b) => b[1].total - a[1].total)
+                                        .map(([charId, s]) => ({
+                                            name: characters.find(c => c.id === charId)?.shorthandName || 'Unknown',
+                                            value: s.total,
+                                        }))}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={90}
+                                    innerRadius={30}
+                                    paddingAngle={2}
+                                    label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                                    labelLine={true}
+                                >
+                                    {Object.entries(charStats)
+                                        .sort((a, b) => b[1].total - a[1].total)
+                                        .map((_, index) => (
+                                            <Cell key={`cell-${index}`} fill={CHAR_COLORS[index % CHAR_COLORS.length]} stroke="#fff" strokeWidth={2} />
+                                        ))}
+                                </Pie>
+                                <Tooltip
+                                    formatter={(value) => [`${value} rounds`]}
+                                    contentStyle={{ borderRadius: 8, border: '1px solid #ddd' }}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </Box>
+                </Box>
+            )}
 
             <Typography variant="h4" mb={2}>Match History</Typography>
             {userMatches

@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useLeagues } from "../../lib/hooks/useLeagues"
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 import { BarChart as BarChartIcon } from "@mui/icons-material";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
@@ -250,6 +250,105 @@ export default function LeagueStats() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Head-to-Head Records */}
+      {league.matches.filter(m => m.completed).length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: 'primary.main' }}>
+            Head-to-Head Records
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+            {(() => {
+              const h2h: Record<string, { p1: string; p2: string; p1Wins: number; p2Wins: number }> = {};
+              league.matches.filter(m => m.completed).forEach(match => {
+                const key = [match.playerOne.userId, match.playerTwo.userId].sort().join('-');
+                if (!h2h[key]) {
+                  const [sorted1, sorted2] = [match.playerOne.userId, match.playerTwo.userId].sort();
+                  h2h[key] = {
+                    p1: sorted1 === match.playerOne.userId ? match.playerOne.displayName : match.playerTwo.displayName,
+                    p2: sorted2 === match.playerTwo.userId ? match.playerTwo.displayName : match.playerOne.displayName,
+                    p1Wins: 0,
+                    p2Wins: 0,
+                  };
+                }
+                const [sorted1] = [match.playerOne.userId, match.playerTwo.userId].sort();
+                if (match.winnerUserId === sorted1) h2h[key].p1Wins += 1;
+                else h2h[key].p2Wins += 1;
+              });
+              return Object.values(h2h).map((record, i) => (
+                <Paper
+                  key={i}
+                  elevation={1}
+                  sx={{
+                    p: 2, borderRadius: 2,
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    background: `linear-gradient(90deg, ${SMASH_COLORS.p1Red}10, transparent, ${SMASH_COLORS.p2Blue}10)`,
+                  }}
+                >
+                  <Box textAlign="center" flex={1}>
+                    <Typography fontWeight="bold" sx={{ color: record.p1Wins > record.p2Wins ? SMASH_COLORS.p4Green : 'text.primary' }}>
+                      {record.p1}
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p1Red }}>
+                      {record.p1Wins}
+                    </Typography>
+                  </Box>
+                  <Box sx={{
+                    px: 1.5, py: 0.5,
+                    borderRadius: 2,
+                    background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+                  }}>
+                    <Typography variant="body2" fontWeight="bold" color="white">VS</Typography>
+                  </Box>
+                  <Box textAlign="center" flex={1}>
+                    <Typography fontWeight="bold" sx={{ color: record.p2Wins > record.p1Wins ? SMASH_COLORS.p4Green : 'text.primary' }}>
+                      {record.p2}
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" sx={{ color: SMASH_COLORS.p2Blue }}>
+                      {record.p2Wins}
+                    </Typography>
+                  </Box>
+                </Paper>
+              ));
+            })()}
+          </Box>
+        </Box>
+      )}
+
+      {/* Points Distribution Pie Chart */}
+      {hasPlayerData && (
+        <Box mt={4}>
+          <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: 'primary.main' }}>
+            Points Distribution
+          </Typography>
+          <Box sx={{ width: '100%', height: 280 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={leaderboard?.map(p => ({ name: p.displayName, points: p.points })) || []}
+                  dataKey="points"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={isMobile ? 70 : 100}
+                  innerRadius={isMobile ? 25 : 35}
+                  paddingAngle={2}
+                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                  labelLine={true}
+                >
+                  {(leaderboard || []).map((_, index) => (
+                    <Cell key={`pts-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} stroke="#fff" strokeWidth={2} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value) => [`${value} pts`]}
+                  contentStyle={{ borderRadius: 8, border: '1px solid #ddd' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </Box>
+        </Box>
+      )}
     </Box>
   )
 }

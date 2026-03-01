@@ -8,6 +8,9 @@ import { LEAGUE_STATUSES } from "../../lib/util/constants";
 import UserChip from "../../app/shared/components/UserChip";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import EmptyState from "../../app/shared/components/EmptyState";
+import { SMASH_COLORS } from "../../app/theme";
+
+const STATUS_BORDERS = [SMASH_COLORS.p3Yellow, SMASH_COLORS.p4Green, SMASH_COLORS.p2Blue];
 
 export default function LeagueList() {
     const navigate = useNavigate();
@@ -32,16 +35,41 @@ export default function LeagueList() {
                         component={RouterLink}
                         to="/createLeague"
                         startIcon={<Add />}
+                        sx={{
+                            background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}, ${SMASH_COLORS.p2Blue})`,
+                            '&:hover': { background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}cc, ${SMASH_COLORS.p2Blue}cc)` },
+                        }}
                     >
                         Create League
                     </Button>
                 )}
             </Box>
             {leagues.map(league => (
-                <Card component={Box} key={league.id} p={1} m={1}>
-                    <CardHeader title={league.title} action={
-                        <Chip label={LEAGUE_STATUSES[league.status][0]} color={league.status === 0 ? 'warning' : league.status === 1 ? 'success' : 'info'} />
-                    } />
+                <Card
+                    component={Box}
+                    key={league.id}
+                    p={1}
+                    m={1}
+                    sx={{
+                        borderLeft: `4px solid ${STATUS_BORDERS[league.status]}`,
+                        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                        '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                        },
+                    }}
+                >
+                    <CardHeader
+                        title={league.title}
+                        titleTypographyProps={{ fontWeight: 'bold' }}
+                        action={
+                            <Chip
+                                label={LEAGUE_STATUSES[league.status][0]}
+                                color={league.status === 0 ? 'warning' : league.status === 1 ? 'success' : 'info'}
+                                sx={{ fontWeight: 'bold' }}
+                            />
+                        }
+                    />
                     <CardContent>
                         <Box>
                             <Typography fontWeight='bold'>
@@ -51,16 +79,16 @@ export default function LeagueList() {
                                 {league.description}
                             </Typography>
                             <Box display='flex' alignItems='center'>
-                                <SportsEsports sx={{ mr: 2 }} />
+                                <SportsEsports sx={{ mr: 2, color: SMASH_COLORS.p1Red }} />
                                 <Typography>Super Smash Bros</Typography>
                             </Box>
                             <Box display='flex' alignItems='center'>
-                                <AccessTime sx={{ mr: 2 }} />
+                                <AccessTime sx={{ mr: 2, color: SMASH_COLORS.p2Blue }} />
                                 <Typography>{formatDate(league.startDate)}</Typography>
                             </Box>
                             <Box display='flex' alignItems='center'>
-                                <Group sx={{ mr: 2 }} />
-                                <Typography>{league.members.length}</Typography>
+                                <Group sx={{ mr: 2, color: SMASH_COLORS.p4Green }} />
+                                <Typography>{league.members.length} players</Typography>
                             </Box>
                             <Box gap={1} mt={1} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' } }}>
                                 {league.members.map(member =>

@@ -1,7 +1,8 @@
-import { ArrowBack, CheckCircle, Delete, PlayArrow } from "@mui/icons-material";
+import { ArrowBack, CheckCircle, Delete, PlayArrow, Warning } from "@mui/icons-material";
 import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from "@mui/material";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useState } from "react";
+import { SMASH_COLORS } from "../../app/theme";
 
 type Props = {
     leagueId: string;
@@ -30,6 +31,8 @@ export default function StatusButton({ leagueId, leagueStatus }: Props) {
         ? 'Are you sure you want to move back to planning phase? This will delete all existing match data for this league.'
         : 'Are you sure you want to reopen this league? The league will return to active status.';
 
+    const isDestructive = pendingStatus === 0;
+
     if (leagueStatus === 1) {
         return (
             <>
@@ -39,6 +42,7 @@ export default function StatusButton({ leagueId, leagueStatus }: Props) {
                         variant="contained"
                         onClick={() => onSubmit(2)}
                         startIcon={<CheckCircle />}
+                        sx={{ fontWeight: 'bold' }}
                     >
                         <Typography variant="button">Finish League</Typography>
                     </Button>
@@ -52,26 +56,25 @@ export default function StatusButton({ leagueId, leagueStatus }: Props) {
                     </Button>
                 </Stack>
                 <Dialog open={open} onClose={() => setOpen(false)} aria-labelledby="status-dialog-title">
-                    <DialogTitle id="status-dialog-title">
+                    <DialogTitle id="status-dialog-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Warning sx={{ color: isDestructive ? SMASH_COLORS.p1Red : SMASH_COLORS.p3Yellow }} />
                         Change league status
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             {confirmDialogText}
                         </DialogContentText>
-                        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', mt: 2 }}>
-                            <Box>
-                                <Button variant="contained" onClick={() => setOpen(false)} sx={{ mr: 2 }}>
-                                    No
-                                </Button>
-                                <Button color="error" variant="contained" onClick={() => {
-                                    setOpen(false);
-                                    if (pendingStatus !== undefined) onSubmit(pendingStatus);
-                                }}>
-                                    <Delete />
-                                    Yes (delete matches)
-                                </Button>
-                            </Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', mt: 2, gap: 1 }}>
+                            <Button variant="outlined" onClick={() => setOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button color="error" variant="contained" onClick={() => {
+                                setOpen(false);
+                                if (pendingStatus !== undefined) onSubmit(pendingStatus);
+                            }}>
+                                <Delete sx={{ mr: 0.5 }} />
+                                Yes (delete matches)
+                            </Button>
                         </Box>
                     </DialogContent>
                 </Dialog>
@@ -103,33 +106,31 @@ export default function StatusButton({ leagueId, leagueStatus }: Props) {
 
     return (
         <>
-            <Button sx={{ ml: 2 }} color={color} variant="contained" onClick={() => handleClick(changeStatusTo)}>
+            <Button sx={{ ml: 2, fontWeight: 'bold' }} color={color} variant="contained" onClick={() => handleClick(changeStatusTo)}>
                 {icon}
                 <Typography variant="button" ml={1}>
                     {text}
                 </Typography>
             </Button>
             <Dialog open={open} onClose={() => setOpen(false)} aria-labelledby="status-dialog-title">
-                <DialogTitle id="status-dialog-title">
+                <DialogTitle id="status-dialog-title" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Warning sx={{ color: SMASH_COLORS.p3Yellow }} />
                     Change league status
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         {confirmDialogText}
                     </DialogContentText>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', mt: 2 }}>
-                        <Box>
-                            <Button variant="contained" onClick={() => setOpen(false)} sx={{ mr: 2 }}>
-                                No
-                            </Button>
-                            <Button color="error" variant="contained" onClick={() => {
-                                setOpen(false);
-                                if (pendingStatus !== undefined) onSubmit(pendingStatus);
-                            }}>
-                                <Delete />
-                                Yes
-                            </Button>
-                        </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', mt: 2, gap: 1 }}>
+                        <Button variant="outlined" onClick={() => setOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button color="warning" variant="contained" onClick={() => {
+                            setOpen(false);
+                            if (pendingStatus !== undefined) onSubmit(pendingStatus);
+                        }}>
+                            Yes, proceed
+                        </Button>
                     </Box>
                 </DialogContent>
             </Dialog>

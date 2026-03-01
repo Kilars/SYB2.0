@@ -1,8 +1,8 @@
-import { AppBar, Box, Button, Container, Menu, MenuItem, Toolbar } from "@mui/material";
+import { AppBar, Box, Button, Container, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
 import MenuItemLink from "../shared/components/MenuItemLink";
 import { observer } from "mobx-react-lite";
 import { useAccount } from "../../lib/hooks/useAccount";
-import { Add, Menu as MenuIcon } from "@mui/icons-material";
+import { Add, Menu as MenuIcon, Person, SportsEsports } from "@mui/icons-material";
 import { useState } from "react";
 import { NavLink } from "react-router";
 import { APP_GRADIENT } from "../theme";
@@ -22,10 +22,27 @@ const NavBar = observer(function NavBar() {
     <Box sx={{ flexGrow: 1, width: '100%' }}>
       <AppBar position='fixed' sx={{
         backgroundImage: APP_GRADIENT,
+        boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
       }}>
         <Container maxWidth='xl'>
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
+              <SportsEsports sx={{ color: 'white', fontSize: 28 }} />
+              <Typography
+                variant="h6"
+                component={NavLink}
+                to="/"
+                sx={{
+                  color: 'white',
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  letterSpacing: '0.05em',
+                  mr: 3,
+                  display: { xs: 'none', sm: 'block' },
+                }}
+              >
+                SYB
+              </Typography>
               <MenuItemLink to='/leagues'> Leagues </MenuItemLink>
             </Box>
             <Box>
@@ -38,14 +55,17 @@ const NavBar = observer(function NavBar() {
               sx={{textDecoration: 'none'}}
             >
               {currentUser
-                ? <MenuItem component={NavLink} to={`/user/${currentUser.id}`}>My Profile</MenuItem>
+                ? <MenuItem component={NavLink} to={`/user/${currentUser.id}`}>
+                    <Person sx={{ mr: 1 }} fontSize="small" />
+                    My Profile
+                  </MenuItem>
                 : (
                   <Box>
-                    <MenuItem component={NavLink} to="/login">login</MenuItem>
-                    <MenuItem component={NavLink} to="/register">register</MenuItem>
+                    <MenuItem component={NavLink} to="/login">Login</MenuItem>
+                    <MenuItem component={NavLink} to="/register">Register</MenuItem>
                   </Box>
                 )}
-              {currentUser && <MenuItem component={NavLink} to="/createLeague">Create League <Add /> </MenuItem>}
+              {currentUser && <MenuItem component={NavLink} to="/createLeague"><Add sx={{ mr: 1 }} fontSize="small" /> Create League</MenuItem>}
             </Menu>
           </Toolbar>
         </Container>
