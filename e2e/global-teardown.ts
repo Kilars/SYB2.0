@@ -57,6 +57,32 @@ async function globalTeardown(_config: FullConfig): Promise<void> {
         console.warn(`[global-teardown] Error deleting "${league.title}":`, err);
       }
     }
+    // Fetch all tournaments and delete test-created ones
+    const tournamentRes = await context.request.get(`${FRONTEND_URL}/api/tournaments`);
+    if (tournamentRes.ok()) {
+      const tournaments: { id: string; title: string }[] = await tournamentRes.json();
+      if (tournaments.length > 0) {
+        console.log(`[global-teardown] Found ${tournaments.length} tournament(s) to delete`);
+        for (const tournament of tournaments) {
+          try {
+            const delRes = await context.request.delete(
+              `${FRONTEND_URL}/api/tournaments/${tournament.id}`
+            );
+            if (delRes.ok()) {
+              console.log(`[global-teardown] Deleted tournament: "${tournament.title}" (${tournament.id})`);
+            } else {
+              console.warn(
+                `[global-teardown] Failed to delete tournament "${tournament.title}": ${delRes.status()}`
+              );
+            }
+          } catch (err) {
+            console.warn(`[global-teardown] Error deleting tournament "${tournament.title}":`, err);
+          }
+        }
+      }
+    } else {
+      console.warn(`[global-teardown] Could not fetch tournaments: ${tournamentRes.status()}`);
+    }
   } finally {
     await browser.close();
   }

@@ -117,8 +117,9 @@ test.describe('League Lifecycle', () => {
     expect(rowCount).toBe(2);
 
     // First data row (sorted by points) should have 5 points (4 win + 1 flawless)
+    // Columns: #(0), Player(1), Points(2), WR(3), Wins(4), Losses(5), Flawless(6)
     const firstDataRow = page.getByRole('row').nth(1);
-    const pointsText = await firstDataRow.getByRole('cell').nth(1).textContent();
+    const pointsText = await firstDataRow.getByRole('cell').nth(2).textContent();
     expect(parseInt(pointsText?.trim() ?? '0', 10)).toBe(5);
 
     expect(pageErrors).toEqual([]);
@@ -153,8 +154,9 @@ test.describe('League Lifecycle', () => {
     await leaderboard.waitForTable();
 
     // First row should be highest-scoring player
+    // Columns: #(0), Player(1), Points(2), WR(3), Wins(4), Losses(5), Flawless(6)
     const firstDataRow = page.getByRole('row').nth(1);
-    const pointsText = await firstDataRow.getByRole('cell').nth(1).textContent();
+    const pointsText = await firstDataRow.getByRole('cell').nth(2).textContent();
     expect(parseInt(pointsText?.trim() ?? '0', 10)).toBeGreaterThanOrEqual(4);
 
     expect(pageErrors).toEqual([]);

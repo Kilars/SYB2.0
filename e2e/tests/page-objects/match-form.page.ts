@@ -8,7 +8,7 @@
  *     <div 50%> P1 name (h6) → CharacterSelect (Autocomplete)
  *     <div 50%> P2 name (h6) → CharacterSelect (Autocomplete)
  *   </div>
- *   <div> "Winner" label → ToggleButtonGroup (P1 name | P2 name)
+ *   <div> "Who won Round N?" paragraph → ToggleButtonGroup[aria-label="Round N winner selection"]
  */
 
 import { Page, Locator, expect } from '@playwright/test';
@@ -66,9 +66,8 @@ export class MatchFormPage {
    */
   async setWinner(roundNumber: number, player: 'p1' | 'p2') {
     const container = this.getRoundContainer(roundNumber);
-    // Find the Winner section wrapper (contains "Winner" text + ToggleButtonGroup)
-    const winnerSection = container.getByText('Winner').locator('..');
-    const toggleGroup = winnerSection.locator('[role="group"]');
+    // The winner ToggleButtonGroup has an accessible name like "Round 1 winner selection"
+    const toggleGroup = container.getByRole('group', { name: new RegExp(`Round ${roundNumber} winner`, 'i') });
     const buttons = toggleGroup.getByRole('button');
     const index = player === 'p1' ? 0 : 1;
     const target = buttons.nth(index);
@@ -90,8 +89,7 @@ export class MatchFormPage {
     const container = this.getRoundContainer(roundNumber);
 
     // Deselect any selected winner toggle button (clicking a selected toggle deselects it)
-    const winnerSection = container.getByText('Winner').locator('..');
-    const toggleGroup = winnerSection.locator('[role="group"]');
+    const toggleGroup = container.getByRole('group', { name: new RegExp(`Round ${roundNumber} winner`, 'i') });
     const toggleButtons = toggleGroup.getByRole('button');
     const toggleCount = await toggleButtons.count();
     for (let i = 0; i < toggleCount; i++) {

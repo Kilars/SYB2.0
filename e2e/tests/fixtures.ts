@@ -23,6 +23,7 @@ export const SEEDED_LEAGUE = {
 export const PUBLIC_PAGES = [
   { path: '/', name: 'Home' },
   { path: '/leagues', name: 'League List' },
+  { path: '/tournaments', name: 'Tournament List' },
   { path: '/login', name: 'Login' },
   { path: '/register', name: 'Register' },
 ] as const;

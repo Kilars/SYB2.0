@@ -2,7 +2,7 @@
  * Page object for the Leaderboard table.
  * Maps to: client/src/features/leagues/Leaderboard.tsx
  *
- * Table columns: Player | Points | WR | Wins | Losses | Flawless
+ * Table columns: # | Player | Points | WR | Wins | Losses | Flawless
  */
 
 import { Page, expect } from '@playwright/test';
@@ -40,14 +40,14 @@ export class LeaderboardPage {
       cellTexts.push((await cells.nth(i).textContent())?.trim() ?? '');
     }
 
-    // Columns: Player, Points, WR, Wins, Losses, Flawless
+    // Columns: #, Player, Points, WR, Wins, Losses, Flawless
     return {
-      player: cellTexts[0],
-      points: parseInt(cellTexts[1], 10),
-      wr: cellTexts[2],
-      wins: parseInt(cellTexts[3], 10),
-      losses: parseInt(cellTexts[4], 10),
-      flawless: parseInt(cellTexts[5], 10),
+      player: cellTexts[1],
+      points: parseInt(cellTexts[2], 10),
+      wr: cellTexts[3],
+      wins: parseInt(cellTexts[4], 10),
+      losses: parseInt(cellTexts[5], 10),
+      flawless: parseInt(cellTexts[6], 10),
     };
   }
 
