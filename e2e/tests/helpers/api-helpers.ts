@@ -58,8 +58,8 @@ export async function changeStatusViaApi(
 
 interface MatchData {
   completed: boolean;
-  leagueId: string;
-  split: number;
+  competitionId: string;
+  bracketNumber: number;
   matchNumber: number;
   winnerUserId?: string;
   playerOne: { userId: string; displayName: string };
@@ -68,8 +68,8 @@ interface MatchData {
 }
 
 interface RoundData {
-  leagueId: string;
-  split: number;
+  competitionId: string;
+  bracketNumber: number;
   matchNumber: number;
   roundNumber: number;
   completed: boolean;
@@ -83,12 +83,12 @@ interface RoundData {
  */
 export async function getMatchViaApi(
   context: BrowserContext,
-  leagueId: string,
-  split: number,
+  competitionId: string,
+  bracketNumber: number,
   matchNumber: number
 ): Promise<MatchData> {
   const res = await context.request.get(
-    `${BASE}/api/matches/${leagueId}/split/${split}/match/${matchNumber}`
+    `${BASE}/api/matches/${competitionId}/bracket/${bracketNumber}/match/${matchNumber}`
   );
   if (!res.ok()) {
     throw new Error(`getMatchViaApi failed: ${res.status()} ${await res.text()}`);
@@ -102,13 +102,13 @@ export async function getMatchViaApi(
  */
 export async function completeMatchViaApi(
   context: BrowserContext,
-  leagueId: string,
-  split: number,
+  competitionId: string,
+  bracketNumber: number,
   matchNumber: number,
   rounds: RoundData[]
 ): Promise<void> {
   const res = await context.request.post(
-    `${BASE}/api/matches/${leagueId}/split/${split}/match/${matchNumber}/complete`,
+    `${BASE}/api/matches/${competitionId}/bracket/${bracketNumber}/match/${matchNumber}/complete`,
     {
       data: rounds,
       headers: { 'Content-Type': 'application/json' },
@@ -129,6 +129,107 @@ export async function deleteLeagueViaApi(
   const res = await context.request.delete(`${BASE}/api/leagues/${leagueId}`);
   if (!res.ok()) {
     throw new Error(`deleteLeagueViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tournament helpers
+// ---------------------------------------------------------------------------
+
+interface CreateTournamentOptions {
+  title: string;
+  description: string;
+  bestOf?: 1 | 3 | 5;
+  members: { userId: string; displayName: string }[];
+}
+
+/**
+ * Create a tournament via the API. Returns the new tournament ID.
+ */
+export async function createTournamentViaApi(
+  context: BrowserContext,
+  options: CreateTournamentOptions
+): Promise<string> {
+  const res = await context.request.post(`${BASE}/api/tournaments`, {
+    data: {
+      title: options.title,
+      description: options.description,
+      startDate: new Date().toISOString(),
+      bestOf: options.bestOf ?? 3,
+      members: options.members,
+    },
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok()) {
+    throw new Error(`createTournamentViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+  const id = await res.text();
+  return id;
+}
+
+/**
+ * Start a tournament via the API (Planned → Active, generates bracket).
+ */
+export async function startTournamentViaApi(
+  context: BrowserContext,
+  competitionId: string
+): Promise<void> {
+  const res = await context.request.post(
+    `${BASE}/api/tournaments/${competitionId}/start`
+  );
+  if (!res.ok()) {
+    throw new Error(`startTournamentViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+}
+
+/**
+ * Delete a tournament via the API.
+ */
+export async function deleteTournamentViaApi(
+  context: BrowserContext,
+  competitionId: string
+): Promise<void> {
+  const res = await context.request.delete(`${BASE}/api/tournaments/${competitionId}`);
+  if (!res.ok()) {
+    throw new Error(`deleteTournamentViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+}
+
+/**
+ * Get tournament match details via the API.
+ */
+export async function getTournamentMatchViaApi(
+  context: BrowserContext,
+  competitionId: string,
+  matchNumber: number
+): Promise<MatchData> {
+  const res = await context.request.get(
+    `${BASE}/api/tournaments/${competitionId}/match/${matchNumber}`
+  );
+  if (!res.ok()) {
+    throw new Error(`getTournamentMatchViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+  return res.json();
+}
+
+/**
+ * Complete a tournament match via the API.
+ */
+export async function completeTournamentMatchViaApi(
+  context: BrowserContext,
+  competitionId: string,
+  matchNumber: number,
+  rounds: RoundData[]
+): Promise<void> {
+  const res = await context.request.post(
+    `${BASE}/api/tournaments/${competitionId}/match/${matchNumber}/complete`,
+    {
+      data: rounds,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  );
+  if (!res.ok()) {
+    throw new Error(`completeTournamentMatchViaApi failed: ${res.status()} ${await res.text()}`);
   }
 }
 

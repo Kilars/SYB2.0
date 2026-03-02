@@ -1,120 +1,133 @@
-import { useParams } from "react-router";
-import { useMatch } from "../../lib/hooks/useMatch";
-import { Box, Button, Card, CardContent, Paper, ToggleButton, ToggleButtonGroup, Typography, CircularProgress } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { SportsEsports } from "@mui/icons-material";
-import CharacterSelect from "./CharacterSelect";
-import { matchSchema } from "../../lib/schemas/matchSchema";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Paper,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import z from "zod";
 import { toast } from "react-toastify";
-import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
-import EmptyState from "../../app/shared/components/EmptyState";
-import { SMASH_COLORS } from "../../app/theme";
-import { useAppTheme } from "../../app/context/ThemeContext";
+import z from "zod/v4";
 
-export default function MatchDetailsForm() {
-  const { competitionId, bracketNumber, matchNumber } = useParams();
-  const { match: matchData, isMatchLoading, completeMatch } = useMatch(competitionId || '', parseInt(bracketNumber || ''), parseInt(matchNumber || ''));
+import { useAppTheme } from "../../app/context/ThemeContext";
+import { SMASH_COLORS } from "../../app/theme";
+import CharacterSelect from "./CharacterSelect";
+
+interface MatchDetailsFormProps {
+  matchData: Match;
+  onComplete: (rounds: Round[]) => Promise<void>;
+  schema: z.ZodType<unknown>;
+}
+
+export default function MatchDetailsForm({ matchData, onComplete, schema }: MatchDetailsFormProps) {
   const { meta } = useAppTheme();
-  const [rounds, setRounds] = useState(matchData?.rounds)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [rounds, setRounds] = useState(matchData.rounds);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    setRounds(matchData?.rounds)
-  }, [matchData])
+    setRounds(matchData.rounds);
+  }, [matchData]);
 
   const onSubmit = async () => {
     setIsSubmitting(true);
     try {
-      matchSchema.parse(rounds)
-      if (rounds) await completeMatch.mutateAsync(rounds);
-      toast('Match completed successfully!', {type: 'success'})
+      schema.parse(rounds);
+      await onComplete(rounds);
+      toast("Match completed successfully!", { type: "success" });
     } catch (error) {
       if (error instanceof z.ZodError) {
         for (const issue of error.issues) {
-          toast(issue.message, {type: 'error'});
+          toast(issue.message, { type: "error" });
         }
-      } else (
-        toast('Server error', {type: 'error'})
-      )
+      } else toast("Server error", { type: "error" });
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
-  if (isMatchLoading) return <LoadingSkeleton variant="detail" />
-  if (!matchNumber || !matchData) return (
-    <EmptyState
-      icon={<SportsEsports sx={{ fontSize: 48 }} />}
-      message="Match not found"
-    />
-  )
-  if (!rounds) return (
-    <EmptyState
-      icon={<SportsEsports sx={{ fontSize: 48 }} />}
-      message="Match not found"
-    />
-  )
+  const { playerOne, playerTwo } = matchData;
+  if (!playerOne || !playerTwo) return null;
 
-  const getDisplayName = (player: Player) => player.isGuest ? `${player.displayName} (guest)` : player.displayName;
+  const getDisplayName = (player: Player) =>
+    player.isGuest ? `${player.displayName} (guest)` : player.displayName;
 
-  // Compute running score from completed rounds
-  const playerOneScore = rounds.filter(r => r.winnerUserId === matchData.playerOne!.userId).length;
-  const playerTwoScore = rounds.filter(r => r.winnerUserId === matchData.playerTwo!.userId).length;
+  const playerOneScore = rounds.filter((r) => r.winnerUserId === playerOne.userId).length;
+  const playerTwoScore = rounds.filter((r) => r.winnerUserId === playerTwo.userId).length;
   const requiredWins = Math.ceil(rounds.length / 2);
   const matchDecided = playerOneScore >= requiredWins || playerTwoScore >= requiredWins;
 
-  // Determine per-round status: 'complete' | 'partial' | 'empty'
-  function getRoundStatus(round: Round): 'complete' | 'partial' | 'empty' {
+  function getRoundStatus(round: Round): "complete" | "partial" | "empty" {
     const filledFields = [
       round.playerOneCharacterId,
       round.playerTwoCharacterId,
       round.winnerUserId,
     ].filter(Boolean).length;
-    if (filledFields === 3) return 'complete';
-    if (filledFields > 0) return 'partial';
-    return 'empty';
+    if (filledFields === 3) return "complete";
+    if (filledFields > 0) return "partial";
+    return "empty";
   }
 
   const ROUND_STATUS_COLORS = {
     complete: SMASH_COLORS.p4Green,
     partial: SMASH_COLORS.p3Yellow,
-    empty: 'transparent',
+    empty: "transparent",
   };
 
   return (
     <Box>
-      <Typography variant="h4" mb={2} fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>Register Match Result</Typography>
+      <Typography
+        variant="h4"
+        mb={2}
+        fontWeight="bold"
+        sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
+      >
+        Register Match Result
+      </Typography>
 
       {/* Match score indicator */}
       <Paper
         elevation={2}
         sx={{
-          p: 2, mb: 3, textAlign: 'center',
+          p: 2,
+          mb: 3,
+          textAlign: "center",
           background: `linear-gradient(135deg, ${SMASH_COLORS.p1Red}15 0%, transparent 40%, ${SMASH_COLORS.p2Blue}15 100%)`,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="center" gap={{ xs: 1, sm: 2 }} flexWrap="wrap">
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          gap={{ xs: 1, sm: 2 }}
+          flexWrap="wrap"
+        >
           <Typography
             variant="h5"
             fontWeight="bold"
             noWrap
             sx={{
-              color: playerOneScore > playerTwoScore ? SMASH_COLORS.p1Red : 'text.primary',
-              fontSize: { xs: '1rem', sm: '1.5rem' },
-              maxWidth: { xs: '30vw', sm: 'none' },
+              color: playerOneScore > playerTwoScore ? SMASH_COLORS.p1Red : "text.primary",
+              fontSize: { xs: "1rem", sm: "1.5rem" },
+              maxWidth: { xs: "30vw", sm: "none" },
             }}
           >
-            {getDisplayName(matchData.playerOne!)}
+            {getDisplayName(playerOne)}
           </Typography>
-          <Box sx={{
-            px: 2, py: 0.5,
-            borderRadius: 2,
-            background: meta.accentGradient,
-          }}>
+          <Box
+            sx={{
+              px: 2,
+              py: 0.5,
+              borderRadius: 2,
+              background: meta.accentGradient,
+            }}
+          >
             <Typography variant="h5" fontWeight="bold" color="white">
               {playerOneScore} — {playerTwoScore}
             </Typography>
@@ -124,12 +137,12 @@ export default function MatchDetailsForm() {
             fontWeight="bold"
             noWrap
             sx={{
-              color: playerTwoScore > playerOneScore ? SMASH_COLORS.p2Blue : 'text.primary',
-              fontSize: { xs: '1rem', sm: '1.5rem' },
-              maxWidth: { xs: '30vw', sm: 'none' },
+              color: playerTwoScore > playerOneScore ? SMASH_COLORS.p2Blue : "text.primary",
+              fontSize: { xs: "1rem", sm: "1.5rem" },
+              maxWidth: { xs: "30vw", sm: "none" },
             }}
           >
-            {getDisplayName(matchData.playerTwo!)}
+            {getDisplayName(playerTwo)}
           </Typography>
         </Box>
       </Paper>
@@ -142,10 +155,12 @@ export default function MatchDetailsForm() {
             <Box
               key={i}
               sx={{
-                width: 12, height: 12, borderRadius: '50%',
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
                 backgroundColor: ROUND_STATUS_COLORS[status],
-                border: `2px solid ${status === 'empty' ? '#ccc' : ROUND_STATUS_COLORS[status]}`,
-                transition: 'all 0.2s ease',
+                border: `2px solid ${status === "empty" ? "#ccc" : ROUND_STATUS_COLORS[status]}`,
+                transition: "all 0.2s ease",
               }}
             />
           );
@@ -165,49 +180,55 @@ export default function MatchDetailsForm() {
               opacity: isDecidedEarly ? 0.5 : 1,
               mb: 2,
               borderLeft: `4px solid ${borderColor}`,
-              transition: 'border-color 0.3s ease',
+              transition: "border-color 0.3s ease",
             }}
           >
             <CardContent>
               {/* Round header with inline validation icon */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Typography variant="h5" fontWeight="bold">Round {round.roundNumber}</Typography>
-                {roundStatus === 'complete' && (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                <Typography variant="h5" fontWeight="bold">
+                  Round {round.roundNumber}
+                </Typography>
+                {roundStatus === "complete" && (
                   <CheckCircleOutlineIcon sx={{ color: SMASH_COLORS.p4Green }} />
                 )}
-                {roundStatus === 'partial' && (
+                {roundStatus === "partial" && (
                   <WarningAmberIcon sx={{ color: SMASH_COLORS.p3Yellow }} />
                 )}
                 {isDecidedEarly && (
-                  <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1 }}>
+                  <Typography variant="body2" sx={{ color: "text.secondary", ml: 1 }}>
                     Match already decided
                   </Typography>
                 )}
               </Box>
 
               {/* Player columns — responsive: stacked on mobile, side-by-side on sm+ */}
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p1Red }}>{getDisplayName(matchData.playerOne!)}</Typography>
+                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p1Red }}>
+                    {getDisplayName(playerOne)}
+                  </Typography>
                   <CharacterSelect
-                    onChange={id =>
-                      setRounds(originalRounds =>
-                        originalRounds?.map((r, index) =>
-                          index === i ? { ...r, playerOneCharacterId: id } : r
-                        )
+                    onChange={(id) =>
+                      setRounds((originalRounds) =>
+                        originalRounds.map((r, index) =>
+                          index === i ? { ...r, playerOneCharacterId: id } : r,
+                        ),
                       )
                     }
                     selectedId={round.playerOneCharacterId}
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p2Blue }}>{getDisplayName(matchData.playerTwo!)}</Typography>
+                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p2Blue }}>
+                    {getDisplayName(playerTwo)}
+                  </Typography>
                   <CharacterSelect
-                    onChange={id =>
-                      setRounds(originalRounds =>
-                        originalRounds?.map((r, index) =>
-                          index === i ? { ...r, playerTwoCharacterId: id } : r
-                        )
+                    onChange={(id) =>
+                      setRounds((originalRounds) =>
+                        originalRounds.map((r, index) =>
+                          index === i ? { ...r, playerTwoCharacterId: id } : r,
+                        ),
                       )
                     }
                     selectedId={round.playerTwoCharacterId}
@@ -217,7 +238,10 @@ export default function MatchDetailsForm() {
 
               {/* Single winner toggle spanning full width */}
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: 600 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ mb: 0.5, color: "text.secondary", fontWeight: 600 }}
+                >
                   Who won Round {round.roundNumber}?
                 </Typography>
                 <ToggleButtonGroup
@@ -225,44 +249,44 @@ export default function MatchDetailsForm() {
                   fullWidth
                   value={round.winnerUserId ?? null}
                   onChange={(_, newValue) => {
-                    setRounds(prev =>
-                      prev?.map((r, idx) =>
-                        idx === i ? { ...r, winnerUserId: newValue ?? undefined } : r
-                      )
+                    setRounds((prev) =>
+                      prev.map((r, idx) =>
+                        idx === i ? { ...r, winnerUserId: newValue ?? undefined } : r,
+                      ),
                     );
                   }}
                   aria-label={`Round ${round.roundNumber} winner selection`}
                   sx={{
-                    '& .Mui-selected': {
-                      fontWeight: 'bold',
+                    "& .Mui-selected": {
+                      fontWeight: "bold",
                     },
                   }}
                 >
                   <ToggleButton
-                    value={matchData.playerOne!.userId}
-                    aria-label={`${getDisplayName(matchData.playerOne!)} wins round ${round.roundNumber}`}
+                    value={playerOne.userId}
+                    aria-label={`${getDisplayName(playerOne)} wins round ${round.roundNumber}`}
                     sx={{
-                      '&.Mui-selected': {
+                      "&.Mui-selected": {
                         backgroundColor: `${SMASH_COLORS.p1Red}22`,
                         borderColor: SMASH_COLORS.p1Red,
                         color: SMASH_COLORS.p1Red,
                       },
                     }}
                   >
-                    {getDisplayName(matchData.playerOne!)}
+                    {getDisplayName(playerOne)}
                   </ToggleButton>
                   <ToggleButton
-                    value={matchData.playerTwo!.userId}
-                    aria-label={`${getDisplayName(matchData.playerTwo!)} wins round ${round.roundNumber}`}
+                    value={playerTwo.userId}
+                    aria-label={`${getDisplayName(playerTwo)} wins round ${round.roundNumber}`}
                     sx={{
-                      '&.Mui-selected': {
+                      "&.Mui-selected": {
                         backgroundColor: `${SMASH_COLORS.p2Blue}22`,
                         borderColor: SMASH_COLORS.p2Blue,
                         color: SMASH_COLORS.p2Blue,
                       },
                     }}
                   >
-                    {getDisplayName(matchData.playerTwo!)}
+                    {getDisplayName(playerTwo)}
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Box>
@@ -277,18 +301,18 @@ export default function MatchDetailsForm() {
         sx={{
           mt: 3,
           py: 1.5,
-          fontWeight: 'bold',
-          fontSize: '1rem',
+          fontWeight: "bold",
+          fontSize: "1rem",
           background: meta.accentGradient,
-          color: 'white',
-          '&:hover': { opacity: 0.85 },
+          color: "white",
+          "&:hover": { opacity: 0.85 },
         }}
         disabled={isSubmitting}
         startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
         onClick={() => onSubmit()}
       >
-        {isSubmitting ? 'Completing...' : 'Complete'}
+        {isSubmitting ? "Completing..." : "Complete"}
       </Button>
     </Box>
-  )
+  );
 }

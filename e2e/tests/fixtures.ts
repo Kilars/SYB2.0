@@ -48,7 +48,7 @@ export const PROTECTED_PAGES = [
     name: 'League Stats',
   },
   {
-    path: `/leagues/${SEEDED_LEAGUE.id}/split/${SEEDED_LEAGUE.defaultSplit}/match/${SEEDED_LEAGUE.completedMatchNumber}`,
+    path: `/leagues/${SEEDED_LEAGUE.id}/bracket/${SEEDED_LEAGUE.defaultSplit}/match/${SEEDED_LEAGUE.completedMatchNumber}`,
     name: 'Match Details',
   },
 ] as const;

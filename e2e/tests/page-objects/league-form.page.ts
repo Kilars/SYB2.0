@@ -25,9 +25,8 @@ export class LeagueFormPage {
     // Wait for the Members heading (indicates UserSelectInput has rendered)
     await this.page.getByRole('heading', { name: /members/i }).waitFor({ timeout: 15000 });
 
-    // MUI v7 Select combobox doesn't get an accessible name from InputLabel.
-    // It's the only combobox on the league form, so we can target it directly.
-    const select = this.page.getByRole('combobox');
+    // Target the member select specifically by its aria-label
+    const select = this.page.getByRole('combobox', { name: /select a user to add as member/i });
     await select.click();
 
     // Wait for the dropdown menu to appear and click the matching option

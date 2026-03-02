@@ -15,6 +15,9 @@ export const PASSWORD = 'Pa$$w0rd';
 // 3-player member list for most lifecycle tests
 export const THREE_PLAYERS = [USERS.denix, USERS.hansemann, USERS.larsski];
 
+// 4-player member list for tournament tests
+export const FOUR_PLAYERS = [USERS.denix, USERS.hansemann, USERS.larsski, USERS.matias];
+
 // Character IDs (seeded in AllCharacters.cs — lowercase string IDs)
 // Only characters whose fullName is NOT a substring of another character's fullName.
 // E.g., avoid "Mario" (matches "Dr. Mario"), "Link" (matches "Young Link").
@@ -29,5 +32,10 @@ export const CHARACTERS = {
 
 // Unique league name per test run to avoid collisions
 export function uniqueLeagueName(prefix: string): string {
+  return `${prefix}-${Date.now()}`;
+}
+
+// Unique tournament name per test run to avoid collisions
+export function uniqueTournamentName(prefix: string): string {
   return `${prefix}-${Date.now()}`;
 }

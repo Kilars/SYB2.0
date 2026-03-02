@@ -1,14 +1,13 @@
-import { format, formatDistanceToNow, type DateArg } from "date-fns";
+import { type DateArg, format, formatDistanceToNow } from "date-fns";
 import { z } from "zod";
 
 export function formatDate(date: DateArg<Date>) {
-    return format(date, 'dd MMM yyyy HH:mm')
+  return format(date, "dd MMM yyyy HH:mm");
 }
 
 export function timeAgo(date: DateArg<Date>) {
-    return formatDistanceToNow(date) + ' ago';
+  return formatDistanceToNow(date) + " ago";
 }
 
-export const requiredString = (fieldName: string) => z
-    .string({ error: `${fieldName} is required` })
-    .min(1, { message: `${fieldName} is required` });
+export const requiredString = (fieldName: string) =>
+  z.string({ error: `${fieldName} is required` }).min(1, { message: `${fieldName} is required` });

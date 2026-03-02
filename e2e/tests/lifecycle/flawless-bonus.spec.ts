@@ -37,7 +37,7 @@ test.describe('Flawless Bonus Recalculation', () => {
 
     // Get match 1 to find the match URL and player names
     const match = await getMatchViaApi(ctx, leagueId, 1, 1);
-    matchUrl = `/leagues/${leagueId}/split/1/match/1`;
+    matchUrl = `/leagues/${leagueId}/bracket/1/match/1`;
     winnerName = match.playerOne.displayName;
 
     await ctx.close();

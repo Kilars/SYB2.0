@@ -90,7 +90,7 @@ test.describe('League Lifecycle', () => {
     // Find a card with "Register result" text (incomplete match) and click it
     const registerCard = cards.filter({ hasText: /register result/i }).first();
     await registerCard.click();
-    await page.waitForURL(/\/split\//, { timeout: 10000 });
+    await page.waitForURL(/\/bracket\//, { timeout: 10000 });
 
     await matchForm.waitForForm();
 
@@ -135,7 +135,7 @@ test.describe('League Lifecycle', () => {
     await expect(cards.first()).toBeVisible({ timeout: 15000 });
     const registerCard = cards.filter({ hasText: /register result/i }).first();
     await registerCard.click();
-    await page.waitForURL(/\/split\//, { timeout: 10000 });
+    await page.waitForURL(/\/bracket\//, { timeout: 10000 });
 
     await matchForm.waitForForm();
 

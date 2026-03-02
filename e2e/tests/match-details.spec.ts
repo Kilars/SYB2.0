@@ -23,7 +23,7 @@ const SPLIT = SEEDED_LEAGUE.defaultSplit;
 
 /** Navigate to a specific match detail page */
 function matchUrl(matchNumber: number): string {
-  return `/leagues/${LEAGUE_ID}/split/${SPLIT}/match/${matchNumber}`;
+  return `/leagues/${LEAGUE_ID}/bracket/${SPLIT}/match/${matchNumber}`;
 }
 
 test.describe('Completed Match View', () => {
@@ -122,7 +122,7 @@ test.describe('Match Navigation', () => {
 
     // Should navigate to a match detail URL
     await expect(page).toHaveURL(
-      new RegExp(`leagues/${LEAGUE_ID}/split/${SPLIT}/match/\\d+`),
+      new RegExp(`leagues/${LEAGUE_ID}/bracket/${SPLIT}/match/\\d+`),
       { timeout: 10000 }
     );
 

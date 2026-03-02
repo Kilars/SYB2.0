@@ -1,46 +1,45 @@
-import Autocomplete from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import { styled } from '@mui/material/styles';
-import { useCharacters } from '../../lib/hooks/useCharacters';
-import { Skeleton, Typography } from '@mui/material';
+import { Skeleton, Typography } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import MenuItem from "@mui/material/MenuItem";
+import { styled } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
 
-
+import { useCharacters } from "../../lib/hooks/useCharacters";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   background: theme.palette.background.paper,
-  '&.MuiAutocomplete-option:hover': {
+  "&.MuiAutocomplete-option:hover": {
     fontWeight: theme.typography.fontWeightBold,
     backgroundColor: theme.palette.grey[300],
-    '.non-pop-out-box': {
-      visibility: 'hidden',
+    ".non-pop-out-box": {
+      visibility: "hidden",
     },
-    '.custom-pop-out-box': {
-      display: 'flex',
-      transform: 'scale(1.2)',
-      transformOrigin: 'left',
-      position: 'absolute',
+    ".custom-pop-out-box": {
+      display: "flex",
+      transform: "scale(1.2)",
+      transformOrigin: "left",
+      position: "absolute",
       zIndex: 10,
     },
   },
   '&.MuiAutocomplete-option.MuiAutocomplete-option[aria-selected="true"]': {
     fontWeight: theme.typography.fontWeightBold,
     backgroundColor: theme.palette.grey[300],
-  }
+  },
 }));
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
-  width: '100%',
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      border: 'none',
+  width: "100%",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      border: "none",
     },
-    '&:hover fieldset': {
-      border: 'none',
+    "&:hover fieldset": {
+      border: "none",
     },
-    '&.Mui-focused fieldset': {
+    "&.Mui-focused fieldset": {
       border: `2px solid ${theme.palette.primary.main}`,
       borderRadius: 4,
     },
@@ -50,15 +49,20 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 type Props = {
   selectedId?: string;
   onChange: (id?: string) => void;
-}
+};
 
 export default function CharacterSelect({ selectedId, onChange }: Props) {
   const { characters, charactersIsLoading } = useCharacters();
 
-  if (charactersIsLoading) return <Skeleton variant="rectangular" width="100%" height={40} />
-  if (!characters) return <Typography variant="body2" color="text.secondary">No characters found</Typography>
+  if (charactersIsLoading) return <Skeleton variant="rectangular" width="100%" height={40} />;
+  if (!characters)
+    return (
+      <Typography variant="body2" color="text.secondary">
+        No characters found
+      </Typography>
+    );
 
-  const selectedCharacter = characters.find(char => char.id === selectedId);
+  const selectedCharacter = characters.find((char) => char.id === selectedId);
 
   return (
     <Autocomplete
@@ -72,42 +76,61 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
           style: {
             paddingTop: 0,
             paddingBottom: 0,
-            marginTop: '5px',
-          }
+            marginTop: "5px",
+          },
         },
       }}
       renderInput={(params) => {
-        const optionalCharacterImage = selectedCharacter && (<img src={selectedCharacter.imageUrl} alt={selectedCharacter.shorthandName} style={{ width: 'clamp(32px, 8vw, 50px)', height: 'clamp(32px, 8vw, 50px)' }} />)
+        const optionalCharacterImage = selectedCharacter && (
+          <img
+            src={selectedCharacter.imageUrl}
+            alt={selectedCharacter.shorthandName}
+            style={{ width: "clamp(32px, 8vw, 50px)", height: "clamp(32px, 8vw, 50px)" }}
+          />
+        );
         return (
           <>
             <CustomTextField
               {...params}
               slotProps={{
                 input: {
-                  ...params.InputProps, startAdornment: optionalCharacterImage
-                }
+                  ...params.InputProps,
+                  startAdornment: optionalCharacterImage,
+                },
               }}
               inputProps={{
                 ...params.inputProps,
-                'aria-label': 'Select character',
+                "aria-label": "Select character",
               }}
               variant="outlined"
               placeholder="Select character..."
             />
           </>
-        )
+        );
       }}
       renderOption={(props, item) => (
-        <StyledMenuItem
-          {...props}
-          key={item.id}
-          value={item.id}
-        >
-          <Box className="non-pop-out-box" sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+        <StyledMenuItem {...props} key={item.id} value={item.id}>
+          <Box
+            className="non-pop-out-box"
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <img src={item.imageUrl} alt={item.fullName} width="50" height="50" />
             {item.fullName}
           </Box>
-          <Box className="custom-pop-out-box" sx={{ display: 'none', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+          <Box
+            className="custom-pop-out-box"
+            sx={{
+              display: "none",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <img src={item.imageUrl} alt={item.fullName} width="50" height="50" />
             {item.fullName}
           </Box>
@@ -115,4 +138,4 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
       )}
     />
   );
-};
+}
