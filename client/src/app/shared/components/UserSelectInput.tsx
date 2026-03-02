@@ -5,6 +5,7 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Divider,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -58,23 +59,39 @@ export default function UserSelectInput<T extends FieldValues>(props: Props<T>) 
   };
 
   return (
-    <>
-      <Typography variant="h5">Members</Typography>
-      <Box>
-        {members?.map((member) => {
-          const user = props.users?.find((u) => u.id === member.userId);
-          return (
-            <Chip
-              key={member.userId}
-              label={getDisplayLabel({ displayName: member.displayName, isGuest: user?.isGuest })}
-              onDelete={() => {
-                field.onChange(members.filter((m) => m.userId !== member.userId));
-              }}
-              sx={{ mr: 1 }}
-            />
-          );
-        })}
+    <Box>
+      <Box display="flex" alignItems="center" gap={1} mb={1}>
+        <Typography variant="h5">Members</Typography>
+        <Chip
+          label={members.length}
+          size="small"
+          color={members.length >= 2 ? "success" : "default"}
+          sx={{ fontWeight: "bold", minWidth: 32 }}
+        />
       </Box>
+
+      {members.length > 0 ? (
+        <Box display="flex" flexWrap="wrap" gap={0.5} mb={1.5}>
+          {members.map((member) => {
+            const user = props.users?.find((u) => u.id === member.userId);
+            return (
+              <Chip
+                key={member.userId}
+                label={getDisplayLabel({ displayName: member.displayName, isGuest: user?.isGuest })}
+                variant={user?.isGuest ? "outlined" : "filled"}
+                onDelete={() => {
+                  field.onChange(members.filter((m) => m.userId !== member.userId));
+                }}
+              />
+            );
+          })}
+        </Box>
+      ) : (
+        <Typography variant="body2" color="text.secondary" mb={1.5}>
+          No members added yet
+        </Typography>
+      )}
+
       <FormControl fullWidth error={!!fieldState.error}>
         <InputLabel>{props.label}</InputLabel>
         <Select
@@ -83,12 +100,6 @@ export default function UserSelectInput<T extends FieldValues>(props: Props<T>) 
           label={props.label}
           onChange={addMember}
           inputProps={{ "aria-label": `Select a user to add as member` }}
-          sx={{
-            height: "unset",
-            "& .MuiSelect-select": {
-              height: 0,
-            },
-          }}
         >
           {availableUsersList.map((user) => (
             <MenuItem key={user.id} value={user.id}>
@@ -103,34 +114,42 @@ export default function UserSelectInput<T extends FieldValues>(props: Props<T>) 
         </Select>
         <FormHelperText>{fieldState?.error?.message}</FormHelperText>
       </FormControl>
+
       {props.onCreateGuest && (
-        <Box sx={{ display: "flex", gap: 1, mt: 1, alignItems: "center" }}>
-          <TextField
-            size="small"
-            label="Guest name"
-            value={guestName}
-            onChange={(e) => setGuestName(e.target.value)}
-            inputProps={{ "aria-label": "Enter guest player name" }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleCreateGuest();
-              }
-            }}
-            disabled={isCreatingGuest}
-            sx={{ flex: 1 }}
-          />
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={isCreatingGuest ? <CircularProgress size={16} /> : <PersonAdd />}
-            onClick={handleCreateGuest}
-            disabled={!guestName.trim() || isCreatingGuest}
-          >
-            {isCreatingGuest ? "Adding..." : "Add Guest"}
-          </Button>
-        </Box>
+        <>
+          <Divider sx={{ my: 2 }}>
+            <Typography variant="caption" color="text.secondary">
+              or add a guest player
+            </Typography>
+          </Divider>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <TextField
+              size="small"
+              label="Guest name"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              inputProps={{ "aria-label": "Enter guest player name" }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleCreateGuest();
+                }
+              }}
+              disabled={isCreatingGuest}
+              sx={{ flex: 1 }}
+            />
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={isCreatingGuest ? <CircularProgress size={16} /> : <PersonAdd />}
+              onClick={handleCreateGuest}
+              disabled={!guestName.trim() || isCreatingGuest}
+            >
+              {isCreatingGuest ? "Adding..." : "Add Guest"}
+            </Button>
+          </Box>
+        </>
       )}
-    </>
+    </Box>
   );
 }

@@ -31,6 +31,9 @@ function sharedComponents(mode: "light" | "dark") {
         body: {
           transition: "background-color 0.3s ease, color 0.3s ease",
         },
+        "*": {
+          transition: "border-color 0.2s ease",
+        },
       },
     },
     MuiCard: {
@@ -60,6 +63,11 @@ function sharedComponents(mode: "light" | "dark") {
           fontWeight: 600,
           textTransform: "none" as const,
           "&:focus-visible": { outlineOffset: 2 },
+          "&.Mui-disabled": {
+            opacity: 0.5,
+            cursor: "not-allowed",
+            pointerEvents: "auto",
+          },
         },
       },
     },

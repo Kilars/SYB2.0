@@ -12,14 +12,15 @@ type Props = {
 };
 
 export default function AppBreadcrumbs({ items }: Props) {
+  const allItems: BreadcrumbItem[] = [{ label: "Home", href: "/" }, ...items];
   return (
     <Breadcrumbs
       aria-label="breadcrumb"
       sx={{ mb: 1 }}
       separator={<NavigateNext fontSize="small" sx={{ color: "text.secondary" }} />}
     >
-      {items.map((item, index) => {
-        const isLast = index === items.length - 1;
+      {allItems.map((item, index) => {
+        const isLast = index === allItems.length - 1;
         if (isLast || !item.href) {
           return (
             <Tooltip key={index} title={item.label} enterDelay={500}>

@@ -40,6 +40,18 @@ export default function MatchesList() {
             overflowY: "auto",
             WebkitOverflowScrolling: "touch",
             scrollBehavior: "smooth",
+            pr: 0.5,
+            "&::-webkit-scrollbar": {
+              width: 6,
+            },
+            "&::-webkit-scrollbar-track": {
+              borderRadius: 3,
+              backgroundColor: "action.hover",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              borderRadius: 3,
+              backgroundColor: "text.disabled",
+            },
           }}
         >
           {league.matches.map((match) => {
@@ -56,13 +68,29 @@ export default function MatchesList() {
                 component={Card}
                 elevation={match.completed ? 1 : 3}
                 p={2}
+                role="link"
+                tabIndex={0}
+                aria-label={`Match #${match.matchNumber}: ${playerOne.displayName} vs ${playerTwo.displayName}${match.completed ? ` — Winner: ${winner}` : " — Pending"}`}
                 onClick={() =>
                   navigate(
                     `/leagues/${match.competitionId}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
                   )
                 }
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(
+                      `/leagues/${match.competitionId}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
+                    );
+                  }
+                }}
                 sx={{
                   cursor: "pointer",
+                  "&:focus-visible": {
+                    outline: "2px solid",
+                    outlineColor: "primary.main",
+                    outlineOffset: 2,
+                  },
                   borderLeft: `4px solid ${match.completed ? SMASH_COLORS.p4Green : SMASH_COLORS.p2Blue}`,
                   opacity: match.completed ? 0.9 : 1,
                   transition: "transform 0.15s ease, box-shadow 0.15s ease",
@@ -261,12 +289,23 @@ export default function MatchesList() {
                         Winner: {winner}
                       </Typography>
                     ) : (
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "bold", color: SMASH_COLORS.p2Blue }}
+                      <Box
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 0.5,
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 2,
+                          background: meta.accentGradient,
+                          color: "white",
+                          fontWeight: "bold",
+                          fontSize: "0.8rem",
+                        }}
                       >
-                        Register result
-                      </Typography>
+                        <SportsEsports sx={{ fontSize: 16 }} />
+                        Play
+                      </Box>
                     )}
                   </Box>
                 </Box>

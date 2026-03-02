@@ -57,13 +57,16 @@ export default function LeagueTabs({ tab }: Props) {
                 fontWeight: 600,
                 textTransform: "none",
                 fontSize: "0.95rem",
+                borderRadius: "8px 8px 0 0",
+                transition: "background-color 0.2s ease",
               },
               "& .Mui-selected": {
                 color: "secondary.main",
+                backgroundColor: "action.selected",
               },
               "& .MuiTabs-indicator": {
                 backgroundColor: "secondary.main",
-                height: 3,
+                height: 4,
                 borderRadius: 2,
               },
             }}
@@ -79,13 +82,13 @@ export default function LeagueTabs({ tab }: Props) {
           </Tabs>
         </Box>
         <Box
+          key={tab}
           sx={{
             "@keyframes tabFadeIn": {
               from: { opacity: 0, transform: "translateY(8px)" },
               to: { opacity: 1, transform: "translateY(0)" },
             },
             animation: "tabFadeIn 0.25s ease-out",
-            key: tab,
           }}
         >
           {tab === "description" && <Description />}

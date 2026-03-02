@@ -23,6 +23,11 @@ export default function EmptyState({ icon, message, action }: Props) {
     background: meta.accentGradient,
     color: "white",
     "&:hover": { opacity: 0.85 },
+    "&:focus-visible": {
+      outline: "2px solid",
+      outlineColor: "primary.main",
+      outlineOffset: 2,
+    },
   };
 
   return (

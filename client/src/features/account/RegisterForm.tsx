@@ -87,6 +87,11 @@ export default function RegisterForm() {
               fontWeight: "bold",
               py: 1.5,
               "&:hover": { opacity: 0.85 },
+              "&:focus-visible": {
+                outline: "2px solid",
+                outlineColor: "secondary.main",
+                outlineOffset: 2,
+              },
             }}
           >
             {isSubmitting ? "Registering..." : "Register"}

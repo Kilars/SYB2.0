@@ -1,5 +1,5 @@
 import { AccessTime, Add, Edit, Group, SportsEsports, Visibility } from "@mui/icons-material";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { Link as RouterLink, useNavigate } from "react-router";
 
 import { useAppTheme } from "../../app/context/ThemeContext";
@@ -82,20 +82,58 @@ export default function LeagueList() {
           }
         >
           <Box>
-            <Typography fontWeight="bold">Description:</Typography>
-            <Typography mb={2}>{league.description}</Typography>
-            <Box display="flex" alignItems="center">
-              <SportsEsports sx={{ mr: 2, color: "error.main" }} />
-              <Typography>Super Smash Bros</Typography>
+            <Typography variant="body2" color="text.secondary" mb={2} sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}>
+              {league.description}
+            </Typography>
+            <Box display="flex" gap={3} flexWrap="wrap" mb={1.5}>
+              <Box display="flex" alignItems="center">
+                <SportsEsports sx={{ mr: 1, fontSize: 20, color: "error.main" }} />
+                <Typography variant="body2">Smash Bros</Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <AccessTime sx={{ mr: 1, fontSize: 20, color: "info.main" }} />
+                <Typography variant="body2">{formatDate(league.startDate)}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Group sx={{ mr: 1, fontSize: 20, color: "success.main" }} />
+                <Typography variant="body2">{league.members.length} players</Typography>
+              </Box>
             </Box>
-            <Box display="flex" alignItems="center">
-              <AccessTime sx={{ mr: 2, color: "info.main" }} />
-              <Typography>{formatDate(league.startDate)}</Typography>
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Group sx={{ mr: 2, color: "success.main" }} />
-              <Typography>{league.members.length} players</Typography>
-            </Box>
+            {league.matches.length > 0 && (() => {
+              const completed = league.matches.filter(m => m.completed).length;
+              const total = league.matches.length;
+              const pct = Math.round((completed / total) * 100);
+              return (
+                <Box mb={1.5}>
+                  <Box display="flex" justifyContent="space-between" mb={0.5}>
+                    <Typography variant="caption" color="text.secondary">
+                      Matches
+                    </Typography>
+                    <Typography variant="caption" fontWeight="bold">
+                      {completed}/{total} ({pct}%)
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={pct}
+                    sx={{
+                      height: 6,
+                      borderRadius: 3,
+                      backgroundColor: "action.hover",
+                      "& .MuiLinearProgress-bar": {
+                        borderRadius: 3,
+                        background: meta.accentGradient,
+                      },
+                    }}
+                  />
+                </Box>
+              );
+            })()}
             <Box
               gap={1}
               mt={1}

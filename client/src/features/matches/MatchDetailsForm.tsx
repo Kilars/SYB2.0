@@ -39,7 +39,15 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
     try {
       schema.parse(rounds);
       await onComplete(rounds);
-      toast("Match completed successfully!", { type: "success" });
+      const { playerOne: p1, playerTwo: p2 } = matchData;
+      if (p1 && p2) {
+        const p1Score = rounds.filter((r) => r.winnerUserId === p1.userId).length;
+        const p2Score = rounds.filter((r) => r.winnerUserId === p2.userId).length;
+        const winner = p1Score > p2Score ? getDisplayName(p1) : getDisplayName(p2);
+        toast(`${winner} wins ${Math.max(p1Score, p2Score)}–${Math.min(p1Score, p2Score)}!`, { type: "success" });
+      } else {
+        toast("Match completed!", { type: "success" });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         for (const issue of error.issues) {
@@ -147,22 +155,26 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
         </Box>
       </Paper>
 
-      {/* Round progress dots */}
-      <Box display="flex" justifyContent="center" gap={1} mb={3}>
+      {/* Round progress indicators */}
+      <Box display="flex" justifyContent="center" gap={2} mb={3}>
         {rounds.map((round, i) => {
           const status = getRoundStatus(round);
           return (
-            <Box
-              key={i}
-              sx={{
-                width: 12,
-                height: 12,
-                borderRadius: "50%",
-                backgroundColor: ROUND_STATUS_COLORS[status],
-                border: `2px solid ${status === "empty" ? "#ccc" : ROUND_STATUS_COLORS[status]}`,
-                transition: "all 0.2s ease",
-              }}
-            />
+            <Box key={i} display="flex" flexDirection="column" alignItems="center" gap={0.5}>
+              <Box
+                sx={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: "50%",
+                  backgroundColor: ROUND_STATUS_COLORS[status],
+                  border: `2px solid ${status === "empty" ? "#ccc" : ROUND_STATUS_COLORS[status]}`,
+                  transition: "all 0.2s ease",
+                }}
+              />
+              <Typography variant="caption" sx={{ fontSize: "0.65rem", color: "text.secondary" }}>
+                R{round.roundNumber}
+              </Typography>
+            </Box>
           );
         })}
       </Box>
@@ -303,15 +315,23 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
           py: 1.5,
           fontWeight: "bold",
           fontSize: "1rem",
-          background: meta.accentGradient,
-          color: "white",
-          "&:hover": { opacity: 0.85 },
+          background: matchDecided ? meta.accentGradient : undefined,
+          backgroundColor: matchDecided ? undefined : "action.disabledBackground",
+          color: matchDecided ? "white" : "text.secondary",
+          "&:hover": matchDecided ? { opacity: 0.85 } : {},
+          transition: "all 0.3s ease",
         }}
         disabled={isSubmitting}
-        startIcon={isSubmitting ? <CircularProgress size={20} /> : undefined}
+        startIcon={
+          isSubmitting ? (
+            <CircularProgress size={20} />
+          ) : matchDecided ? (
+            <CheckCircleOutlineIcon />
+          ) : undefined
+        }
         onClick={() => onSubmit()}
       >
-        {isSubmitting ? "Completing..." : "Complete"}
+        {isSubmitting ? "Completing..." : matchDecided ? "Complete Match" : "Fill in rounds to complete"}
       </Button>
     </Box>
   );

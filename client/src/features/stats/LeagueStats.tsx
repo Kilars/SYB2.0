@@ -59,7 +59,7 @@ export default function LeagueStats() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  if (isLeagueLoading || isLeaderboardLoading) return <LoadingSkeleton variant="table" count={5} />;
+  if (isLeagueLoading || isLeaderboardLoading) return <LoadingSkeleton variant="chart" count={5} />;
   if (!league || !characters)
     return (
       <EmptyState icon={<BarChartIcon sx={{ fontSize: 48 }} />} message="No league stats yet" />

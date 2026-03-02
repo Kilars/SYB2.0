@@ -49,7 +49,7 @@ interface BracketMatchCardProps {
 
 function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
   const getPlayerName = (player?: Player) => {
-    if (!player) return "TBD";
+    if (!player) return "— TBD —";
     return player.isGuest ? `${player.displayName} (guest)` : player.displayName;
   };
 
@@ -78,11 +78,19 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
             ? SMASH_COLORS.p2Blue
             : "divider",
         transition: "transform 0.15s ease, box-shadow 0.15s ease",
+        ...(canPlay && {
+          "@keyframes bracketPulse": {
+            "0%, 100%": { boxShadow: `0 0 0 0 ${SMASH_COLORS.p2Blue}44` },
+            "50%": { boxShadow: `0 0 0 4px ${SMASH_COLORS.p2Blue}22` },
+          },
+          animation: "bracketPulse 2s ease-in-out infinite",
+        }),
         "&:hover":
           match.playerOne && match.playerTwo
             ? {
                 transform: "translateY(-2px)",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                animation: "none",
               }
             : {},
         opacity: !match.playerOne && !match.playerTwo ? 0.5 : 1,
@@ -106,6 +114,7 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
             noWrap
             sx={{
               fontWeight: isP1Winner ? "bold" : "normal",
+              fontStyle: !match.playerOne ? "italic" : "normal",
               color: !match.playerOne
                 ? "text.disabled"
                 : isP1Winner
@@ -147,6 +156,7 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
             noWrap
             sx={{
               fontWeight: isP2Winner ? "bold" : "normal",
+              fontStyle: !match.playerTwo ? "italic" : "normal",
               color: !match.playerTwo
                 ? "text.disabled"
                 : isP2Winner

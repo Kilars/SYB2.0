@@ -1,7 +1,7 @@
 import { Box, Skeleton } from "@mui/material";
 
 type Props = {
-  variant: "list" | "card" | "detail" | "table";
+  variant: "list" | "card" | "detail" | "table" | "chart";
   count?: number;
 };
 
@@ -72,6 +72,43 @@ export default function LoadingSkeleton({ variant, count = 3 }: Props) {
           height={48}
           sx={{ mt: 2, borderRadius: 1 }}
         />
+      </Box>
+    );
+  }
+
+  if (variant === "chart") {
+    return (
+      <Box role="status" aria-label="Loading charts">
+        <Skeleton animation="wave" variant="text" width="30%" height={36} sx={{ mb: 1 }} />
+        <Skeleton
+          animation="wave"
+          variant="rectangular"
+          height={300}
+          sx={{ borderRadius: 2, mb: 3 }}
+        />
+        <Skeleton animation="wave" variant="text" width="25%" height={36} sx={{ mb: 1 }} />
+        <Skeleton
+          animation="wave"
+          variant="rectangular"
+          height={250}
+          sx={{ borderRadius: 2, mb: 3 }}
+        />
+        <Skeleton animation="wave" variant="text" width="35%" height={36} sx={{ mb: 1 }} />
+        <Skeleton
+          animation="wave"
+          variant="rectangular"
+          height={48}
+          sx={{ borderRadius: 1, mb: 1 }}
+        />
+        {Array.from({ length: count }).map((_, i) => (
+          <Skeleton
+            animation="wave"
+            key={i}
+            variant="rectangular"
+            height={40}
+            sx={{ mb: 0.5, borderRadius: 0.5 }}
+          />
+        ))}
       </Box>
     );
   }

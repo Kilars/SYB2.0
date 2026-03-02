@@ -1,6 +1,5 @@
 import { Skeleton, Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
@@ -10,23 +9,15 @@ import { useCharacters } from "../../lib/hooks/useCharacters";
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   background: theme.palette.background.paper,
+  padding: theme.spacing(1),
+  gap: theme.spacing(1.5),
   "&.MuiAutocomplete-option:hover": {
     fontWeight: theme.typography.fontWeightBold,
-    backgroundColor: theme.palette.grey[300],
-    ".non-pop-out-box": {
-      visibility: "hidden",
-    },
-    ".custom-pop-out-box": {
-      display: "flex",
-      transform: "scale(1.2)",
-      transformOrigin: "left",
-      position: "absolute",
-      zIndex: 10,
-    },
+    backgroundColor: theme.palette.action.hover,
   },
   '&.MuiAutocomplete-option.MuiAutocomplete-option[aria-selected="true"]': {
     fontWeight: theme.typography.fontWeightBold,
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor: theme.palette.action.selected,
   },
 }));
 
@@ -89,51 +80,35 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
           />
         );
         return (
-          <>
-            <CustomTextField
-              {...params}
-              slotProps={{
-                input: {
-                  ...params.InputProps,
-                  startAdornment: optionalCharacterImage,
-                },
-              }}
-              inputProps={{
-                ...params.inputProps,
-                "aria-label": "Select character",
-              }}
-              variant="outlined"
-              placeholder="Select character..."
-            />
-          </>
+          <CustomTextField
+            {...params}
+            slotProps={{
+              input: {
+                ...params.InputProps,
+                startAdornment: optionalCharacterImage,
+              },
+            }}
+            inputProps={{
+              ...params.inputProps,
+              "aria-label": "Select character",
+            }}
+            variant="outlined"
+            placeholder="Select character..."
+          />
         );
       }}
       renderOption={(props, item) => (
         <StyledMenuItem {...props} key={item.id} value={item.id}>
-          <Box
-            className="non-pop-out-box"
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <img src={item.imageUrl} alt={item.fullName} width="50" height="50" />
+          <img
+            src={item.imageUrl}
+            alt={item.fullName}
+            width="44"
+            height="44"
+            style={{ borderRadius: 4 }}
+          />
+          <Typography variant="body2" fontWeight="inherit">
             {item.fullName}
-          </Box>
-          <Box
-            className="custom-pop-out-box"
-            sx={{
-              display: "none",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <img src={item.imageUrl} alt={item.fullName} width="50" height="50" />
-            {item.fullName}
-          </Box>
+          </Typography>
         </StyledMenuItem>
       )}
     />

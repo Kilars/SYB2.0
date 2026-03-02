@@ -45,22 +45,30 @@ const NavBar = observer(function NavBar() {
         <Container maxWidth="xl">
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}>
-              <SportsEsports sx={{ color: "white", fontSize: 28 }} />
-              <Typography
-                variant="h6"
+              <Box
                 component={NavLink}
                 to="/"
                 sx={{
-                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
                   textDecoration: "none",
-                  fontWeight: "bold",
-                  letterSpacing: "0.05em",
                   mr: 3,
-                  display: { xs: "none", sm: "block" },
                 }}
               >
-                SYB
-              </Typography>
+                <SportsEsports sx={{ color: "white", fontSize: 28 }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "white",
+                    fontWeight: "bold",
+                    letterSpacing: "0.05em",
+                    display: { xs: "none", sm: "block" },
+                  }}
+                >
+                  SYB
+                </Typography>
+              </Box>
               <MenuItemLink to="/leagues"> Leagues </MenuItemLink>
               <MenuItemLink to="/tournaments"> Tournaments </MenuItemLink>
             </Box>

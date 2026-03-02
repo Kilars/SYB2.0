@@ -194,6 +194,8 @@ function RecentMatches({ userId }: { userId: string }) {
           return (
             <Card
               key={match.competitionId + match.bracketNumber + match.matchNumber}
+              tabIndex={0}
+              role="link"
               sx={{
                 cursor: "pointer",
                 borderLeft: `4px solid ${!match.completed ? SMASH_COLORS.p2Blue : won ? SMASH_COLORS.p4Green : SMASH_COLORS.p1Red}`,
@@ -202,12 +204,25 @@ function RecentMatches({ userId }: { userId: string }) {
                   transform: "translateX(4px)",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
                 },
+                "&:focus-visible": {
+                  outline: "2px solid",
+                  outlineColor: "primary.main",
+                  outlineOffset: 2,
+                },
               }}
               onClick={() =>
                 navigate(
                   `/leagues/${match.competitionId}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
                 )
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate(
+                    `/leagues/${match.competitionId}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
+                  );
+                }
+              }}
             >
               <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -222,7 +237,8 @@ function RecentMatches({ userId }: { userId: string }) {
                   </Box>
                   {match.completed ? (
                     <Chip
-                      label={`${isPlayerOne ? p1Wins : p2Wins}–${isPlayerOne ? p2Wins : p1Wins}`}
+                      icon={won ? <CheckCircle sx={{ fontSize: 16 }} /> : undefined}
+                      label={`${won ? "W" : "L"} ${isPlayerOne ? p1Wins : p2Wins}–${isPlayerOne ? p2Wins : p1Wins}`}
                       size="small"
                       sx={{
                         fontWeight: "bold",
@@ -234,7 +250,13 @@ function RecentMatches({ userId }: { userId: string }) {
                       }}
                     />
                   ) : (
-                    <Chip label="Pending" size="small" color="info" variant="outlined" />
+                    <Chip
+                      icon={<SportsEsports sx={{ fontSize: 16 }} />}
+                      label="Pending"
+                      size="small"
+                      color="info"
+                      variant="outlined"
+                    />
                   )}
                 </Box>
               </CardContent>

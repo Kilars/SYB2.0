@@ -1,4 +1,4 @@
-import { AutoAwesome, Edit, EmojiEvents } from "@mui/icons-material";
+import { AutoAwesome, Cancel, CheckCircle, Edit, EmojiEvents, HelpOutline } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -104,9 +104,22 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
             {entry.displayName}
             {entry.isGuest ? " (guest)" : ""}
           </Typography>
-          <Typography variant="caption" sx={{ color: rankStyle?.color || "text.secondary" }}>
-            {`W: ${entry.wins} | L: ${entry.losses} | F: ${entry.flawless} | ${winRate}%`}
-          </Typography>
+          <Box display="flex" gap={1} alignItems="center" flexWrap="wrap">
+            <Typography variant="caption" sx={{ color: rankStyle?.color || "success.main", fontWeight: 600 }}>
+              {entry.wins}W
+            </Typography>
+            <Typography variant="caption" sx={{ color: rankStyle?.color || "error.main", fontWeight: 600 }}>
+              {entry.losses}L
+            </Typography>
+            {entry.flawless > 0 && (
+              <Typography variant="caption" sx={{ color: rankStyle?.color || "info.main", fontWeight: 600 }}>
+                {entry.flawless}<AutoAwesome sx={{ fontSize: 10, ml: 0.25, verticalAlign: "middle" }} />
+              </Typography>
+            )}
+            <Typography variant="caption" sx={{ color: rankStyle?.color || "text.secondary" }}>
+              {winRate}%
+            </Typography>
+          </Box>
         </Box>
         <Box textAlign="right" flexShrink={0}>
           <Box display="flex" alignItems="center" gap={0.5} justifyContent="flex-end">
@@ -119,9 +132,11 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
             </Typography>
             {entry.flawless > 0 && <AutoAwesome sx={{ color: SMASH_COLORS.gold, fontSize: 18 }} />}
           </Box>
-          <Typography variant="caption" color="text.secondary">
-            pts{entry.flawless > 0 ? ` (${entry.flawless} flawless)` : ""}
-          </Typography>
+          <Tooltip title="4 pts per win + 1 bonus for 2-0 sweep" enterDelay={200} arrow>
+            <Typography variant="caption" color="text.secondary" sx={{ cursor: "help", borderBottom: "1px dotted", borderColor: "text.secondary" }}>
+              pts{entry.flawless > 0 ? ` (${entry.flawless} flawless)` : ""}
+            </Typography>
+          </Tooltip>
         </Box>
       </Box>
     </Paper>
@@ -226,8 +241,12 @@ export default function Leaderboard() {
                   sx={{ backgroundColor: "primary.main", color: "white", fontWeight: "bold" }}
                   align="center"
                 >
-                  {" "}
-                  Points{" "}
+                  <Tooltip title="4 pts per win + 1 bonus for 2-0 sweep" arrow>
+                    <Box display="inline-flex" alignItems="center" gap={0.5} sx={{ cursor: "help" }}>
+                      Points
+                      <HelpOutline sx={{ fontSize: 16, opacity: 0.8 }} />
+                    </Box>
+                  </Tooltip>
                 </TableCell>
                 <TableCell
                   sx={{ backgroundColor: "primary.main", color: "white", fontWeight: "bold" }}
@@ -254,8 +273,12 @@ export default function Leaderboard() {
                   sx={{ backgroundColor: "primary.main", color: "white", fontWeight: "bold" }}
                   align="center"
                 >
-                  {" "}
-                  Flawless{" "}
+                  <Tooltip title="Flawless = 2-0 match victory" arrow>
+                    <Box display="inline-flex" alignItems="center" gap={0.5} sx={{ cursor: "help" }}>
+                      Flawless
+                      <HelpOutline sx={{ fontSize: 16, opacity: 0.8 }} />
+                    </Box>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -322,10 +345,16 @@ export default function Leaderboard() {
                           ) + "%"}
                     </TableCell>
                     <TableCell align="center" sx={{ color: rankStyle?.color || "success.main", fontWeight: 600 }}>
-                      {leaderboardUser.wins}
+                      <Box display="inline-flex" alignItems="center" gap={0.5}>
+                        {leaderboardUser.wins}
+                        {leaderboardUser.wins > 0 && <CheckCircle sx={{ fontSize: 14, opacity: 0.7 }} />}
+                      </Box>
                     </TableCell>
                     <TableCell align="center" sx={{ color: rankStyle?.color || "error.main", fontWeight: 600 }}>
-                      {leaderboardUser.losses}
+                      <Box display="inline-flex" alignItems="center" gap={0.5}>
+                        {leaderboardUser.losses}
+                        {leaderboardUser.losses > 0 && <Cancel sx={{ fontSize: 14, opacity: 0.7 }} />}
+                      </Box>
                     </TableCell>
                     <TableCell align="center" sx={{ color: rankStyle?.color || "info.main", fontWeight: 600 }}>
                       <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
