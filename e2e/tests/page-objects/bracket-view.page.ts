@@ -13,7 +13,7 @@ export class BracketViewPage {
    * For a 4-player bracket: "Semifinals" and "Final".
    */
   async waitForBracket() {
-    await expect(this.page.getByText('Final')).toBeVisible({ timeout: 15000 });
+    await expect(this.page.getByText('Final', { exact: true })).toBeVisible({ timeout: 15000 });
   }
 
   async expectTitle(title: string) {
@@ -70,6 +70,14 @@ export class BracketViewPage {
     const card = this.page.locator('[class*="MuiCard"]')
       .filter({ hasText: playerName });
     await card.first().click();
+  }
+
+  /**
+   * Click the final match card (last card in the bracket).
+   */
+  async clickFinalCard() {
+    const cards = this.page.locator('[class*="MuiCard"]');
+    await cards.last().click();
   }
 
   /**

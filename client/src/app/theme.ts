@@ -88,6 +88,7 @@ function sharedComponents(mode: "light" | "dark") {
     MuiAppBar: {
       styleOverrides: {
         root: {
+          borderRadius: 0,
           transition: "background 0.3s ease",
         },
       },

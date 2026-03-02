@@ -65,7 +65,7 @@ test.describe('Tournament Lifecycle', () => {
     await bracket.clickStartTournament();
 
     await expect(page.getByText('Semifinals')).toBeVisible();
-    await expect(page.getByText('Final')).toBeVisible();
+    await expect(page.getByText('Final', { exact: true })).toBeVisible();
 
     const count = await bracket.getMatchCardCount();
     expect(count).toBe(3);
@@ -106,6 +106,7 @@ test.describe('Tournament Lifecycle', () => {
   });
 
   test('complete semifinal 2 with 2-1 result', async ({ page, pageErrors }) => {
+    await page.goto(`/tournaments/${tournamentId}`);
     const bracket = new BracketViewPage(page);
     await bracket.waitForBracket();
 
@@ -129,6 +130,7 @@ test.describe('Tournament Lifecycle', () => {
 
     // Final match card should now show both finalists (not TBD)
     const bracket2 = new BracketViewPage(page);
+    await bracket2.waitForBracket();
     const finalists = await bracket2.getFinalists();
     expect(finalists.p1).not.toBe('TBD');
     expect(finalists.p2).not.toBe('TBD');
@@ -137,11 +139,12 @@ test.describe('Tournament Lifecycle', () => {
   });
 
   test('complete final — tournament winner declared', async ({ page, pageErrors }) => {
+    await page.goto(`/tournaments/${tournamentId}`);
     const bracket = new BracketViewPage(page);
     await bracket.waitForBracket();
 
-    // Click the final match card (contains one of the semifinal winners)
-    await bracket.clickMatchCard(semifinal1Winner);
+    // Click the final match card (last card in the bracket)
+    await bracket.clickFinalCard();
     await page.waitForURL(/\/match\//, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
@@ -159,6 +162,7 @@ test.describe('Tournament Lifecycle', () => {
 
     // Winner banner and Complete status
     const finalBracket = new BracketViewPage(page);
+    await finalBracket.waitForBracket();
     const finalists = await finalBracket.getFinalists();
     await finalBracket.expectWinnerBanner(finalists.p1);
     await finalBracket.expectStatus('Complete');

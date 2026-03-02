@@ -12,7 +12,7 @@ export const useUsers = () => {
       const res = await agent.get<User[]>("/account/users");
       return res.data;
     },
-    enabled: location.pathname === "/createLeague" || location.pathname.includes("/manage"),
+    enabled: location.pathname === "/createLeague" || location.pathname === "/createTournament" || location.pathname.includes("/manage"),
   });
 
   const createGuest = useMutation({

@@ -59,6 +59,7 @@ test.describe('Tournament Reopen', () => {
   });
 
   test('reopen completed semifinal', async ({ page, pageErrors }) => {
+    await page.goto(`/tournaments/${tournamentId}`);
     const bracket = new BracketViewPage(page);
     await bracket.waitForBracket();
 
@@ -70,11 +71,8 @@ test.describe('Tournament Reopen', () => {
     await matchPage.waitForForm();
     await matchPage.expectCompleted();
 
-    // Reopen the match
+    // Reopen the match — no toast, just switches to form view
     await matchPage.clickReopen();
-    await expect(page.getByText(/reopened/i)).toBeVisible({ timeout: 10000 });
-
-    // Form should switch to editable state
     await matchPage.expectRegisterForm();
 
     expect(pageErrors).toEqual([]);

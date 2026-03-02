@@ -68,7 +68,7 @@ test.describe('Tournament Navigation', () => {
 
     await bracket.expectStatus('Active');
     await expect(page.getByText('Semifinals')).toBeVisible();
-    await expect(page.getByText('Final')).toBeVisible();
+    await expect(page.getByText('Final', { exact: true })).toBeVisible();
 
     // 4-player bracket: 2 semis + 1 final = 3 cards
     const count = await bracket.getMatchCardCount();

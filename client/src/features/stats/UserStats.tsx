@@ -48,17 +48,19 @@ export default function UserStats() {
     );
 
   const stats = userMatches.flatMap((match) =>
-    match.rounds.map((round) => {
-      const charId =
-        match.playerOne?.userId === userId
-          ? (round.playerOneCharacterId as string)
-          : (round.playerTwoCharacterId as string);
-      const won = round.winnerUserId === userId;
-      return {
-        charId,
-        won,
-      };
-    }),
+    match.rounds
+      .filter((round) => round.winnerUserId)
+      .map((round) => {
+        const charId =
+          match.playerOne?.userId === userId
+            ? (round.playerOneCharacterId as string)
+            : (round.playerTwoCharacterId as string);
+        const won = round.winnerUserId === userId;
+        return {
+          charId,
+          won,
+        };
+      }),
   );
   const charStats: Record<string, { wins: number; total: number; wr: number }> = {};
 
@@ -127,11 +129,11 @@ export default function UserStats() {
                     <Box>
                       <Typography fontWeight="bold">{character?.fullName ?? "Unknown"}</Typography>
                       <Typography variant="body2">
-                        Wins:{" "}
+                        Round wins:{" "}
                         <Box component="span" sx={{ color: SMASH_COLORS.p4Green, fontWeight: 600 }}>
                           {stats.wins}
                         </Box>{" "}
-                        / Total: {stats.total}
+                        / {stats.total}
                       </Typography>
                       <Typography variant="body2">
                         Win rate:{" "}
@@ -175,8 +177,8 @@ export default function UserStats() {
           return roundsWithWinner.length === 2;
         }).length;
         const statCards = [
-          { label: "Wins", value: totalWins, icon: <EmojiEvents />, color: SMASH_COLORS.p4Green },
-          { label: "Losses", value: totalLosses, icon: <SportsMma />, color: SMASH_COLORS.p1Red },
+          { label: "Match Wins", value: totalWins, icon: <EmojiEvents />, color: SMASH_COLORS.p4Green },
+          { label: "Match Losses", value: totalLosses, icon: <SportsMma />, color: SMASH_COLORS.p1Red },
           {
             label: "Win Rate",
             value: `${overallWR}%`,
@@ -409,6 +411,14 @@ export default function UserStats() {
       <Typography variant="h4" mb={2}>
         Match History
       </Typography>
+      <Box
+        sx={{
+          maxHeight: "60vh",
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
+          scrollBehavior: "smooth",
+        }}
+      >
       {userMatches
         .filter((match) => match.completed)
         .map((match) => (
@@ -585,6 +595,7 @@ export default function UserStats() {
             </Box>
           </Box>
         ))}
+      </Box>
     </Box>
   );
 }

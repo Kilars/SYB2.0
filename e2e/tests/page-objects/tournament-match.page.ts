@@ -16,8 +16,10 @@ export class TournamentMatchPage {
   constructor(private page: Page) {}
 
   async waitForForm() {
+    // Wait for the match details page to load in any state (form or completed).
+    // The "Back to Bracket" link is always present.
     await expect(
-      this.page.getByRole('heading', { name: /match result/i })
+      this.page.getByRole('link', { name: /back to bracket/i }).first()
     ).toBeVisible({ timeout: 15000 });
   }
 
@@ -27,8 +29,8 @@ export class TournamentMatchPage {
    */
   private getRoundContainer(roundNumber: number): Locator {
     return this.page
-      .getByRole('heading', { name: `Round ${roundNumber}`, exact: false })
-      .locator('ancestor::div[class*="MuiCard"]');
+      .locator('[class*="MuiCard"]')
+      .filter({ has: this.page.getByRole('heading', { name: `Round ${roundNumber}` }) });
   }
 
   /**
@@ -111,15 +113,18 @@ export class TournamentMatchPage {
   }
 
   async clickComplete() {
-    await this.page.getByRole('button', { name: /complete match/i }).click();
+    await this.page.getByRole('button', { name: /complete/i }).click();
   }
 
   async clickReopen() {
     await this.page.getByRole('button', { name: /reopen match/i }).click();
+    // Handle the confirmation dialog
+    const dialog = this.page.getByRole('dialog');
+    await dialog.getByRole('button', { name: /^reopen$/i }).click();
   }
 
   async clickBackToBracket() {
-    await this.page.getByRole('button', { name: /back to bracket/i }).click();
+    await this.page.getByRole('link', { name: /back to bracket/i }).first().click();
   }
 
   /**
@@ -147,8 +152,8 @@ export class TournamentMatchPage {
 
   async expectCompleted() {
     await expect(
-      this.page.getByRole('heading', { name: 'Match Result', exact: true })
-    ).toBeVisible();
+      this.page.getByRole('button', { name: /reopen match/i })
+    ).toBeVisible({ timeout: 10000 });
   }
 
   async expectRegisterForm() {

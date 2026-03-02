@@ -54,6 +54,7 @@ type LeaderboardCardProps = {
 };
 
 function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
+  const navigate = useNavigate();
   const winRate =
     entry.wins + entry.losses === 0
       ? 0
@@ -62,11 +63,19 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
   return (
     <Paper
       elevation={rankStyle ? 4 : 2}
+      onClick={() => entry.userId && navigate(`/user/${entry.userId}`)}
+      role={entry.userId ? "link" : undefined}
+      tabIndex={entry.userId ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && entry.userId) navigate(`/user/${entry.userId}`);
+      }}
       sx={{
         p: 2,
+        cursor: entry.userId ? "pointer" : "default",
         backgroundImage: rankStyle?.bg,
-        backgroundColor: rankStyle ? undefined : rank % 2 === 0 ? "primary.light" : "info.light",
+        backgroundColor: rankStyle ? undefined : rank % 2 === 0 ? "action.hover" : "background.paper",
         border: rankStyle ? `2px solid ${rankStyle.border}` : "none",
+        "&:hover": { filter: "brightness(0.95)" },
       }}
     >
       <Box display="flex" alignItems="center" gap={2}>
@@ -91,11 +100,11 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
           </Typography>
         </Box>
         <Box flex={1} minWidth={0}>
-          <Typography variant="subtitle1" fontWeight="bold" noWrap>
+          <Typography variant="subtitle1" fontWeight="bold" noWrap sx={{ color: rankStyle?.color }}>
             {entry.displayName}
             {entry.isGuest ? " (guest)" : ""}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: rankStyle?.color || "text.secondary" }}>
             {`W: ${entry.wins} | L: ${entry.losses} | F: ${entry.flawless} | ${winRate}%`}
           </Typography>
         </Box>
@@ -259,24 +268,35 @@ export default function Leaderboard() {
                 return (
                   <TableRow
                     key={leaderboardUser.displayName}
+                    onClick={() =>
+                      leaderboardUser.userId &&
+                      navigate(`/user/${leaderboardUser.userId}`)
+                    }
                     sx={{
+                      cursor: leaderboardUser.userId ? "pointer" : "default",
                       backgroundImage: rankStyle ? rowBg : "none",
                       backgroundColor: rankStyle
                         ? undefined
                         : i % 2 === 0
-                          ? "primary.light"
-                          : "info.light",
+                          ? "action.hover"
+                          : "background.paper",
                       borderBottom: "1px solid",
                       borderColor: "divider",
+                      "&:hover": { filter: "brightness(0.95)" },
                       ...(rankStyle && {
                         borderLeft: `4px solid ${rankStyle.border}`,
                       }),
                     }}
+                    tabIndex={leaderboardUser.userId ? 0 : undefined}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && leaderboardUser.userId)
+                        navigate(`/user/${leaderboardUser.userId}`);
+                    }}
                   >
-                    <TableCell sx={{ width: 50 }}>
+                    <TableCell sx={{ width: 50, color: rankStyle?.color }}>
                       <RankBadge rank={rank} />
                     </TableCell>
-                    <TableCell sx={{ fontWeight: rankStyle ? "bold" : "normal" }}>
+                    <TableCell sx={{ fontWeight: rankStyle ? "bold" : "normal", color: rankStyle?.color }}>
                       <Tooltip
                         title={`${leaderboardUser.displayName} — W: ${leaderboardUser.wins}, L: ${leaderboardUser.losses}, Pts: ${leaderboardUser.points}`}
                         enterDelay={300}
@@ -289,11 +309,11 @@ export default function Leaderboard() {
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ fontWeight: "bold", fontSize: rankStyle ? "1.1rem" : "inherit" }}
+                      sx={{ fontWeight: "bold", fontSize: rankStyle ? "1.1rem" : "inherit", color: rankStyle?.color }}
                     >
                       {leaderboardUser.points}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell align="center" sx={{ color: rankStyle?.color }}>
                       {leaderboardUser.wins + leaderboardUser.losses === 0
                         ? 0
                         : Math.round(
@@ -301,13 +321,13 @@ export default function Leaderboard() {
                               (leaderboardUser.wins + leaderboardUser.losses),
                           ) + "%"}
                     </TableCell>
-                    <TableCell align="center" sx={{ color: "success.main", fontWeight: 600 }}>
+                    <TableCell align="center" sx={{ color: rankStyle?.color || "success.main", fontWeight: 600 }}>
                       {leaderboardUser.wins}
                     </TableCell>
-                    <TableCell align="center" sx={{ color: "error.main", fontWeight: 600 }}>
+                    <TableCell align="center" sx={{ color: rankStyle?.color || "error.main", fontWeight: 600 }}>
                       {leaderboardUser.losses}
                     </TableCell>
-                    <TableCell align="center" sx={{ color: "info.main", fontWeight: 600 }}>
+                    <TableCell align="center" sx={{ color: rankStyle?.color || "info.main", fontWeight: 600 }}>
                       <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
                         {leaderboardUser.flawless}
                         {leaderboardUser.flawless > 0 && (

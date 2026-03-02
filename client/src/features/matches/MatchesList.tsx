@@ -31,7 +31,17 @@ export default function MatchesList() {
           message="No matches in this split"
         />
       ) : (
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          sx={{
+            maxHeight: "60vh",
+            overflowY: "auto",
+            WebkitOverflowScrolling: "touch",
+            scrollBehavior: "smooth",
+          }}
+        >
           {league.matches.map((match) => {
             if (!match.playerOne || !match.playerTwo) return null;
             const { playerOne, playerTwo } = match;

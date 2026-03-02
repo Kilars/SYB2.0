@@ -71,7 +71,7 @@ test.describe('Tournament Permissions', () => {
     // Can see bracket structure
     await bracket.expectStatus('Active');
     await expect(page.getByText('Semifinals')).toBeVisible();
-    await expect(page.getByText('Final')).toBeVisible();
+    await expect(page.getByText('Final', { exact: true })).toBeVisible();
 
     // Can click a match card and see match details
     const semis = await bracket.getSemifinalists();

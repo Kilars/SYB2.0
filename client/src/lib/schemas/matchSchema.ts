@@ -70,9 +70,9 @@ export const tournamentMatchSchema = z
       matchNumber: z.number(),
       roundNumber: z.number(),
       completed: z.boolean().optional(),
-      winnerUserId: z.string().optional(),
-      playerOneCharacterId: z.string().optional(),
-      playerTwoCharacterId: z.string().optional(),
+      winnerUserId: z.string().nullable().optional(),
+      playerOneCharacterId: z.string().nullable().optional(),
+      playerTwoCharacterId: z.string().nullable().optional(),
     }),
   )
   .refine(

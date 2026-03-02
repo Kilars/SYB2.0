@@ -26,6 +26,7 @@ function HeroSection() {
         gap: 4,
         alignItems: "center",
         justifyContent: "center",
+        minHeight: "calc(100vh - 96px)",
         py: { xs: 8, sm: 12 },
         px: 3,
         backgroundImage: meta.heroGradient,

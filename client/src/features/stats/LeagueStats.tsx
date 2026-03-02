@@ -1,7 +1,6 @@
 import { BarChart as BarChartIcon } from "@mui/icons-material";
 import {
   Box,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -19,22 +18,22 @@ import {
   CartesianGrid,
   Cell,
   Legend,
-  Pie,
-  PieChart,
   ResponsiveContainer,
+  Scatter,
+  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
+  ZAxis,
 } from "recharts";
 
-import { useAppTheme } from "../../app/context/ThemeContext";
 import EmptyState from "../../app/shared/components/EmptyState";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import { SMASH_COLORS } from "../../app/theme";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 
-const PIE_COLORS = [
+const CHART_COLORS = [
   SMASH_COLORS.p1Red,
   SMASH_COLORS.p2Blue,
   SMASH_COLORS.p3Yellow,
@@ -57,7 +56,6 @@ export default function LeagueStats() {
   const { competitionId } = useParams();
   const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(competitionId);
   const { characters } = useCharacters();
-  const { meta } = useAppTheme();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -106,32 +104,7 @@ export default function LeagueStats() {
     });
   };
 
-  // Character pick distribution
-  const computeCharacterPickCounts = (
-    matches: Match[],
-  ): { name: string; picks: number; imageUrl: string }[] => {
-    const pickDict: Record<string, number> = {};
-    matches
-      .flatMap((m) => m.rounds)
-      .filter((round) => round.completed)
-      .forEach((round) => {
-        if (round.playerOneCharacterId) {
-          pickDict[round.playerOneCharacterId] = (pickDict[round.playerOneCharacterId] || 0) + 1;
-        }
-        if (round.playerTwoCharacterId) {
-          pickDict[round.playerTwoCharacterId] = (pickDict[round.playerTwoCharacterId] || 0) + 1;
-        }
-      });
-    return Object.entries(pickDict)
-      .map(([charId, picks]) => {
-        const char = characters.find((c) => c.id === charId);
-        return { name: char?.shorthandName || "Unknown", picks, imageUrl: char?.imageUrl || "" };
-      })
-      .sort((a, b) => b.picks - a.picks);
-  };
-
   const charStats = computeCharacterWinratesPercentage(league.matches);
-  const charPicks = computeCharacterPickCounts(league.matches);
 
   // Player win rate data for bar chart
   const playerWinRates = leaderboard
@@ -143,103 +116,116 @@ export default function LeagueStats() {
             : Math.round((player.wins * 100) / (player.wins + player.losses)),
         wins: player.wins,
         losses: player.losses,
-        fill: PIE_COLORS[i % PIE_COLORS.length],
+        fill: CHART_COLORS[i % CHART_COLORS.length],
       }))
     : [];
 
-  const hasCharData = charPicks.length > 0;
+  const hasCharData = charStats.length > 0;
   const hasPlayerData = playerWinRates.length > 0;
+
+  // Scatter chart data — index for X, win rate for Y
+  const scatterData = charStats
+    .sort((a, b) => b.total - a.total)
+    .map((s, i) => ({
+      x: i,
+      winRate: s.winRate,
+      total: s.total,
+      name: s.name,
+      imageUrl: s.imageUrl,
+    }));
+
+  const CharacterDot = (props: {
+    cx?: number;
+    cy?: number;
+    payload?: (typeof scatterData)[number];
+  }) => {
+    const { cx = 0, cy = 0, payload } = props;
+    if (!payload?.imageUrl) return null;
+    const size = Math.max(28, Math.min(48, 20 + payload.total * 4));
+    return (
+      <g>
+        <defs>
+          <clipPath id={`clip-${payload.name}`}>
+            <circle cx={cx} cy={cy} r={size / 2} />
+          </clipPath>
+        </defs>
+        <circle cx={cx} cy={cy} r={size / 2 + 2} fill={theme.palette.divider} />
+        <image
+          href={payload.imageUrl}
+          x={cx - size / 2}
+          y={cy - size / 2}
+          width={size}
+          height={size}
+          clipPath={`url(#clip-${payload.name})`}
+        />
+      </g>
+    );
+  };
 
   return (
     <Box>
-      {/* Character Pick Distribution Pie Chart */}
+      {/* Character Win Rate Scatter Chart */}
       {hasCharData && (
         <Box mb={4}>
           <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: "primary.main" }}>
-            Character Pick Distribution
+            Character Win Rates
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", md: "row" },
-              gap: 3,
-              alignItems: "center",
-            }}
-          >
-            <Box sx={{ width: { xs: "100%", md: "50%" }, height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={charPicks}
-                    dataKey="picks"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={isMobile ? 80 : 110}
-                    innerRadius={isMobile ? 30 : 40}
-                    paddingAngle={2}
-                    label={
-                      isMobile
-                        ? false
-                        : ({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                    }
-                    labelLine={!isMobile}
-                  >
-                    {charPicks.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={PIE_COLORS[index % PIE_COLORS.length]}
-                        stroke="#fff"
-                        strokeWidth={2}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value, name) => [`${value} picks`, name]}
-                    contentStyle={{ borderRadius: 8, border: "1px solid #ddd" }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </Box>
-            {/* Character legend with images */}
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 1,
-                justifyContent: { xs: "center", md: "flex-start" },
-              }}
-            >
-              {charPicks.slice(0, 12).map((char, i) => (
-                <Box
-                  key={char.name}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: 2,
-                    backgroundColor: "rgba(0,0,0,0.04)",
-                    border: `2px solid ${PIE_COLORS[i % PIE_COLORS.length]}`,
+          <Box sx={{ width: "100%", height: isMobile ? 350 : 400 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis
+                  type="number"
+                  dataKey="x"
+                  domain={[-0.5, scatterData.length - 0.5]}
+                  ticks={scatterData.map((_, i) => i)}
+                  tickFormatter={(i) => scatterData[i]?.name || ""}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                  tick={{ fontSize: 11 }}
+                />
+                <YAxis
+                  type="number"
+                  dataKey="winRate"
+                  domain={[0, 100]}
+                  tickFormatter={(v) => `${v}%`}
+                  label={{
+                    value: "Win Rate",
+                    angle: -90,
+                    position: "insideLeft",
+                    style: { fontSize: 12 },
                   }}
-                >
-                  {char.imageUrl && (
-                    <img
-                      src={char.imageUrl}
-                      alt={char.name}
-                      style={{ width: 28, height: 28, borderRadius: 4 }}
-                    />
-                  )}
-                  <Typography variant="caption" fontWeight="bold">
-                    {char.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    ({char.picks})
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
+                />
+                <ZAxis type="number" dataKey="total" range={[100, 400]} />
+                <Tooltip
+                  content={({ payload }) => {
+                    if (!payload || payload.length === 0) return null;
+                    const data = payload[0]?.payload as (typeof scatterData)[number];
+                    return (
+                      <Box
+                        sx={{
+                          bgcolor: "background.paper",
+                          border: "1px solid",
+                          borderColor: "divider",
+                          borderRadius: 1,
+                          p: 1.5,
+                          boxShadow: 2,
+                        }}
+                      >
+                        <Typography variant="body2" fontWeight="bold">
+                          {data.name}
+                        </Typography>
+                        <Typography variant="caption">Win Rate: {data.winRate}%</Typography>
+                        <br />
+                        <Typography variant="caption">Rounds: {data.total}</Typography>
+                      </Box>
+                    );
+                  }}
+                />
+                <Scatter data={scatterData} shape={<CharacterDot />} />
+              </ScatterChart>
+            </ResponsiveContainer>
           </Box>
         </Box>
       )}
@@ -267,7 +253,7 @@ export default function LeagueStats() {
                 <Legend />
                 <Bar dataKey="winRate" name="Win Rate %" radius={[0, 6, 6, 0]}>
                   {playerWinRates.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                   ))}
                 </Bar>
               </BarChart>
@@ -278,7 +264,7 @@ export default function LeagueStats() {
 
       {/* Character Win Rates Table */}
       <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: "primary.main" }}>
-        Character Win Rates
+        Character Win Rate Details
       </Typography>
       <TableContainer sx={{ maxHeight: "40vh", overflowX: "auto" }}>
         <Table stickyHeader aria-label="Character win rates table">
@@ -314,7 +300,7 @@ export default function LeagueStats() {
                 <TableRow
                   key={stats.name}
                   sx={{
-                    backgroundColor: i % 2 === 0 ? "primary.light" : "info.light",
+                    backgroundColor: i % 2 === 0 ? "action.hover" : "background.paper",
                     borderBottom: "1px solid",
                     borderColor: "divider",
                   }}
@@ -363,164 +349,6 @@ export default function LeagueStats() {
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Head-to-Head Records */}
-      {league.matches.filter((m) => m.completed).length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: "primary.main" }}>
-            Head-to-Head Records
-          </Typography>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
-            {(() => {
-              const h2h: Record<
-                string,
-                { p1: string; p2: string; p1Wins: number; p2Wins: number }
-              > = {};
-              league.matches
-                .filter((m) => m.completed)
-                .forEach((match) => {
-                  if (!match.playerOne || !match.playerTwo) return;
-                  const key = [match.playerOne.userId, match.playerTwo.userId].sort().join("-");
-                  if (!h2h[key]) {
-                    const [sorted1, sorted2] = [
-                      match.playerOne.userId,
-                      match.playerTwo.userId,
-                    ].sort();
-                    h2h[key] = {
-                      p1:
-                        sorted1 === match.playerOne.userId
-                          ? match.playerOne.displayName
-                          : match.playerTwo.displayName,
-                      p2:
-                        sorted2 === match.playerTwo.userId
-                          ? match.playerTwo.displayName
-                          : match.playerOne.displayName,
-                      p1Wins: 0,
-                      p2Wins: 0,
-                    };
-                  }
-                  const [sorted1] = [match.playerOne.userId, match.playerTwo.userId].sort();
-                  if (match.winnerUserId === sorted1) h2h[key].p1Wins += 1;
-                  else h2h[key].p2Wins += 1;
-                });
-              return Object.values(h2h).map((record, i) => (
-                <Paper
-                  key={i}
-                  elevation={1}
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    background: `linear-gradient(90deg, ${SMASH_COLORS.p1Red}10, transparent, ${SMASH_COLORS.p2Blue}10)`,
-                  }}
-                >
-                  <Box textAlign="center" flex={1}>
-                    <Typography
-                      fontWeight="bold"
-                      noWrap
-                      sx={{
-                        color:
-                          record.p1Wins > record.p2Wins ? SMASH_COLORS.p4Green : "text.primary",
-                        fontSize: { xs: "0.85rem", sm: "1rem" },
-                      }}
-                    >
-                      {record.p1}
-                    </Typography>
-                    <Typography
-                      variant="h4"
-                      fontWeight="bold"
-                      sx={{ color: SMASH_COLORS.p1Red, fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
-                    >
-                      {record.p1Wins}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 2,
-                      background: meta.accentGradient,
-                    }}
-                  >
-                    <Typography variant="body2" fontWeight="bold" color="white">
-                      VS
-                    </Typography>
-                  </Box>
-                  <Box textAlign="center" flex={1}>
-                    <Typography
-                      fontWeight="bold"
-                      noWrap
-                      sx={{
-                        color:
-                          record.p2Wins > record.p1Wins ? SMASH_COLORS.p4Green : "text.primary",
-                        fontSize: { xs: "0.85rem", sm: "1rem" },
-                      }}
-                    >
-                      {record.p2}
-                    </Typography>
-                    <Typography
-                      variant="h4"
-                      fontWeight="bold"
-                      sx={{
-                        color: SMASH_COLORS.p2Blue,
-                        fontSize: { xs: "1.5rem", sm: "2.125rem" },
-                      }}
-                    >
-                      {record.p2Wins}
-                    </Typography>
-                  </Box>
-                </Paper>
-              ));
-            })()}
-          </Box>
-        </Box>
-      )}
-
-      {/* Points Distribution Pie Chart */}
-      {hasPlayerData && (
-        <Box mt={4}>
-          <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: "primary.main" }}>
-            Points Distribution
-          </Typography>
-          <Box sx={{ width: "100%", height: 280 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={leaderboard?.map((p) => ({ name: p.displayName, points: p.points })) || []}
-                  dataKey="points"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={isMobile ? 70 : 100}
-                  innerRadius={isMobile ? 25 : 35}
-                  paddingAngle={2}
-                  label={
-                    isMobile
-                      ? false
-                      : ({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-                  }
-                  labelLine={!isMobile}
-                >
-                  {(leaderboard || []).map((_, index) => (
-                    <Cell
-                      key={`pts-${index}`}
-                      fill={PIE_COLORS[index % PIE_COLORS.length]}
-                      stroke="#fff"
-                      strokeWidth={2}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => [`${value} pts`]}
-                  contentStyle={{ borderRadius: 8, border: "1px solid #ddd" }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </Box>
-        </Box>
-      )}
     </Box>
   );
 }
