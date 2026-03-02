@@ -27,7 +27,7 @@ public class ShuffleBracket
             if (tournament == null)
                 return Result<Unit>.Failure("Tournament not found", 404);
 
-            if (tournament.Status != TournamentStatus.Active)
+            if (tournament.Status != CompetitionStatus.Active)
                 return Result<Unit>.Failure("Can only shuffle bracket of active tournaments", 400);
 
             // Check if any match has been completed
@@ -35,8 +35,8 @@ public class ShuffleBracket
                 return Result<Unit>.Failure("Cannot shuffle bracket after matches have been completed", 400);
 
             // Remove existing matches and rounds
-            context.RemoveRange(context.TournamentRounds.Where(r => r.TournamentId == tournament.Id));
-            context.RemoveRange(context.TournamentMatches.Where(m => m.TournamentId == tournament.Id));
+            context.RemoveRange(context.Rounds.Where(r => r.CompetitionId == tournament.Id));
+            context.RemoveRange(context.Matches.Where(m => m.CompetitionId == tournament.Id));
 
             // Regenerate bracket
             var members = tournament.Members.ToList();
@@ -54,22 +54,22 @@ public class ShuffleBracket
             int firstRoundMatches = playerCount / 2;
             for (int i = 0; i < firstRoundMatches; i++)
             {
-                var match = new TournamentMatch
+                var match = new Match
                 {
-                    TournamentId = tournament.Id,
-                    BracketRound = 1,
-                    BracketPosition = i + 1,
+                    CompetitionId = tournament.Id,
+                    BracketNumber = 1,
                     MatchNumber = matchNumber,
                     PlayerOneUserId = members[i * 2].UserId,
                     PlayerTwoUserId = members[i * 2 + 1].UserId,
                 };
-                context.TournamentMatches.Add(match);
+                context.Matches.Add(match);
 
                 for (int r = 0; r < tournament.BestOf; r++)
                 {
-                    context.TournamentRounds.Add(new TournamentRound
+                    context.Rounds.Add(new Round
                     {
-                        TournamentId = tournament.Id,
+                        CompetitionId = tournament.Id,
+                        BracketNumber = 1,
                         MatchNumber = matchNumber,
                         RoundNumber = r + 1,
                     });
@@ -82,22 +82,22 @@ public class ShuffleBracket
                 int matchesInRound = playerCount / (int)Math.Pow(2, round);
                 for (int i = 0; i < matchesInRound; i++)
                 {
-                    var match = new TournamentMatch
+                    var match = new Match
                     {
-                        TournamentId = tournament.Id,
-                        BracketRound = round,
-                        BracketPosition = i + 1,
+                        CompetitionId = tournament.Id,
+                        BracketNumber = round,
                         MatchNumber = matchNumber,
                         PlayerOneUserId = null,
                         PlayerTwoUserId = null,
                     };
-                    context.TournamentMatches.Add(match);
+                    context.Matches.Add(match);
 
                     for (int r = 0; r < tournament.BestOf; r++)
                     {
-                        context.TournamentRounds.Add(new TournamentRound
+                        context.Rounds.Add(new Round
                         {
-                            TournamentId = tournament.Id,
+                            CompetitionId = tournament.Id,
+                            BracketNumber = round,
                             MatchNumber = matchNumber,
                             RoundNumber = r + 1,
                         });

@@ -1,5 +1,6 @@
 using System;
 using Application.Leagues.DTOs;
+using Application.Matches.DTOs;
 using Application.Tournaments.DTOs;
 using AutoMapper;
 using Domain;
@@ -12,25 +13,16 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         CreateMap<CreateLeagueDto, League>();
-        CreateMap<CreateLeagueMemberDto, LeagueMember>();
+        CreateMap<CreateMemberDto, CompetitionMember>();
         CreateMap<User, UserDto>();
         CreateMap<League, LeagueDto>();
-        CreateMap<LeagueMember, LeagueMemberDto>()
+        CreateMap<Tournament, TournamentDto>();
+        CreateMap<CreateTournamentDto, Tournament>();
+        CreateMap<CompetitionMember, CompetitionMemberDto>()
             .ForMember(x => x.DisplayName, o => o.MapFrom(s => s.User.DisplayName))
             .ForMember(x => x.IsGuest, o => o.MapFrom(s => s.User.IsGuest));
         CreateMap<Match, MatchDto>();
         CreateMap<Round, RoundDto>();
         CreateMap<RoundDto, Round>();
-
-        // Tournament mappings
-        CreateMap<CreateTournamentDto, Tournament>();
-        CreateMap<CreateLeagueMemberDto, TournamentMember>();
-        CreateMap<Tournament, TournamentDto>();
-        CreateMap<TournamentMember, TournamentMemberDto>()
-            .ForMember(x => x.DisplayName, o => o.MapFrom(s => s.User.DisplayName))
-            .ForMember(x => x.IsGuest, o => o.MapFrom(s => s.User.IsGuest));
-        CreateMap<TournamentMatch, TournamentMatchDto>();
-        CreateMap<TournamentRound, TournamentRoundDto>();
-        CreateMap<TournamentRoundDto, TournamentRound>();
     }
 }

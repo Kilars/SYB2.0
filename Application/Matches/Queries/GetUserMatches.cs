@@ -1,7 +1,6 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using Application.Core;
-using Application.Leagues.DTOs;
+using Application.Matches.DTOs;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -10,8 +10,8 @@ public class ReopenMatch
 {
     public class Command : IRequest<Result<Unit>>
     {
-        public required string LeagueId { get; set; }
-        public required int Split { get; set; }
+        public required string CompetitionId { get; set; }
+        public required int BracketNumber { get; set; }
         public required int MatchNumber { get; set; }
     }
 
@@ -21,7 +21,7 @@ public class ReopenMatch
         {
             var match = await context.Matches
                 .Include(x => x.Rounds)
-                .FirstAsync(m => m.LeagueId == request.LeagueId && m.Split == request.Split && m.MatchNumber == request.MatchNumber,
+                .FirstAsync(m => m.CompetitionId == request.CompetitionId && m.BracketNumber == request.BracketNumber && m.MatchNumber == request.MatchNumber,
                 cancellationToken: cancellationToken);
 
             foreach (var round in match.Rounds)

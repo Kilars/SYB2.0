@@ -127,31 +127,31 @@ function RecentMatches({ userId }: { userId: string }) {
       <Typography variant="h6" fontWeight="bold" mb={2}>Recent Matches</Typography>
       <Box display="flex" flexDirection="column" gap={1}>
         {recentMatches.map(match => {
-          const isPlayerOne = match.playerOne.userId === userId;
+          const isPlayerOne = match.playerOne?.userId === userId;
           const opponent = isPlayerOne ? match.playerTwo : match.playerOne;
           const won = match.completed && match.winnerUserId === userId;
-          const p1Wins = match.rounds.filter(r => r.winnerUserId === match.playerOne.userId).length;
-          const p2Wins = match.rounds.filter(r => r.winnerUserId === match.playerTwo.userId).length;
+          const p1Wins = match.rounds.filter(r => r.winnerUserId === match.playerOne?.userId).length;
+          const p2Wins = match.rounds.filter(r => r.winnerUserId === match.playerTwo?.userId).length;
 
           return (
             <Card
-              key={match.leagueId + match.split + match.matchNumber}
+              key={match.competitionId + match.bracketNumber + match.matchNumber}
               sx={{
                 cursor: 'pointer',
                 borderLeft: `4px solid ${!match.completed ? SMASH_COLORS.p2Blue : won ? SMASH_COLORS.p4Green : SMASH_COLORS.p1Red}`,
                 transition: 'transform 0.15s ease, box-shadow 0.15s ease',
                 '&:hover': { transform: 'translateX(4px)', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' },
               }}
-              onClick={() => navigate(`/leagues/${match.leagueId}/split/${match.split}/match/${match.matchNumber}`)}
+              onClick={() => navigate(`/leagues/${match.competitionId}/bracket/${match.bracketNumber}/match/${match.matchNumber}`)}
             >
               <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography fontWeight="bold" noWrap>
-                      vs {opponent.displayName}{opponent.isGuest ? ' (guest)' : ''}
+                      vs {opponent?.displayName}{opponent?.isGuest ? ' (guest)' : ''}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Match #{match.matchNumber} · Split {match.split}
+                      Match #{match.matchNumber} · Split {match.bracketNumber}
                     </Typography>
                   </Box>
                   {match.completed ? (

@@ -1,6 +1,6 @@
 using System;
 using Application.Core;
-using Application.Tournaments.DTOs;
+using Application.Matches.DTOs;
 using AutoMapper;
 using Domain;
 using MediatR;
@@ -15,7 +15,7 @@ public class CompleteTournamentMatch
     {
         public required string TournamentId { get; set; }
         public required int MatchNumber { get; set; }
-        public required List<TournamentRoundDto> Rounds { get; set; }
+        public required List<RoundDto> Rounds { get; set; }
     }
 
     public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, Result<Unit>>
@@ -26,9 +26,9 @@ public class CompleteTournamentMatch
                 .FirstOrDefaultAsync(t => t.Id == request.TournamentId, cancellationToken);
             if (tournament == null) return Result<Unit>.Failure("Tournament not found", 404);
 
-            var match = await context.TournamentMatches
+            var match = await context.Matches
                 .Include(m => m.Rounds)
-                .FirstOrDefaultAsync(m => m.TournamentId == request.TournamentId && m.MatchNumber == request.MatchNumber, cancellationToken);
+                .FirstOrDefaultAsync(m => m.CompetitionId == request.TournamentId && m.MatchNumber == request.MatchNumber, cancellationToken);
             if (match == null) return Result<Unit>.Failure("Match not found", 404);
             if (match.Completed) return Result<Unit>.Failure("Match is already completed", 400);
             if (match.PlayerOneUserId == null || match.PlayerTwoUserId == null)
@@ -37,8 +37,8 @@ public class CompleteTournamentMatch
             // Update rounds with winners
             foreach (var round in request.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)))
             {
-                var dbRound = await context.TournamentRounds.FirstAsync(r =>
-                    r.TournamentId == request.TournamentId
+                var dbRound = await context.Rounds.FirstAsync(r =>
+                    r.CompetitionId == request.TournamentId
                     && r.MatchNumber == request.MatchNumber
                     && r.RoundNumber == round.RoundNumber,
                     cancellationToken);
@@ -50,8 +50,8 @@ public class CompleteTournamentMatch
             // Clear unplayed rounds
             foreach (var round in request.Rounds.Where(r => string.IsNullOrEmpty(r.WinnerUserId)))
             {
-                var dbRound = await context.TournamentRounds.FirstOrDefaultAsync(r =>
-                    r.TournamentId == request.TournamentId
+                var dbRound = await context.Rounds.FirstOrDefaultAsync(r =>
+                    r.CompetitionId == request.TournamentId
                     && r.MatchNumber == request.MatchNumber
                     && r.RoundNumber == round.RoundNumber,
                     cancellationToken);
@@ -82,10 +82,10 @@ public class CompleteTournamentMatch
 
             // Check if tournament is complete (final match completed)
             var totalRounds = (int)Math.Log2(tournament.PlayerCount);
-            if (match.BracketRound == totalRounds)
+            if (match.BracketNumber == totalRounds)
             {
                 tournament.WinnerUserId = matchWinnerUserId;
-                tournament.Status = TournamentStatus.Complete;
+                tournament.Status = CompetitionStatus.Complete;
                 tournament.EndDate = DateTime.UtcNow;
             }
 
@@ -95,24 +95,31 @@ public class CompleteTournamentMatch
                 : Result<Unit>.Failure("Match could not be completed", 400);
         }
 
-        private void AdvanceWinner(Tournament tournament, TournamentMatch completedMatch, string winnerUserId)
+        private void AdvanceWinner(Tournament tournament, Match completedMatch, string winnerUserId)
         {
             var totalRounds = (int)Math.Log2(tournament.PlayerCount);
-            if (completedMatch.BracketRound >= totalRounds) return; // Final match, no next round
+            if (completedMatch.BracketNumber >= totalRounds) return; // Final match, no next round
 
-            int nextRound = completedMatch.BracketRound + 1;
-            int nextPosition = (completedMatch.BracketPosition + 1) / 2; // ceil(pos/2)
+            // Calculate position within this bracket round
+            var matchesInThisRound = context.Matches
+                .Where(m => m.CompetitionId == tournament.Id && m.BracketNumber == completedMatch.BracketNumber)
+                .OrderBy(m => m.MatchNumber)
+                .ToList();
+            var positionInRound = matchesInThisRound.FindIndex(m => m.MatchNumber == completedMatch.MatchNumber) + 1;
 
-            var nextMatch = context.TournamentMatches
-                .FirstOrDefault(m =>
-                    m.TournamentId == tournament.Id
-                    && m.BracketRound == nextRound
-                    && m.BracketPosition == nextPosition);
+            int nextBracketNumber = completedMatch.BracketNumber + 1;
+            var nextRoundMatches = context.Matches
+                .Where(m => m.CompetitionId == tournament.Id && m.BracketNumber == nextBracketNumber)
+                .OrderBy(m => m.MatchNumber)
+                .ToList();
 
-            if (nextMatch == null) return;
+            int nextMatchIndex = (positionInRound - 1) / 2;
+            if (nextMatchIndex >= nextRoundMatches.Count) return;
 
-            // Odd bracket positions feed into PlayerOne, even into PlayerTwo
-            if (completedMatch.BracketPosition % 2 == 1)
+            var nextMatch = nextRoundMatches[nextMatchIndex];
+
+            // Odd positions feed into PlayerOne, even into PlayerTwo
+            if (positionInRound % 2 == 1)
             {
                 nextMatch.PlayerOneUserId = winnerUserId;
             }

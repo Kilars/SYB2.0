@@ -1,4 +1,5 @@
 using System;
+using Application.Matches.DTOs;
 using Application.Tournaments.Commands;
 using Application.Tournaments.DTOs;
 using Application.Tournaments.Queries;
@@ -16,10 +17,10 @@ public class TournamentsController() : BaseApiController
         return HandleResult(await Mediator.Send(new GetTournamentList.Query()));
     }
 
-    [HttpGet("{tournamentId}")]
-    public async Task<ActionResult<TournamentDto>> GetTournamentDetails(string tournamentId)
+    [HttpGet("{competitionId}")]
+    public async Task<ActionResult<TournamentDto>> GetTournamentDetails(string competitionId)
     {
-        return HandleResult(await Mediator.Send(new GetTournamentDetails.Query { Id = tournamentId }));
+        return HandleResult(await Mediator.Send(new GetTournamentDetails.Query { Id = competitionId }));
     }
 
     [HttpPost]
@@ -28,53 +29,53 @@ public class TournamentsController() : BaseApiController
         return HandleResult(await Mediator.Send(new CreateTournament.Command { TournamentDto = tournamentDto }));
     }
 
-    [HttpDelete("{tournamentId}")]
-    [Authorize(Policy = "IsTournamentAdmin")]
-    public async Task<ActionResult> DeleteTournament(string tournamentId)
+    [HttpDelete("{competitionId}")]
+    [Authorize(Policy = "IsCompetitionAdmin")]
+    public async Task<ActionResult> DeleteTournament(string competitionId)
     {
-        return HandleResult(await Mediator.Send(new DeleteTournament.Command { TournamentId = tournamentId }));
+        return HandleResult(await Mediator.Send(new DeleteTournament.Command { TournamentId = competitionId }));
     }
 
-    [HttpPost("{tournamentId}/start")]
-    [Authorize(Policy = "IsTournamentAdmin")]
-    public async Task<ActionResult> StartTournament(string tournamentId)
+    [HttpPost("{competitionId}/start")]
+    [Authorize(Policy = "IsCompetitionAdmin")]
+    public async Task<ActionResult> StartTournament(string competitionId)
     {
-        return HandleResult(await Mediator.Send(new StartTournament.Command { TournamentId = tournamentId }));
+        return HandleResult(await Mediator.Send(new StartTournament.Command { TournamentId = competitionId }));
     }
 
-    [HttpPost("{tournamentId}/shuffle")]
-    [Authorize(Policy = "IsTournamentAdmin")]
-    public async Task<ActionResult> ShuffleBracket(string tournamentId)
+    [HttpPost("{competitionId}/shuffle")]
+    [Authorize(Policy = "IsCompetitionAdmin")]
+    public async Task<ActionResult> ShuffleBracket(string competitionId)
     {
-        return HandleResult(await Mediator.Send(new ShuffleBracket.Command { TournamentId = tournamentId }));
+        return HandleResult(await Mediator.Send(new ShuffleBracket.Command { TournamentId = competitionId }));
     }
 
-    [HttpGet("{tournamentId}/match/{matchNumber}")]
-    [Authorize(Policy = "IsTournamentMember")]
-    public async Task<ActionResult<TournamentMatchDto>> GetTournamentMatch(string tournamentId, int matchNumber)
+    [HttpGet("{competitionId}/match/{matchNumber}")]
+    [Authorize(Policy = "IsCompetitionMember")]
+    public async Task<ActionResult<MatchDto>> GetTournamentMatch(string competitionId, int matchNumber)
     {
-        return HandleResult(await Mediator.Send(new GetTournamentMatch.Query { TournamentId = tournamentId, MatchNumber = matchNumber }));
+        return HandleResult(await Mediator.Send(new GetTournamentMatch.Query { TournamentId = competitionId, MatchNumber = matchNumber }));
     }
 
-    [HttpPost("{tournamentId}/match/{matchNumber}/complete")]
-    [Authorize(Policy = "IsTournamentMember")]
-    public async Task<ActionResult> CompleteTournamentMatch(string tournamentId, int matchNumber, List<TournamentRoundDto> rounds)
+    [HttpPost("{competitionId}/match/{matchNumber}/complete")]
+    [Authorize(Policy = "IsCompetitionMember")]
+    public async Task<ActionResult> CompleteTournamentMatch(string competitionId, int matchNumber, List<RoundDto> rounds)
     {
         return HandleResult(await Mediator.Send(new CompleteTournamentMatch.Command
         {
-            TournamentId = tournamentId,
+            TournamentId = competitionId,
             MatchNumber = matchNumber,
             Rounds = rounds
         }));
     }
 
-    [HttpPost("{tournamentId}/match/{matchNumber}/reopen")]
-    [Authorize(Policy = "IsTournamentMember")]
-    public async Task<ActionResult> ReopenTournamentMatch(string tournamentId, int matchNumber)
+    [HttpPost("{competitionId}/match/{matchNumber}/reopen")]
+    [Authorize(Policy = "IsCompetitionMember")]
+    public async Task<ActionResult> ReopenTournamentMatch(string competitionId, int matchNumber)
     {
         return HandleResult(await Mediator.Send(new ReopenTournamentMatch.Command
         {
-            TournamentId = tournamentId,
+            TournamentId = competitionId,
             MatchNumber = matchNumber
         }));
     }

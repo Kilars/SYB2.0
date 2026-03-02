@@ -15,8 +15,8 @@ import { toast } from "react-toastify";
 const STATUS_COLORS = [SMASH_COLORS.p3Yellow, SMASH_COLORS.p4Green, SMASH_COLORS.p2Blue];
 
 export default function Description() {
-    const { leagueId } = useParams();
-    const { league, isLeagueLoading, deleteLeague } = useLeagues(leagueId);
+    const { competitionId } = useParams();
+    const { league, isLeagueLoading, deleteLeague } = useLeagues(competitionId);
     const { currentUser } = useAccount();
     const { meta } = useAppTheme();
     const navigate = useNavigate();

@@ -26,7 +26,7 @@ public class StartTournament
             if (tournament == null)
                 return Result<Unit>.Failure("Tournament not found", 404);
 
-            if (tournament.Status != TournamentStatus.Planned)
+            if (tournament.Status != CompetitionStatus.Planned)
                 return Result<Unit>.Failure("Tournament must be in Planned status to start", 400);
 
             var validCounts = new[] { 4, 8, 16, 32 };
@@ -34,7 +34,7 @@ public class StartTournament
                 return Result<Unit>.Failure($"Tournament must have exactly 4, 8, 16, or 32 players to start. Got {tournament.Members.Count}.", 400);
 
             GenerateBracket(tournament);
-            tournament.Status = TournamentStatus.Active;
+            tournament.Status = CompetitionStatus.Active;
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
             return res
@@ -45,8 +45,8 @@ public class StartTournament
         private void GenerateBracket(Tournament tournament)
         {
             // Remove existing matches and rounds if any
-            context.RemoveRange(context.TournamentRounds.Where(r => r.TournamentId == tournament.Id));
-            context.RemoveRange(context.TournamentMatches.Where(m => m.TournamentId == tournament.Id));
+            context.RemoveRange(context.Rounds.Where(r => r.CompetitionId == tournament.Id));
+            context.RemoveRange(context.Matches.Where(m => m.CompetitionId == tournament.Id));
 
             var members = tournament.Members.ToList();
             Shuffle(members);
@@ -65,22 +65,22 @@ public class StartTournament
             int firstRoundMatches = playerCount / 2;
             for (int i = 0; i < firstRoundMatches; i++)
             {
-                var match = new TournamentMatch
+                var match = new Match
                 {
-                    TournamentId = tournament.Id,
-                    BracketRound = 1,
-                    BracketPosition = i + 1,
+                    CompetitionId = tournament.Id,
+                    BracketNumber = 1,
                     MatchNumber = matchNumber,
                     PlayerOneUserId = members[i * 2].UserId,
                     PlayerTwoUserId = members[i * 2 + 1].UserId,
                 };
-                context.TournamentMatches.Add(match);
+                context.Matches.Add(match);
 
                 for (int r = 0; r < tournament.BestOf; r++)
                 {
-                    context.TournamentRounds.Add(new TournamentRound
+                    context.Rounds.Add(new Round
                     {
-                        TournamentId = tournament.Id,
+                        CompetitionId = tournament.Id,
+                        BracketNumber = 1,
                         MatchNumber = matchNumber,
                         RoundNumber = r + 1,
                     });
@@ -94,22 +94,22 @@ public class StartTournament
                 int matchesInRound = playerCount / (int)Math.Pow(2, round);
                 for (int i = 0; i < matchesInRound; i++)
                 {
-                    var match = new TournamentMatch
+                    var match = new Match
                     {
-                        TournamentId = tournament.Id,
-                        BracketRound = round,
-                        BracketPosition = i + 1,
+                        CompetitionId = tournament.Id,
+                        BracketNumber = round,
                         MatchNumber = matchNumber,
                         PlayerOneUserId = null,
                         PlayerTwoUserId = null,
                     };
-                    context.TournamentMatches.Add(match);
+                    context.Matches.Add(match);
 
                     for (int r = 0; r < tournament.BestOf; r++)
                     {
-                        context.TournamentRounds.Add(new TournamentRound
+                        context.Rounds.Add(new Round
                         {
-                            TournamentId = tournament.Id,
+                            CompetitionId = tournament.Id,
+                            BracketNumber = round,
                             MatchNumber = matchNumber,
                             RoundNumber = r + 1,
                         });

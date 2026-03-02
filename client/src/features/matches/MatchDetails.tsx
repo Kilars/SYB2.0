@@ -10,9 +10,9 @@ import { ArrowBack, SportsEsports } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
 
 export default function MatchDetails() {
-    const { leagueId, split, match } = useParams();
-    const { match: matchData, isMatchLoading } = useMatch(leagueId || '', parseInt(split || ''), parseInt(match || ''));
-    const { league } = useLeagues(leagueId);
+    const { competitionId, bracketNumber, matchNumber } = useParams();
+    const { match: matchData, isMatchLoading } = useMatch(competitionId || '', parseInt(bracketNumber || ''), parseInt(matchNumber || ''));
+    const { league } = useLeagues(competitionId);
 
     if (isMatchLoading) return <LoadingSkeleton variant="detail" />
     if (!matchData) return (
@@ -24,8 +24,8 @@ export default function MatchDetails() {
 
     const breadcrumbItems = [
         { label: 'Leagues', href: '/leagues' },
-        { label: league?.title ?? '...', href: `/leagues/${leagueId}/leaderboard` },
-        { label: `Match #${match}` },
+        { label: league?.title ?? '...', href: `/leagues/${competitionId}/leaderboard` },
+        { label: `Match #${matchNumber}` },
     ];
 
     return (
@@ -34,7 +34,7 @@ export default function MatchDetails() {
             <Box display="flex" alignItems="center" gap={1} mb={1}>
                 <IconButton
                     component={RouterLink}
-                    to={`/leagues/${leagueId}/matches`}
+                    to={`/leagues/${competitionId}/matches`}
                     aria-label="Back to matches"
                     size="small"
                 >
@@ -42,7 +42,7 @@ export default function MatchDetails() {
                 </IconButton>
                 <Typography
                     component={RouterLink}
-                    to={`/leagues/${leagueId}/matches`}
+                    to={`/leagues/${competitionId}/matches`}
                     variant="body2"
                     color="text.secondary"
                     sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}

@@ -43,127 +43,7 @@ namespace Persistence.Migrations
                     b.ToTable("Characters");
                 });
 
-            modelBuilder.Entity("Domain.League", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Leagues");
-                });
-
-            modelBuilder.Entity("Domain.LeagueMember", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LeagueId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DateJoined")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.HasKey("UserId", "LeagueId");
-
-                    b.HasIndex("LeagueId");
-
-                    b.ToTable("LeagueMembers");
-                });
-
-            modelBuilder.Entity("Domain.Match", b =>
-                {
-                    b.Property<string>("LeagueId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("MatchNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Split")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Completed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PlayerOneUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PlayerTwoUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("RegisteredTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("WinnerUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("LeagueId", "MatchNumber", "Split");
-
-                    b.HasIndex("PlayerOneUserId", "LeagueId");
-
-                    b.HasIndex("PlayerTwoUserId", "LeagueId");
-
-                    b.ToTable("Matches");
-                });
-
-            modelBuilder.Entity("Domain.Round", b =>
-                {
-                    b.Property<string>("LeagueId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("MatchNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Split")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoundNumber")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Completed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PlayerOneCharacterId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PlayerTwoCharacterId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("WinnerUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("LeagueId", "MatchNumber", "Split", "RoundNumber");
-
-                    b.HasIndex("PlayerOneCharacterId");
-
-                    b.HasIndex("PlayerTwoCharacterId");
-
-                    b.ToTable("Rounds");
-                });
-
-            modelBuilder.Entity("Domain.Tournament", b =>
+            modelBuilder.Entity("Domain.Competition", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -171,15 +51,17 @@ namespace Persistence.Migrations
                     b.Property<int>("BestOf")
                         .HasColumnType("int");
 
+                    b.Property<string>("CompetitionType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("PlayerCount")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -191,26 +73,48 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("WinnerUserId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Tournaments");
+                    b.ToTable("Competitions");
+
+                    b.HasDiscriminator<string>("CompetitionType").HasValue("Competition");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Domain.TournamentMatch", b =>
+            modelBuilder.Entity("Domain.CompetitionMember", b =>
                 {
-                    b.Property<string>("TournamentId")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CompetitionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DateJoined")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Seed")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "CompetitionId");
+
+                    b.HasIndex("CompetitionId");
+
+                    b.ToTable("CompetitionMembers");
+                });
+
+            modelBuilder.Entity("Domain.Match", b =>
+                {
+                    b.Property<string>("CompetitionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("BracketNumber")
+                        .HasColumnType("int");
+
                     b.Property<int>("MatchNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BracketPosition")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BracketRound")
                         .HasColumnType("int");
 
                     b.Property<bool>("Completed")
@@ -228,43 +132,22 @@ namespace Persistence.Migrations
                     b.Property<string>("WinnerUserId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TournamentId", "MatchNumber");
+                    b.HasKey("CompetitionId", "BracketNumber", "MatchNumber");
 
-                    b.HasIndex("PlayerOneUserId", "TournamentId");
+                    b.HasIndex("PlayerOneUserId", "CompetitionId");
 
-                    b.HasIndex("PlayerTwoUserId", "TournamentId");
+                    b.HasIndex("PlayerTwoUserId", "CompetitionId");
 
-                    b.ToTable("TournamentMatches");
+                    b.ToTable("Matches");
                 });
 
-            modelBuilder.Entity("Domain.TournamentMember", b =>
+            modelBuilder.Entity("Domain.Round", b =>
                 {
-                    b.Property<string>("UserId")
+                    b.Property<string>("CompetitionId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TournamentId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DateJoined")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Seed")
+                    b.Property<int>("BracketNumber")
                         .HasColumnType("int");
-
-                    b.HasKey("UserId", "TournamentId");
-
-                    b.HasIndex("TournamentId");
-
-                    b.ToTable("TournamentMembers");
-                });
-
-            modelBuilder.Entity("Domain.TournamentRound", b =>
-                {
-                    b.Property<string>("TournamentId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("MatchNumber")
                         .HasColumnType("int");
@@ -284,13 +167,13 @@ namespace Persistence.Migrations
                     b.Property<string>("WinnerUserId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TournamentId", "MatchNumber", "RoundNumber");
+                    b.HasKey("CompetitionId", "BracketNumber", "MatchNumber", "RoundNumber");
 
                     b.HasIndex("PlayerOneCharacterId");
 
                     b.HasIndex("PlayerTwoCharacterId");
 
-                    b.ToTable("TournamentRounds");
+                    b.ToTable("Rounds");
                 });
 
             modelBuilder.Entity("Domain.User", b =>
@@ -503,46 +386,64 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.LeagueMember", b =>
+            modelBuilder.Entity("Domain.League", b =>
                 {
-                    b.HasOne("Domain.League", "League")
+                    b.HasBaseType("Domain.Competition");
+
+                    b.HasDiscriminator().HasValue("League");
+                });
+
+            modelBuilder.Entity("Domain.Tournament", b =>
+                {
+                    b.HasBaseType("Domain.Competition");
+
+                    b.Property<int>("PlayerCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WinnerUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("Tournament");
+                });
+
+            modelBuilder.Entity("Domain.CompetitionMember", b =>
+                {
+                    b.HasOne("Domain.Competition", "Competition")
                         .WithMany("Members")
-                        .HasForeignKey("LeagueId")
+                        .HasForeignKey("CompetitionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.User", "User")
-                        .WithMany("LeagueMembers")
+                        .WithMany("CompetitionMembers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("League");
+                    b.Navigation("Competition");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Match", b =>
                 {
-                    b.HasOne("Domain.League", "League")
+                    b.HasOne("Domain.Competition", "Competition")
                         .WithMany("Matches")
-                        .HasForeignKey("LeagueId")
+                        .HasForeignKey("CompetitionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Domain.LeagueMember", "PlayerOne")
+                    b.HasOne("Domain.CompetitionMember", "PlayerOne")
                         .WithMany("MatchesAsPlayerOne")
-                        .HasForeignKey("PlayerOneUserId", "LeagueId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("PlayerOneUserId", "CompetitionId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("Domain.LeagueMember", "PlayerTwo")
+                    b.HasOne("Domain.CompetitionMember", "PlayerTwo")
                         .WithMany("MatchesAsPlayerTwo")
-                        .HasForeignKey("PlayerTwoUserId", "LeagueId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("PlayerTwoUserId", "CompetitionId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
-                    b.Navigation("League");
+                    b.Navigation("Competition");
 
                     b.Navigation("PlayerOne");
 
@@ -563,76 +464,7 @@ namespace Persistence.Migrations
 
                     b.HasOne("Domain.Match", "Match")
                         .WithMany("Rounds")
-                        .HasForeignKey("LeagueId", "MatchNumber", "Split")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Match");
-
-                    b.Navigation("PlayerOneCharacter");
-
-                    b.Navigation("PlayerTwoCharacter");
-                });
-
-            modelBuilder.Entity("Domain.TournamentMatch", b =>
-                {
-                    b.HasOne("Domain.Tournament", "Tournament")
-                        .WithMany("Matches")
-                        .HasForeignKey("TournamentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Domain.TournamentMember", "PlayerOne")
-                        .WithMany()
-                        .HasForeignKey("PlayerOneUserId", "TournamentId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("Domain.TournamentMember", "PlayerTwo")
-                        .WithMany()
-                        .HasForeignKey("PlayerTwoUserId", "TournamentId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("PlayerOne");
-
-                    b.Navigation("PlayerTwo");
-
-                    b.Navigation("Tournament");
-                });
-
-            modelBuilder.Entity("Domain.TournamentMember", b =>
-                {
-                    b.HasOne("Domain.Tournament", "Tournament")
-                        .WithMany("Members")
-                        .HasForeignKey("TournamentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Domain.User", "User")
-                        .WithMany("TournamentMembers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tournament");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Domain.TournamentRound", b =>
-                {
-                    b.HasOne("Domain.Character", "PlayerOneCharacter")
-                        .WithMany()
-                        .HasForeignKey("PlayerOneCharacterId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("Domain.Character", "PlayerTwoCharacter")
-                        .WithMany()
-                        .HasForeignKey("PlayerTwoCharacterId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("Domain.TournamentMatch", "Match")
-                        .WithMany("Rounds")
-                        .HasForeignKey("TournamentId", "MatchNumber")
+                        .HasForeignKey("CompetitionId", "BracketNumber", "MatchNumber")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -701,14 +533,14 @@ namespace Persistence.Migrations
                     b.Navigation("RoundsAsPlayerTwo");
                 });
 
-            modelBuilder.Entity("Domain.League", b =>
+            modelBuilder.Entity("Domain.Competition", b =>
                 {
                     b.Navigation("Matches");
 
                     b.Navigation("Members");
                 });
 
-            modelBuilder.Entity("Domain.LeagueMember", b =>
+            modelBuilder.Entity("Domain.CompetitionMember", b =>
                 {
                     b.Navigation("MatchesAsPlayerOne");
 
@@ -720,23 +552,9 @@ namespace Persistence.Migrations
                     b.Navigation("Rounds");
                 });
 
-            modelBuilder.Entity("Domain.Tournament", b =>
-                {
-                    b.Navigation("Matches");
-
-                    b.Navigation("Members");
-                });
-
-            modelBuilder.Entity("Domain.TournamentMatch", b =>
-                {
-                    b.Navigation("Rounds");
-                });
-
             modelBuilder.Entity("Domain.User", b =>
                 {
-                    b.Navigation("LeagueMembers");
-
-                    b.Navigation("TournamentMembers");
+                    b.Navigation("CompetitionMembers");
                 });
 #pragma warning restore 612, 618
         }

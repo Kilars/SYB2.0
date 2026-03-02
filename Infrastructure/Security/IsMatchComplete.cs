@@ -18,24 +18,22 @@ public class IsMatchCompleteHandler(AppDbContext dbContext, IHttpContextAccessor
     {
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("leagueId") is not string leagueId)
+        if (httpContext?.GetRouteValue("competitionId") is not string competitionId)
         {
-            context.Fail(new AuthorizationFailureReason(this, "LeaguId is not a string"));
+            context.Fail(new AuthorizationFailureReason(this, "competitionId is not a string"));
             return;
         }
 
-        if (httpContext?.GetRouteValue("split") is not string split) return;
+        if (httpContext?.GetRouteValue("bracketNumber") is not string bracketNumber) return;
         if (httpContext?.GetRouteValue("matchNumber") is not string matchNumber) return;
 
         var match = await dbContext.Matches
             .AsNoTracking()
             .SingleOrDefaultAsync(x =>
-                x.LeagueId == leagueId
-                && x.Split == int.Parse(split)
+                x.CompetitionId == competitionId
+                && x.BracketNumber == int.Parse(bracketNumber)
                 && x.MatchNumber == int.Parse(matchNumber)
             );
-
-
 
         if (match == null)
         {

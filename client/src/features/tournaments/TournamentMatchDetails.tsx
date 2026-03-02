@@ -15,9 +15,9 @@ import { SMASH_COLORS } from "../../app/theme";
 import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function TournamentMatchDetails() {
-    const { tournamentId, matchNumber } = useParams();
+    const { competitionId, matchNumber } = useParams();
     const { match: matchData, isMatchLoading, completeMatch, reopenMatch } = useTournamentMatch(
-        tournamentId || '', parseInt(matchNumber || '0')
+        competitionId || '', parseInt(matchNumber || '0')
     );
     const { meta } = useAppTheme();
     const navigate = useNavigate();
@@ -75,14 +75,14 @@ export default function TournamentMatchDetails() {
         />
     );
 
-    const getDisplayName = (player: TournamentPlayer) => player.isGuest ? `${player.displayName} (guest)` : player.displayName;
+    const getDisplayName = (player: Player) => player.isGuest ? `${player.displayName} (guest)` : player.displayName;
     const requiredWins = Math.ceil(rounds.length / 2);
 
     const playerOneScore = rounds.filter(r => r.winnerUserId === matchData.playerOne!.userId).length;
     const playerTwoScore = rounds.filter(r => r.winnerUserId === matchData.playerTwo!.userId).length;
     const matchDecided = playerOneScore >= requiredWins || playerTwoScore >= requiredWins;
 
-    function getRoundStatus(round: TournamentRound): 'complete' | 'partial' | 'empty' {
+    function getRoundStatus(round: Round): 'complete' | 'partial' | 'empty' {
         const filledFields = [
             round.playerOneCharacterId,
             round.playerTwoCharacterId,
@@ -103,7 +103,7 @@ export default function TournamentMatchDetails() {
         <Box>
             <Button
                 startIcon={<ArrowBack />}
-                onClick={() => navigate(`/tournaments/${tournamentId}`)}
+                onClick={() => navigate(`/tournaments/${competitionId}`)}
                 sx={{ mb: 2 }}
             >
                 Back to Bracket
@@ -185,7 +185,7 @@ export default function TournamentMatchDetails() {
 
                 return (
                     <Card
-                        key={round.tournamentId + round.matchNumber + round.roundNumber}
+                        key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
                         variant="outlined"
                         sx={{
                             opacity: isDecidedEarly ? 0.5 : 1,

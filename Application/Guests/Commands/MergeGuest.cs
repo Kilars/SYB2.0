@@ -27,64 +27,48 @@ public class MergeGuest
             if (targetUser == null) return Result<Unit>.Failure("Target user not found", 404);
             if (targetUser.IsGuest) return Result<Unit>.Failure("Target user cannot be a guest", 400);
 
-            var guestLeagueMemberships = await context.LeagueMembers
-                .Where(lm => lm.UserId == request.GuestUserId)
+            var guestMemberships = await context.CompetitionMembers
+                .Where(cm => cm.UserId == request.GuestUserId)
                 .ToListAsync(ct);
 
-            var guestTournamentMemberships = await context.TournamentMembers
-                .Where(tm => tm.UserId == request.GuestUserId)
-                .ToListAsync(ct);
+            if (guestMemberships.Count == 0)
+                return Result<Unit>.Failure("Guest has no competition memberships", 400);
 
-            if (guestLeagueMemberships.Count == 0 && guestTournamentMemberships.Count == 0)
-                return Result<Unit>.Failure("Guest has no league or tournament memberships", 400);
-
-            // Auth check: caller must be admin of at least 1 league or tournament containing the guest
+            // Auth check: caller must be admin of at least 1 competition containing the guest
             var callerId = userAccessor.GetUserId();
-            var guestLeagueIds = guestLeagueMemberships.Select(lm => lm.LeagueId).ToList();
-            var guestTournamentIds = guestTournamentMemberships.Select(tm => tm.TournamentId).ToList();
+            var guestCompetitionIds = guestMemberships.Select(cm => cm.CompetitionId).ToList();
 
-            var callerIsLeagueAdmin = guestLeagueIds.Count > 0 && await context.LeagueMembers
-                .AnyAsync(lm => lm.UserId == callerId && guestLeagueIds.Contains(lm.LeagueId) && lm.IsAdmin, ct);
-            var callerIsTournamentAdmin = guestTournamentIds.Count > 0 && await context.TournamentMembers
-                .AnyAsync(tm => tm.UserId == callerId && guestTournamentIds.Contains(tm.TournamentId) && tm.IsAdmin, ct);
+            var callerIsAdmin = await context.CompetitionMembers
+                .AnyAsync(cm => cm.UserId == callerId && guestCompetitionIds.Contains(cm.CompetitionId) && cm.IsAdmin, ct);
 
-            if (!callerIsLeagueAdmin && !callerIsTournamentAdmin)
-                return Result<Unit>.Failure("You must be admin of a league or tournament containing this guest", 403);
+            if (!callerIsAdmin)
+                return Result<Unit>.Failure("You must be admin of a competition containing this guest", 403);
 
-            // Conflict check: target user must not already be a member of any league the guest belongs to
-            var targetLeagueIds = await context.LeagueMembers
-                .Where(lm => lm.UserId == request.TargetUserId)
-                .Select(lm => lm.LeagueId)
+            // Conflict check: target user must not already be a member of any competition the guest belongs to
+            var targetCompetitionIds = await context.CompetitionMembers
+                .Where(cm => cm.UserId == request.TargetUserId)
+                .Select(cm => cm.CompetitionId)
                 .ToListAsync(ct);
 
-            var conflictingLeagues = guestLeagueIds.Intersect(targetLeagueIds).ToList();
-            if (conflictingLeagues.Any())
-                return Result<Unit>.Failure("Target user is already a member of a league the guest belongs to", 400);
-
-            // Conflict check: target user must not already be a member of any tournament the guest belongs to
-            var targetTournamentIds = await context.TournamentMembers
-                .Where(tm => tm.UserId == request.TargetUserId)
-                .Select(tm => tm.TournamentId)
-                .ToListAsync(ct);
-
-            var conflictingTournaments = guestTournamentIds.Intersect(targetTournamentIds).ToList();
-            if (conflictingTournaments.Any())
-                return Result<Unit>.Failure("Target user is already a member of a tournament the guest belongs to", 400);
+            var conflictingCompetitions = guestCompetitionIds.Intersect(targetCompetitionIds).ToList();
+            if (conflictingCompetitions.Any())
+                return Result<Unit>.Failure("Target user is already a member of a competition the guest belongs to", 400);
 
             using var transaction = await context.Database.BeginTransactionAsync(ct);
 
             try
             {
-                // 1. Insert new LeagueMember records for target user
-                var newLeagueMembers = guestLeagueMemberships.Select(gm => new LeagueMember
+                // 1. Insert new CompetitionMember records for target user
+                var newMembers = guestMemberships.Select(gm => new CompetitionMember
                 {
                     UserId = request.TargetUserId,
-                    LeagueId = gm.LeagueId!,
+                    CompetitionId = gm.CompetitionId!,
                     IsAdmin = gm.IsAdmin,
+                    Seed = gm.Seed,
                     DateJoined = gm.DateJoined
                 }).ToList();
 
-                context.LeagueMembers.AddRange(newLeagueMembers);
+                context.CompetitionMembers.AddRange(newMembers);
                 await context.SaveChangesAsync(ct);
 
                 // 2. Update Match FK references
@@ -105,40 +89,8 @@ public class MergeGuest
                     .Where(r => r.WinnerUserId == request.GuestUserId)
                     .ExecuteUpdateAsync(s => s.SetProperty(r => r.WinnerUserId, request.TargetUserId), ct);
 
-                // 4. Insert new TournamentMember records for target user (BEFORE match FK updates)
-                var newTournamentMembers = guestTournamentMemberships.Select(gm => new TournamentMember
-                {
-                    UserId = request.TargetUserId,
-                    TournamentId = gm.TournamentId!,
-                    IsAdmin = gm.IsAdmin,
-                    Seed = gm.Seed,
-                    DateJoined = gm.DateJoined
-                }).ToList();
-
-                context.TournamentMembers.AddRange(newTournamentMembers);
-                await context.SaveChangesAsync(ct);
-
-                // 5. Update TournamentMatch FK references
-                await context.TournamentMatches
-                    .Where(m => m.PlayerOneUserId == request.GuestUserId)
-                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.PlayerOneUserId, request.TargetUserId), ct);
-
-                await context.TournamentMatches
-                    .Where(m => m.PlayerTwoUserId == request.GuestUserId)
-                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.PlayerTwoUserId, request.TargetUserId), ct);
-
-                await context.TournamentMatches
-                    .Where(m => m.WinnerUserId == request.GuestUserId)
-                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.WinnerUserId, request.TargetUserId), ct);
-
-                // 6. Update TournamentRound FK references
-                await context.TournamentRounds
-                    .Where(r => r.WinnerUserId == request.GuestUserId)
-                    .ExecuteUpdateAsync(s => s.SetProperty(r => r.WinnerUserId, request.TargetUserId), ct);
-
-                // 7. Cleanup: remove old guest membership records and guest User
-                context.LeagueMembers.RemoveRange(guestLeagueMemberships);
-                context.TournamentMembers.RemoveRange(guestTournamentMemberships);
+                // 4. Cleanup: remove old guest membership records and guest User
+                context.CompetitionMembers.RemoveRange(guestMemberships);
                 context.Users.Remove(guestUser);
                 await context.SaveChangesAsync(ct);
 

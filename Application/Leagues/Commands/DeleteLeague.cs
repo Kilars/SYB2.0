@@ -22,9 +22,9 @@ public class DeleteLeague
             if (league == null) return Result<Unit>.Failure("League not found", 404);
 
             // Delete in FK-safe order (all FKs use OnDelete: NoAction)
-            context.RemoveRange(context.Rounds.Where(r => r.LeagueId == league.Id));
-            context.RemoveRange(context.Matches.Where(m => m.LeagueId == league.Id));
-            context.RemoveRange(context.LeagueMembers.Where(lm => lm.LeagueId == league.Id));
+            context.RemoveRange(context.Rounds.Where(r => r.CompetitionId == league.Id));
+            context.RemoveRange(context.Matches.Where(m => m.CompetitionId == league.Id));
+            context.RemoveRange(context.CompetitionMembers.Where(cm => cm.CompetitionId == league.Id));
             context.Leagues.Remove(league);
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;

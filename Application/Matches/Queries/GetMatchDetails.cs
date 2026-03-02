@@ -1,6 +1,6 @@
 using System;
 using Application.Core;
-using Application.Leagues.DTOs;
+using Application.Matches.DTOs;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +12,8 @@ public class GetMatchDetails
 {
     public class Query : IRequest<Result<MatchDto>>
     {
-        public required string LeagueId { get; set; }
-        public required int Split { get; set; }
+        public required string CompetitionId { get; set; }
+        public required int BracketNumber { get; set; }
         public required int MatchNumber { get; set; }
     }
 
@@ -28,7 +28,7 @@ public class GetMatchDetails
                 .Include(x => x.PlayerTwo)
                 .Include(x => x.PlayerTwo!.User)
                 .FirstOrDefaultAsync(x =>
-                    x.LeagueId == request.LeagueId && x.Split == request.Split && x.MatchNumber == request.MatchNumber,
+                    x.CompetitionId == request.CompetitionId && x.BracketNumber == request.BracketNumber && x.MatchNumber == request.MatchNumber,
                     cancellationToken
                 );
 

@@ -12,7 +12,7 @@ type Props<T extends FieldValues> = {
 
 export default function UserSelectInput<T extends FieldValues>(props: Props<T>) {
     const { field, fieldState } = useController({ ...props });
-    const members: LeagueMember[] = field.value ?? [];
+    const members: { userId: string; displayName: string }[] = field.value ?? [];
     const availableUsersList: User[] = props.users?.filter(user => !members?.map(members => members.userId).includes(user.id));
     const [guestName, setGuestName] = useState('');
     const [isCreatingGuest, setIsCreatingGuest] = useState(false);

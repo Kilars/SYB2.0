@@ -14,9 +14,9 @@ type Props = {
   tab: string
 }
 export default function LeagueTabs({ tab }: Props) {
-  const { leagueId } = useParams();
+  const { competitionId } = useParams();
   const navigate = useNavigate();
-  const { league, isLeagueLoading } = useLeagues(leagueId);
+  const { league, isLeagueLoading } = useLeagues(competitionId);
   const pathMap = [
     'description',
     'leaderboard',
@@ -25,7 +25,7 @@ export default function LeagueTabs({ tab }: Props) {
   ]
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
-    navigate(`/leagues/${leagueId}/${pathMap[newValue]}`)
+    navigate(`/leagues/${competitionId}/${pathMap[newValue]}`)
   };
 
   if (isLeagueLoading) return <LoadingSkeleton variant="detail" />

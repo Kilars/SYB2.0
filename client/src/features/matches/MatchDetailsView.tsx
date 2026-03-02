@@ -25,11 +25,11 @@ import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function MatchDetailsView() {
   const { meta } = useAppTheme();
-  const { leagueId, split, match } = useParams();
+  const { competitionId, bracketNumber, matchNumber } = useParams();
   const { match: matchData, isMatchLoading, reopenMatch } = useMatch(
-    leagueId || '',
-    parseInt(split || ''),
-    parseInt(match || '')
+    competitionId || '',
+    parseInt(bracketNumber || ''),
+    parseInt(matchNumber || '')
   );
   const { characters } = useCharacters();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -45,11 +45,12 @@ export default function MatchDetailsView() {
   const getDisplayName = (player: Player) => player.isGuest ? `${player.displayName} (guest)` : player.displayName;
 
   const completedRounds = matchData.rounds.filter(r => !!r.winnerUserId);
-  const playerOneWins = completedRounds.filter(r => r.winnerUserId === matchData.playerOne.userId).length;
-  const playerTwoWins = completedRounds.filter(r => r.winnerUserId === matchData.playerTwo.userId).length;
-  const playerOneIsWinner = matchData.winnerUserId === matchData.playerOne.userId;
-  const playerTwoIsWinner = matchData.winnerUserId === matchData.playerTwo.userId;
-  const isFlawless = (playerOneWins === 2 && playerTwoWins === 0) || (playerTwoWins === 2 && playerOneWins === 0);
+  const playerOneWins = completedRounds.filter(r => r.winnerUserId === matchData.playerOne!.userId).length;
+  const playerTwoWins = completedRounds.filter(r => r.winnerUserId === matchData.playerTwo!.userId).length;
+  const playerOneIsWinner = matchData.winnerUserId === matchData.playerOne!.userId;
+  const playerTwoIsWinner = matchData.winnerUserId === matchData.playerTwo!.userId;
+  const requiredWins = Math.ceil(matchData.rounds.length / 2);
+  const isFlawless = (playerOneWins === requiredWins && playerTwoWins === 0) || (playerTwoWins === requiredWins && playerOneWins === 0);
 
   const handleConfirmReopen = async () => {
     await reopenMatch.mutateAsync();
@@ -77,7 +78,7 @@ export default function MatchDetailsView() {
           }}>
             <EmojiEvents sx={{ color: isFlawless ? SMASH_COLORS.gold : SMASH_COLORS.p4Green, fontSize: 28 }} />
             <Typography variant="body1" fontWeight="bold" sx={{ color: SMASH_COLORS.p4Green }}>
-              {getDisplayName(playerOneIsWinner ? matchData.playerOne : matchData.playerTwo)} wins!
+              {getDisplayName(playerOneIsWinner ? matchData.playerOne! : matchData.playerTwo!)} wins!
               {isFlawless && (
                 <Typography component="span" sx={{ color: SMASH_COLORS.gold, ml: 1, fontWeight: 'bold' }}>
                   Flawless
@@ -98,7 +99,7 @@ export default function MatchDetailsView() {
               maxWidth: { xs: '30vw', sm: 'none' },
             }}
           >
-            {getDisplayName(matchData.playerOne)}
+            {getDisplayName(matchData.playerOne!)}
           </Typography>
           <Box sx={{
             px: 2, py: 0.5,
@@ -119,7 +120,7 @@ export default function MatchDetailsView() {
               maxWidth: { xs: '30vw', sm: 'none' },
             }}
           >
-            {getDisplayName(matchData.playerTwo)}
+            {getDisplayName(matchData.playerTwo!)}
           </Typography>
         </Box>
       </Paper>
@@ -128,7 +129,7 @@ export default function MatchDetailsView() {
       <Box display="flex" justifyContent="center" gap={1} mb={3}>
         {matchData.rounds.map((round, i) => {
           const hasWinner = !!round.winnerUserId;
-          const p1Won = round.winnerUserId === matchData.playerOne.userId;
+          const p1Won = round.winnerUserId === matchData.playerOne!.userId;
           return (
             <Box
               key={i}
@@ -145,14 +146,14 @@ export default function MatchDetailsView() {
 
       {/* Round cards */}
       {completedRounds.map((round) => {
-        const p1IsRoundWinner = round.winnerUserId === matchData.playerOne.userId;
-        const p2IsRoundWinner = round.winnerUserId === matchData.playerTwo.userId;
+        const p1IsRoundWinner = round.winnerUserId === matchData.playerOne!.userId;
+        const p2IsRoundWinner = round.winnerUserId === matchData.playerTwo!.userId;
         const p1Char = characters.find(c => c.id === round.playerOneCharacterId);
         const p2Char = characters.find(c => c.id === round.playerTwoCharacterId);
 
         return (
           <Card
-            key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
+            key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
             variant="outlined"
             sx={{
               mb: 2,
@@ -194,7 +195,7 @@ export default function MatchDetailsView() {
                     fontSize: { xs: '0.95rem', sm: '1.25rem' },
                     maxWidth: '100%',
                   }}>
-                    {getDisplayName(matchData.playerOne)}
+                    {getDisplayName(matchData.playerOne!)}
                   </Typography>
                   {p1Char && (
                     <img
@@ -253,7 +254,7 @@ export default function MatchDetailsView() {
                     fontSize: { xs: '0.95rem', sm: '1.25rem' },
                     maxWidth: '100%',
                   }}>
-                    {getDisplayName(matchData.playerTwo)}
+                    {getDisplayName(matchData.playerTwo!)}
                   </Typography>
                   {p2Char && (
                     <img

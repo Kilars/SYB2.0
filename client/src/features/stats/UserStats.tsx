@@ -33,7 +33,7 @@ export default function UserStats() {
         .flatMap(match =>
             match.rounds
                 .map(round => {
-                    const charId = match.playerOne.userId === userId ? round.playerOneCharacterId as string : round.playerTwoCharacterId as string;
+                    const charId = match.playerOne?.userId === userId ? round.playerOneCharacterId as string : round.playerTwoCharacterId as string;
                     const won = round.winnerUserId === userId;
                     return {
                         charId,
@@ -190,7 +190,7 @@ export default function UserStats() {
                 const opponentCharStats: Record<string, { wins: number; total: number }> = {};
                 userMatches.flatMap(match =>
                     match.rounds.filter(round => round.completed).map(round => {
-                        const isPlayerOne = match.playerOne.userId === userId;
+                        const isPlayerOne = match.playerOne?.userId === userId;
                         const opponentCharId = isPlayerOne ? round.playerTwoCharacterId : round.playerOneCharacterId;
                         const won = round.winnerUserId === userId;
                         return { opponentCharId, won };
@@ -294,12 +294,12 @@ export default function UserStats() {
                 .filter(match => match.completed)
                 .map(match => (
                     <Box
-                        key={match.leagueId + match.matchNumber + match.split}
+                        key={match.competitionId + match.matchNumber + match.bracketNumber}
                         component={Card}
                         elevation={3}
                         p={2}
                         mb={1}
-                        onClick={() => navigate(`/leagues/${match.leagueId}/split/${match.split}/match/${match.matchNumber}`)}
+                        onClick={() => navigate(`/leagues/${match.competitionId}/bracket/${match.bracketNumber}/match/${match.matchNumber}`)}
                         sx={{
                             cursor: 'pointer',
                             transition: 'transform 0.15s ease',
@@ -312,30 +312,30 @@ export default function UserStats() {
                                     variant="h4" fontFamily="monospace" fontStyle="italic" noWrap
                                     sx={{
                                         fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
-                                        color: match.winnerUserId === match.playerOne.userId ? SMASH_COLORS.p1Red : 'text.primary',
+                                        color: match.winnerUserId === match.playerOne?.userId ? SMASH_COLORS.p1Red : 'text.primary',
                                         flex: 1, minWidth: 0,
                                     }}
                                 >
-                                    {match.playerOne.displayName}
+                                    {match.playerOne?.displayName}
                                 </Typography>
                                 <Typography
                                     variant="h4" fontFamily="monospace" fontStyle="italic" noWrap
                                     sx={{
                                         fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
-                                        color: match.winnerUserId === match.playerTwo.userId ? SMASH_COLORS.p2Blue : 'text.primary',
+                                        color: match.winnerUserId === match.playerTwo?.userId ? SMASH_COLORS.p2Blue : 'text.primary',
                                         flex: 1, minWidth: 0, textAlign: 'right',
                                     }}
                                 >
-                                    {match.playerTwo.displayName}
+                                    {match.playerTwo?.displayName}
                                 </Typography>
                             </Box>
                             <Box display='flex' flexDirection='row' justifyContent='space-between'>
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', justifyItems: 'center', }}>
                                     {match.rounds.map((round, i) => {
-                                        const isWin = round.winnerUserId === match.playerOne.userId;
+                                        const isWin = round.winnerUserId === match.playerOne?.userId;
                                         return (
                                         <Box
-                                            key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
+                                            key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
                                             sx={{
                                                 border: '3px solid',
                                                 borderRadius: 1,
@@ -367,10 +367,10 @@ export default function UserStats() {
                                 </Box>
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', justifyItems: 'center' }}>
                                     {match.rounds.map((round, i) => {
-                                        const isWin = round.winnerUserId === match.playerTwo.userId;
+                                        const isWin = round.winnerUserId === match.playerTwo?.userId;
                                         return (
                                         <Box
-                                            key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
+                                            key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
                                             sx={{
                                                 border: '3px solid',
                                                 borderRadius: 1,
@@ -405,7 +405,7 @@ export default function UserStats() {
                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Box>
                                 <Typography> Match #{match.matchNumber} </Typography>
-                                <Typography> Split {match.split} </Typography>
+                                <Typography> Split {match.bracketNumber} </Typography>
                             </Box>
                             <Box display='flex' flexDirection='column' justifyContent='flex-end'>
                                 <Button variant="contained">

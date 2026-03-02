@@ -27,13 +27,13 @@ function getRoundLabel(bracketRound: number, totalRounds: number): string {
 }
 
 interface BracketMatchCardProps {
-    match: TournamentMatch;
-    tournamentId: string;
+    match: Match;
+    competitionId: string;
     onClick: () => void;
 }
 
 function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
-    const getPlayerName = (player?: TournamentPlayer) => {
+    const getPlayerName = (player?: Player) => {
         if (!player) return 'TBD';
         return player.isGuest ? `${player.displayName} (guest)` : player.displayName;
     };
@@ -122,8 +122,8 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
 }
 
 export default function BracketView() {
-    const { tournamentId } = useParams();
-    const { tournament, isTournamentLoading, startTournament, shuffleBracket, deleteTournament } = useTournaments(tournamentId);
+    const { competitionId } = useParams();
+    const { tournament, isTournamentLoading, startTournament, shuffleBracket, deleteTournament } = useTournaments(competitionId);
     const { currentUser } = useAccount();
     const { meta } = useAppTheme();
     const navigate = useNavigate();
@@ -143,15 +143,15 @@ export default function BracketView() {
     const isAdmin = currentUser && tournament.members.some(m => m.userId === currentUser.id && m.isAdmin);
     const totalRounds = Math.log2(tournament.playerCount);
 
-    // Group matches by bracket round
-    const matchesByRound: Record<number, TournamentMatch[]> = {};
+    // Group matches by bracket number (round)
+    const matchesByRound: Record<number, Match[]> = {};
     for (const match of tournament.matches) {
-        if (!matchesByRound[match.bracketRound]) matchesByRound[match.bracketRound] = [];
-        matchesByRound[match.bracketRound].push(match);
+        if (!matchesByRound[match.bracketNumber]) matchesByRound[match.bracketNumber] = [];
+        matchesByRound[match.bracketNumber].push(match);
     }
-    // Sort within each round by bracket position
+    // Sort within each round by match number
     for (const round in matchesByRound) {
-        matchesByRound[round].sort((a, b) => a.bracketPosition - b.bracketPosition);
+        matchesByRound[round].sort((a, b) => a.matchNumber - b.matchNumber);
     }
 
     const handleStart = async () => {
@@ -342,7 +342,7 @@ export default function BracketView() {
                                             <BracketMatchCard
                                                 key={match.matchNumber}
                                                 match={match}
-                                                tournamentId={tournament.id}
+                                                competitionId={tournament.id}
                                                 onClick={() => navigate(`/tournaments/${tournament.id}/match/${match.matchNumber}`)}
                                             />
                                         ))}

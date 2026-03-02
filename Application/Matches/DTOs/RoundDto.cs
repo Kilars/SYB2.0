@@ -1,12 +1,11 @@
 using System;
-using Domain;
 
-namespace Application.Leagues.DTOs;
+namespace Application.Matches.DTOs;
 
 public class RoundDto
 {
-    public required string LeagueId { get; set; }
-    public required int Split { get; set; }
+    public required string CompetitionId { get; set; }
+    public required int BracketNumber { get; set; }
     public required int MatchNumber { get; set; }
     public required int RoundNumber { get; set; }
     public bool Completed { get; set; } = false;

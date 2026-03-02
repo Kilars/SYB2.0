@@ -37,7 +37,7 @@ public class UpdateLeague
 
             var newMembersToAdd = request.UpdateLeagueDto.Members
                 .Where(m => m.Id == null)
-                .Select(mapper.Map<LeagueMember>).ToList();
+                .Select(mapper.Map<CompetitionMember>).ToList();
 
             var adminsRemoved = league.Members.Where(m => !updatedUserIds.Contains(m.UserId!)).Any(x => x.IsAdmin);
             if (adminsRemoved) return Result<Unit>.Failure("Cannot remove admin user", 403);

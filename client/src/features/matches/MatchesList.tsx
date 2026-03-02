@@ -9,8 +9,8 @@ import { SMASH_COLORS } from "../../app/theme";
 import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function MatchesList() {
-  const { leagueId } = useParams();
-  const { league, isLeagueLoading } = useLeagues(leagueId);
+  const { competitionId } = useParams();
+  const { league, isLeagueLoading } = useLeagues(competitionId);
   const { characters } = useCharacters();
   const navigate = useNavigate();
   const { meta } = useAppTheme();
@@ -31,20 +31,20 @@ export default function MatchesList() {
         :
         <Box display='flex' flexDirection='column' gap={2}>
           {league.matches.map(match => {
-            const p1Wins = match.rounds.filter(r => r.winnerUserId === match.playerOne.userId).length;
-            const p2Wins = match.rounds.filter(r => r.winnerUserId === match.playerTwo.userId).length;
-            const winnerPlayer = match.winnerUserId === match.playerOne.userId
-              ? match.playerOne
-              : match.playerTwo;
+            const p1Wins = match.rounds.filter(r => r.winnerUserId === match.playerOne!.userId).length;
+            const p2Wins = match.rounds.filter(r => r.winnerUserId === match.playerTwo!.userId).length;
+            const winnerPlayer = match.winnerUserId === match.playerOne!.userId
+              ? match.playerOne!
+              : match.playerTwo!;
             const winner = winnerPlayer.displayName + (winnerPlayer.isGuest ? ' (guest)' : '');
 
             return (
               <Box
-                key={match.leagueId + match.split + match.matchNumber}
+                key={match.competitionId + match.bracketNumber + match.matchNumber}
                 component={Card}
                 elevation={match.completed ? 1 : 3}
                 p={2}
-                onClick={() => navigate(`/leagues/${match.leagueId}/split/${match.split}/match/${match.matchNumber}`)}
+                onClick={() => navigate(`/leagues/${match.competitionId}/bracket/${match.bracketNumber}/match/${match.matchNumber}`)}
                 sx={{
                   cursor: 'pointer',
                   borderLeft: `4px solid ${match.completed ? SMASH_COLORS.p4Green : SMASH_COLORS.p2Blue}`,
@@ -65,13 +65,13 @@ export default function MatchesList() {
                     noWrap
                     sx={{
                       fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
-                      color: match.winnerUserId === match.playerOne.userId ? SMASH_COLORS.p1Red : 'text.primary',
-                      fontWeight: match.winnerUserId === match.playerOne.userId ? 'bold' : 'normal',
+                      color: match.winnerUserId === match.playerOne!.userId ? SMASH_COLORS.p1Red : 'text.primary',
+                      fontWeight: match.winnerUserId === match.playerOne!.userId ? 'bold' : 'normal',
                       flex: 1,
                       minWidth: 0,
                     }}
                   >
-                    {match.playerOne.displayName}{match.playerOne.isGuest ? ' (guest)' : ''}
+                    {match.playerOne!.displayName}{match.playerOne!.isGuest ? ' (guest)' : ''}
                   </Typography>
                   {match.completed
                     ? <Box sx={{
@@ -101,25 +101,25 @@ export default function MatchesList() {
                     noWrap
                     sx={{
                       fontSize: { xs: '0.9rem', sm: '1.5rem', md: '2.125rem' },
-                      color: match.winnerUserId === match.playerTwo.userId ? SMASH_COLORS.p2Blue : 'text.primary',
-                      fontWeight: match.winnerUserId === match.playerTwo.userId ? 'bold' : 'normal',
+                      color: match.winnerUserId === match.playerTwo!.userId ? SMASH_COLORS.p2Blue : 'text.primary',
+                      fontWeight: match.winnerUserId === match.playerTwo!.userId ? 'bold' : 'normal',
                       flex: 1,
                       minWidth: 0,
                       textAlign: 'right',
                     }}
                   >
-                    {match.playerTwo.displayName}{match.playerTwo.isGuest ? ' (guest)' : ''}
+                    {match.playerTwo!.displayName}{match.playerTwo!.isGuest ? ' (guest)' : ''}
                   </Typography>
                 </Box>
                 <Box display='flex' flexDirection='row' justifyContent='space-between'>
                   <Box display='flex'>
                     {match.rounds.map(round => {
                       if (!round.playerOneCharacterId) return null;
-                      const isWin = round.winnerUserId === match.playerOne.userId;
+                      const isWin = round.winnerUserId === match.playerOne!.userId;
                       const character = characters.find(c => c.id === round.playerOneCharacterId);
                       return (
                         <Box
-                          key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
+                          key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
                           sx={{
                             border: '3px solid',
                             borderRadius: 1,
@@ -149,11 +149,11 @@ export default function MatchesList() {
                   <Box display='flex'>
                     {match.rounds.map(round => {
                       if (!round.playerTwoCharacterId) return null;
-                      const isWin = round.winnerUserId === match.playerTwo.userId;
+                      const isWin = round.winnerUserId === match.playerTwo!.userId;
                       const character = characters.find(c => c.id === round.playerTwoCharacterId);
                       return (
                         <Box
-                          key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
+                          key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
                           sx={{
                             border: '3px solid',
                             borderRadius: 1,
@@ -185,7 +185,7 @@ export default function MatchesList() {
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <Box>
                   <Typography> Match #{match.matchNumber} </Typography>
-                  <Typography> Split {match.split} </Typography>
+                  <Typography> Split {match.bracketNumber} </Typography>
                 </Box>
                 <Box>
                   {match.completed

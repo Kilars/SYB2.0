@@ -29,7 +29,7 @@ public class CreateLeague
             }
             else
             {
-                league.Members.Add(new LeagueMember
+                league.Members.Add(new CompetitionMember
                 {
                     UserId = user.Id,
                     IsAdmin = true

@@ -17,8 +17,8 @@ const PIE_COLORS = [
 ];
 
 export default function LeagueStats() {
-  const { leagueId } = useParams();
-  const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(leagueId);
+  const { competitionId } = useParams();
+  const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(competitionId);
   const { characters } = useCharacters();
   const { meta } = useAppTheme();
   const theme = useTheme();
@@ -46,8 +46,8 @@ export default function LeagueStats() {
 
       const p1 = matches.find(m => m.rounds.some(r =>
         r.matchNumber === round.matchNumber
-        && r.split === round.split
-        && r.roundNumber === round.roundNumber))?.playerOne.userId;
+        && r.bracketNumber === round.bracketNumber
+        && r.roundNumber === round.roundNumber))?.playerOne?.userId;
       if (p1 === round.winnerUserId) winsDict[char1][0] += 1;
       else winsDict[char2][0] += 1;
     })
@@ -263,17 +263,17 @@ export default function LeagueStats() {
             {(() => {
               const h2h: Record<string, { p1: string; p2: string; p1Wins: number; p2Wins: number }> = {};
               league.matches.filter(m => m.completed).forEach(match => {
-                const key = [match.playerOne.userId, match.playerTwo.userId].sort().join('-');
+                const key = [match.playerOne!.userId, match.playerTwo!.userId].sort().join('-');
                 if (!h2h[key]) {
-                  const [sorted1, sorted2] = [match.playerOne.userId, match.playerTwo.userId].sort();
+                  const [sorted1, sorted2] = [match.playerOne!.userId, match.playerTwo!.userId].sort();
                   h2h[key] = {
-                    p1: sorted1 === match.playerOne.userId ? match.playerOne.displayName : match.playerTwo.displayName,
-                    p2: sorted2 === match.playerTwo.userId ? match.playerTwo.displayName : match.playerOne.displayName,
+                    p1: sorted1 === match.playerOne!.userId ? match.playerOne!.displayName : match.playerTwo!.displayName,
+                    p2: sorted2 === match.playerTwo!.userId ? match.playerTwo!.displayName : match.playerOne!.displayName,
                     p1Wins: 0,
                     p2Wins: 0,
                   };
                 }
-                const [sorted1] = [match.playerOne.userId, match.playerTwo.userId].sort();
+                const [sorted1] = [match.playerOne!.userId, match.playerTwo!.userId].sort();
                 if (match.winnerUserId === sorted1) h2h[key].p1Wins += 1;
                 else h2h[key].p2Wins += 1;
               });

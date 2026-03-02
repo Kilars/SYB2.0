@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSql : Migration
+    public partial class UnifiedCompetitionModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,7 @@ namespace Persistence.Migrations
                     DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsGuest = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -68,7 +69,7 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Leagues",
+                name: "Competitions",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -76,11 +77,15 @@ namespace Persistence.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BestOf = table.Column<int>(type: "int", nullable: false),
+                    CompetitionType = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
+                    PlayerCount = table.Column<int>(type: "int", nullable: true),
+                    WinnerUserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Leagues", x => x.Id);
+                    table.PrimaryKey("PK_Competitions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,28 +195,28 @@ namespace Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LeagueMembers",
+                name: "CompetitionMembers",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LeagueId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CompetitionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Seed = table.Column<int>(type: "int", nullable: true),
                     DateJoined = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LeagueMembers", x => new { x.UserId, x.LeagueId });
+                    table.PrimaryKey("PK_CompetitionMembers", x => new { x.UserId, x.CompetitionId });
                     table.ForeignKey(
-                        name: "FK_LeagueMembers_AspNetUsers_UserId",
+                        name: "FK_CompetitionMembers_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LeagueMembers_Leagues_LeagueId",
-                        column: x => x.LeagueId,
-                        principalTable: "Leagues",
+                        name: "FK_CompetitionMembers_Competitions_CompetitionId",
+                        column: x => x.CompetitionId,
+                        principalTable: "Competitions",
                         principalColumn: "Id");
                 });
 
@@ -219,34 +224,32 @@ namespace Persistence.Migrations
                 name: "Matches",
                 columns: table => new
                 {
-                    LeagueId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    MatchIndex = table.Column<int>(type: "int", nullable: false),
-                    Split = table.Column<int>(type: "int", nullable: false),
+                    BracketNumber = table.Column<int>(type: "int", nullable: false),
+                    MatchNumber = table.Column<int>(type: "int", nullable: false),
+                    CompetitionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Completed = table.Column<bool>(type: "bit", nullable: false),
                     WinnerUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RegisteredTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    PlayerOneUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlayerOneLeagueId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlayerTwoUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlayerTwoLeagueId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    PlayerOneUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PlayerTwoUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Matches", x => new { x.LeagueId, x.MatchIndex, x.Split });
+                    table.PrimaryKey("PK_Matches", x => new { x.CompetitionId, x.BracketNumber, x.MatchNumber });
                     table.ForeignKey(
-                        name: "FK_Matches_LeagueMembers_PlayerOneUserId_PlayerOneLeagueId",
-                        columns: x => new { x.PlayerOneUserId, x.PlayerOneLeagueId },
-                        principalTable: "LeagueMembers",
-                        principalColumns: new[] { "UserId", "LeagueId" });
+                        name: "FK_Matches_CompetitionMembers_PlayerOneUserId_CompetitionId",
+                        columns: x => new { x.PlayerOneUserId, x.CompetitionId },
+                        principalTable: "CompetitionMembers",
+                        principalColumns: new[] { "UserId", "CompetitionId" });
                     table.ForeignKey(
-                        name: "FK_Matches_LeagueMembers_PlayerTwoUserId_PlayerTwoLeagueId",
-                        columns: x => new { x.PlayerTwoUserId, x.PlayerTwoLeagueId },
-                        principalTable: "LeagueMembers",
-                        principalColumns: new[] { "UserId", "LeagueId" });
+                        name: "FK_Matches_CompetitionMembers_PlayerTwoUserId_CompetitionId",
+                        columns: x => new { x.PlayerTwoUserId, x.CompetitionId },
+                        principalTable: "CompetitionMembers",
+                        principalColumns: new[] { "UserId", "CompetitionId" });
                     table.ForeignKey(
-                        name: "FK_Matches_Leagues_LeagueId",
-                        column: x => x.LeagueId,
-                        principalTable: "Leagues",
+                        name: "FK_Matches_Competitions_CompetitionId",
+                        column: x => x.CompetitionId,
+                        principalTable: "Competitions",
                         principalColumn: "Id");
                 });
 
@@ -255,9 +258,9 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     RoundNumber = table.Column<int>(type: "int", nullable: false),
-                    MatchIndex = table.Column<int>(type: "int", nullable: false),
-                    LeagueId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Split = table.Column<int>(type: "int", nullable: false),
+                    MatchNumber = table.Column<int>(type: "int", nullable: false),
+                    CompetitionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BracketNumber = table.Column<int>(type: "int", nullable: false),
                     Completed = table.Column<bool>(type: "bit", nullable: false),
                     WinnerUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PlayerOneCharacterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -265,7 +268,7 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rounds", x => new { x.LeagueId, x.MatchIndex, x.Split, x.RoundNumber });
+                    table.PrimaryKey("PK_Rounds", x => new { x.CompetitionId, x.BracketNumber, x.MatchNumber, x.RoundNumber });
                     table.ForeignKey(
                         name: "FK_Rounds_Characters_PlayerOneCharacterId",
                         column: x => x.PlayerOneCharacterId,
@@ -277,10 +280,10 @@ namespace Persistence.Migrations
                         principalTable: "Characters",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Rounds_Matches_LeagueId_MatchIndex_Split",
-                        columns: x => new { x.LeagueId, x.MatchIndex, x.Split },
+                        name: "FK_Rounds_Matches_CompetitionId_BracketNumber_MatchNumber",
+                        columns: x => new { x.CompetitionId, x.BracketNumber, x.MatchNumber },
                         principalTable: "Matches",
-                        principalColumns: new[] { "LeagueId", "MatchIndex", "Split" });
+                        principalColumns: new[] { "CompetitionId", "BracketNumber", "MatchNumber" });
                 });
 
             migrationBuilder.CreateIndex(
@@ -323,19 +326,19 @@ namespace Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LeagueMembers_LeagueId",
-                table: "LeagueMembers",
-                column: "LeagueId");
+                name: "IX_CompetitionMembers_CompetitionId",
+                table: "CompetitionMembers",
+                column: "CompetitionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_PlayerOneUserId_PlayerOneLeagueId",
+                name: "IX_Matches_PlayerOneUserId_CompetitionId",
                 table: "Matches",
-                columns: new[] { "PlayerOneUserId", "PlayerOneLeagueId" });
+                columns: new[] { "PlayerOneUserId", "CompetitionId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_PlayerTwoUserId_PlayerTwoLeagueId",
+                name: "IX_Matches_PlayerTwoUserId_CompetitionId",
                 table: "Matches",
-                columns: new[] { "PlayerTwoUserId", "PlayerTwoLeagueId" });
+                columns: new[] { "PlayerTwoUserId", "CompetitionId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rounds_PlayerOneCharacterId",
@@ -379,13 +382,13 @@ namespace Persistence.Migrations
                 name: "Matches");
 
             migrationBuilder.DropTable(
-                name: "LeagueMembers");
+                name: "CompetitionMembers");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Leagues");
+                name: "Competitions");
         }
     }
 }

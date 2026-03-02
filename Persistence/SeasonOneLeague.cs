@@ -13,8 +13,8 @@ public class SeasonOneLeague
             Id = "season-one-league-id",
             Title = "Syb Season One (Trondhomies)",
             Description = "epic! Ble spilt V23/H24. Kjent som 'Sesong OPP B'",
-            Status = LeagueStatus.Active,
-            Members = [.. GetUsers().Select(u => new LeagueMember
+            Status = CompetitionStatus.Active,
+            Members = [.. GetUsers().Select(u => new CompetitionMember
             {
                 UserId = u.Id,
             })],
@@ -27,23 +27,23 @@ public class SeasonOneLeague
     public static List<Match> GetMatches()
     {
         var leagueId = "season-one-league-id";
-        var split = 1;
+        var bracketNumber = 1;
         var matchesCore = GetMatchesCore();
         var matches = matchesCore.Select((mc, index) => new Match
         {
-            LeagueId = leagueId,
+            CompetitionId = leagueId,
             Completed = true,
             PlayerOneUserId = mc.P1,
             PlayerTwoUserId = mc.P2,
             WinnerUserId = mc.W,
-            Split = split,
+            BracketNumber = bracketNumber,
             MatchNumber = index + 1,
             RegisteredTime = DateTime.UtcNow,
             Rounds = [.. mc.R.Select((r, roundIndex) => new Round
             {
-                LeagueId = leagueId,
+                CompetitionId = leagueId,
                 MatchNumber = index + 1,
-                Split = split,
+                BracketNumber = bracketNumber,
                 RoundNumber = roundIndex + 1,
                 PlayerOneCharacterId = r.Item1,
                 PlayerTwoCharacterId = r.Item2,

@@ -1,10 +1,10 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { startOfToday } from "date-fns";
 import { leagueSchema, type LeagueSchema } from "../../lib/schemas/leagueSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLeagues } from "../../lib/hooks/useLeagues";
-import { Box, Button, Paper, Typography, CircularProgress } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, Typography, CircularProgress } from "@mui/material";
 import { Leaderboard, Save, Add } from "@mui/icons-material";
 import TextInput from "../../app/shared/components/TextInput";
 import UserSelectInput from "../../app/shared/components/UserSelectInput";
@@ -15,14 +15,18 @@ import { useEffect } from "react";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 
 export default function LeagueForm() {
-    const { leagueId } = useParams();
+    const { competitionId } = useParams();
     const { users, createGuest } = useUsers();
     const { currentUser } = useAccount();
-    const { createLeague, updateLeague, league, isLeagueLoading } = useLeagues(leagueId);
+    const { createLeague, updateLeague, league, isLeagueLoading } = useLeagues(competitionId);
     const navigate = useNavigate();
     const { control, handleSubmit, formState: { isValid, isSubmitting, isDirty }, reset } = useForm({
         mode: 'onTouched',
-        resolver: zodResolver(leagueSchema)
+        resolver: zodResolver(leagueSchema),
+        defaultValues: {
+            bestOf: 3,
+            startDate: startOfToday(),
+        }
     })
 
     const onSubmit = async (data: LeagueSchema) => {
@@ -60,12 +64,28 @@ export default function LeagueForm() {
         >
             <Box display='flex' alignItems='center' justifyContent='center' gap={3} color='secondary.main'>
                 <Leaderboard fontSize="large" />
-                <Typography variant="h4">{leagueId ? 'Edit' : 'Create'} League</Typography>
+                <Typography variant="h4">{competitionId ? 'Edit' : 'Create'} League</Typography>
             </Box>
             <Box display='flex' flexDirection='column' gap={3}>
                 <TextInput label='Title' control={control} name='title' />
                 <TextInput label='Description' control={control} name='description' />
                 <DateTimeInput label='Date' control={control} name='startDate' defaultValue={startOfToday()} />
+
+                <Controller
+                    name="bestOf"
+                    control={control}
+                    render={({ field }) => (
+                        <FormControl fullWidth>
+                            <InputLabel>Best Of</InputLabel>
+                            <Select {...field} label="Best Of">
+                                <MenuItem value={1}>Best of 1</MenuItem>
+                                <MenuItem value={3}>Best of 3</MenuItem>
+                                <MenuItem value={5}>Best of 5</MenuItem>
+                            </Select>
+                        </FormControl>
+                    )}
+                />
+
                 {users && currentUser &&
                     <UserSelectInput
                         label='Add members'
@@ -84,14 +104,14 @@ export default function LeagueForm() {
                         variant="contained"
                         disabled={!isDirty || !isValid || isSubmitting}
                         size="large"
-                        startIcon={isSubmitting ? <CircularProgress size={20} /> : (leagueId ? <Save /> : <Add />)}
+                        startIcon={isSubmitting ? <CircularProgress size={20} /> : (competitionId ? <Save /> : <Add />)}
                         sx={{
                             fontWeight: 'bold',
                             px: 3,
                             '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 },
                         }}
                     >
-                        {isSubmitting ? 'Saving...' : (leagueId ? 'Save Changes' : 'Create League')}
+                        {isSubmitting ? 'Saving...' : (competitionId ? 'Save Changes' : 'Create League')}
                     </Button>
                 </Box>
             </Box>

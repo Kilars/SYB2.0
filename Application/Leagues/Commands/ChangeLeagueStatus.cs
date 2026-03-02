@@ -15,7 +15,7 @@ public class ChangeLeagueStatus
     public class Command : IRequest<Result<Unit>>
     {
         public required string LeagueId { get; set; }
-        public required LeagueStatus NewStatus { get; set; }
+        public required CompetitionStatus NewStatus { get; set; }
     }
     public class Handler(AppDbContext context) : IRequestHandler<Command, Result<Unit>>
     {
@@ -30,22 +30,22 @@ public class ChangeLeagueStatus
 
             switch ((league.Status, request.NewStatus))
             {
-                case (LeagueStatus.Planned, LeagueStatus.Active):
+                case (CompetitionStatus.Planned, CompetitionStatus.Active):
                     CreateMatchesBetweenAllPlayers(league);
-                    league.Status = LeagueStatus.Active;
+                    league.Status = CompetitionStatus.Active;
                     break;
 
-                case (LeagueStatus.Active, LeagueStatus.Complete):
+                case (CompetitionStatus.Active, CompetitionStatus.Complete):
                     //Archive all matches
                     break;
-                case (LeagueStatus.Complete, LeagueStatus.Active):
+                case (CompetitionStatus.Complete, CompetitionStatus.Active):
                     //Unarchive all matches
                     break;
-                case (LeagueStatus.Active, LeagueStatus.Planned):
+                case (CompetitionStatus.Active, CompetitionStatus.Planned):
                     //Delete all rounds first (FK NoAction prevents cascade), then matches
-                    context.RemoveRange(context.Rounds.Where(r => r.LeagueId == league.Id));
-                    context.RemoveRange(context.Matches.Where(m => m.LeagueId == league.Id));
-                    league.Status = LeagueStatus.Planned;
+                    context.RemoveRange(context.Rounds.Where(r => r.CompetitionId == league.Id));
+                    context.RemoveRange(context.Matches.Where(m => m.CompetitionId == league.Id));
+                    league.Status = CompetitionStatus.Planned;
                     break;
 
                 default:
@@ -77,18 +77,18 @@ public class ChangeLeagueStatus
 
                     firstSplit.Add(new Match
                     {
-                        LeagueId = league.Id,
+                        CompetitionId = league.Id,
                         PlayerOneUserId = flip ? p1! : p2!,
                         PlayerTwoUserId = flip ? p2! : p1!,
-                        Split = 1
+                        BracketNumber = 1
                     });
 
                     secondSplit.Add(new Match
                     {
-                        LeagueId = league.Id,
+                        CompetitionId = league.Id,
                         PlayerOneUserId = flip ? p2! : p1!,
                         PlayerTwoUserId = flip ? p1! : p2!,
-                        Split = 2
+                        BracketNumber = 2
                     });
 
                 }
@@ -101,13 +101,13 @@ public class ChangeLeagueStatus
             {
                 match.MatchNumber = index;
                 index++;
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < league.BestOf; i++)
                 {
                     context.Rounds.Add(new Round
                     {
-                        LeagueId = match.LeagueId,
+                        CompetitionId = match.CompetitionId,
                         MatchNumber = match.MatchNumber,
-                        Split = match.Split,
+                        BracketNumber = match.BracketNumber,
                         RoundNumber = i + 1
                     });
                 }
@@ -117,13 +117,13 @@ public class ChangeLeagueStatus
             {
                 match.MatchNumber = index;
                 index++;
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < league.BestOf; i++)
                 {
                     context.Rounds.Add(new Round
                     {
-                        LeagueId = match.LeagueId,
+                        CompetitionId = match.CompetitionId,
                         MatchNumber = match.MatchNumber,
-                        Split = match.Split,
+                        BracketNumber = match.BracketNumber,
                         RoundNumber = i + 1
                     });
                 }

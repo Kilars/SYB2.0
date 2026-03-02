@@ -111,8 +111,8 @@ function RankBadge({ rank }: { rank: number }) {
 }
 
 export default function Leaderboard() {
-    const { leagueId } = useParams();
-    const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(leagueId);
+    const { competitionId } = useParams();
+    const { league, isLeagueLoading, leaderboard, isLeaderboardLoading } = useLeagues(competitionId);
     const { currentUser } = useAccount();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -234,7 +234,7 @@ export default function Leaderboard() {
                                 </Typography>
                             </Button>
                         }
-                        <StatusButton leagueId={league.id} leagueStatus={league.status} />
+                        <StatusButton competitionId={league.id} leagueStatus={league.status} />
                     </>
                 }
             </Box>

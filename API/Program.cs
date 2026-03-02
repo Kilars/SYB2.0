@@ -1,5 +1,5 @@
 //TODO
-//Get record MatchId as [NotMapped] into the Match.cs somehow
+//Get record MatchId as [NotMapped] into the Match.cs somehow
 using API.Middleware;
 using Application.Core;
 using Application.Interfaces;
@@ -48,42 +48,32 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 
 builder.Services.AddAuthorization(opt =>
 {
-    opt.AddPolicy("IsLeagueAdmin", policy =>
+    opt.AddPolicy("IsCompetitionAdmin", policy =>
     {
-        policy.Requirements.Add(new IsAdminRequirement());
+        policy.Requirements.Add(new IsCompetitionAdmin());
     });
-    opt.AddPolicy("IsLeagueMember", policy =>
+    opt.AddPolicy("IsCompetitionMember", policy =>
     {
-        policy.Requirements.Add(new IsLeagueMember());
+        policy.Requirements.Add(new IsCompetitionMember());
     });
     opt.AddPolicy("IsMatchEditable", policy =>
     {
         policy.Requirements.Add(new IsMatchEditable());
     });
-    opt.AddPolicy("IsLeaguePlanned", policy =>
+    opt.AddPolicy("IsCompetitionPlanned", policy =>
     {
-        policy.Requirements.Add(new IsPlannedRequirement());
+        policy.Requirements.Add(new IsCompetitionPlanned());
     });
     opt.AddPolicy("IsMatchComplete", policy =>
     {
         policy.Requirements.Add(new IsMatchComplete());
     });
-    opt.AddPolicy("IsTournamentAdmin", policy =>
-    {
-        policy.Requirements.Add(new IsTournamentAdmin());
-    });
-    opt.AddPolicy("IsTournamentMember", policy =>
-    {
-        policy.Requirements.Add(new IsTournamentMember());
-    });
 });
-builder.Services.AddTransient<IAuthorizationHandler, IsAdminRequirementHandler>();
-builder.Services.AddTransient<IAuthorizationHandler, IsPlannerRequirementHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsCompetitionAdminHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsCompetitionPlannedHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsMatchEditableHandler>();
-builder.Services.AddTransient<IAuthorizationHandler, IsLeagueMemberHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsCompetitionMemberHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsMatchCompleteHandler>();
-builder.Services.AddTransient<IAuthorizationHandler, IsTournamentAdminHandler>();
-builder.Services.AddTransient<IAuthorizationHandler, IsTournamentMemberHandler>();
 
 var app = builder.Build();
 

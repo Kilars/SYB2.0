@@ -17,15 +17,15 @@ public class IsMatchEditableHandler(AppDbContext dbContext, IHttpContextAccessor
     {
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("leagueId") is not string leagueId) return;
-        if (httpContext?.GetRouteValue("split") is not string split) return;
+        if (httpContext?.GetRouteValue("competitionId") is not string competitionId) return;
+        if (httpContext?.GetRouteValue("bracketNumber") is not string bracketNumber) return;
         if (httpContext?.GetRouteValue("matchNumber") is not string matchNumber) return;
 
         var match = await dbContext.Matches
             .AsNoTracking()
             .SingleOrDefaultAsync(x =>
-                x.LeagueId == leagueId
-                && x.Split == int.Parse(split)
+                x.CompetitionId == competitionId
+                && x.BracketNumber == int.Parse(bracketNumber)
                 && x.MatchNumber == int.Parse(matchNumber)
             );
 

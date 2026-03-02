@@ -15,8 +15,8 @@ import { SMASH_COLORS } from "../../app/theme";
 import { useAppTheme } from "../../app/context/ThemeContext";
 
 export default function MatchDetailsForm() {
-  const { leagueId, split, match } = useParams();
-  const { match: matchData, isMatchLoading, completeMatch } = useMatch(leagueId || '', parseInt(split || ''), parseInt(match || ''));
+  const { competitionId, bracketNumber, matchNumber } = useParams();
+  const { match: matchData, isMatchLoading, completeMatch } = useMatch(competitionId || '', parseInt(bracketNumber || ''), parseInt(matchNumber || ''));
   const { meta } = useAppTheme();
   const [rounds, setRounds] = useState(matchData?.rounds)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -45,7 +45,7 @@ export default function MatchDetailsForm() {
   }
 
   if (isMatchLoading) return <LoadingSkeleton variant="detail" />
-  if (!match || !matchData) return (
+  if (!matchNumber || !matchData) return (
     <EmptyState
       icon={<SportsEsports sx={{ fontSize: 48 }} />}
       message="Match not found"
@@ -61,9 +61,10 @@ export default function MatchDetailsForm() {
   const getDisplayName = (player: Player) => player.isGuest ? `${player.displayName} (guest)` : player.displayName;
 
   // Compute running score from completed rounds
-  const playerOneScore = rounds.filter(r => r.winnerUserId === matchData.playerOne.userId).length;
-  const playerTwoScore = rounds.filter(r => r.winnerUserId === matchData.playerTwo.userId).length;
-  const matchDecided = playerOneScore === 2 || playerTwoScore === 2;
+  const playerOneScore = rounds.filter(r => r.winnerUserId === matchData.playerOne!.userId).length;
+  const playerTwoScore = rounds.filter(r => r.winnerUserId === matchData.playerTwo!.userId).length;
+  const requiredWins = Math.ceil(rounds.length / 2);
+  const matchDecided = playerOneScore >= requiredWins || playerTwoScore >= requiredWins;
 
   // Determine per-round status: 'complete' | 'partial' | 'empty'
   function getRoundStatus(round: Round): 'complete' | 'partial' | 'empty' {
@@ -107,7 +108,7 @@ export default function MatchDetailsForm() {
               maxWidth: { xs: '30vw', sm: 'none' },
             }}
           >
-            {getDisplayName(matchData.playerOne)}
+            {getDisplayName(matchData.playerOne!)}
           </Typography>
           <Box sx={{
             px: 2, py: 0.5,
@@ -128,7 +129,7 @@ export default function MatchDetailsForm() {
               maxWidth: { xs: '30vw', sm: 'none' },
             }}
           >
-            {getDisplayName(matchData.playerTwo)}
+            {getDisplayName(matchData.playerTwo!)}
           </Typography>
         </Box>
       </Paper>
@@ -153,15 +154,15 @@ export default function MatchDetailsForm() {
 
       {rounds.map((round, i) => {
         const roundStatus = getRoundStatus(round);
-        const isRoundThreeDecided = i === 2 && matchDecided;
+        const isDecidedEarly = matchDecided && !round.winnerUserId;
         const borderColor = ROUND_STATUS_COLORS[roundStatus];
 
         return (
           <Card
-            key={round.leagueId + round.split + round.matchNumber + round.roundNumber}
+            key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
             variant="outlined"
             sx={{
-              opacity: isRoundThreeDecided ? 0.5 : 1,
+              opacity: isDecidedEarly ? 0.5 : 1,
               mb: 2,
               borderLeft: `4px solid ${borderColor}`,
               transition: 'border-color 0.3s ease',
@@ -177,7 +178,7 @@ export default function MatchDetailsForm() {
                 {roundStatus === 'partial' && (
                   <WarningAmberIcon sx={{ color: SMASH_COLORS.p3Yellow }} />
                 )}
-                {isRoundThreeDecided && (
+                {isDecidedEarly && (
                   <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1 }}>
                     Match already decided
                   </Typography>
@@ -187,7 +188,7 @@ export default function MatchDetailsForm() {
               {/* Player columns — responsive: stacked on mobile, side-by-side on sm+ */}
               <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p1Red }}>{getDisplayName(matchData.playerOne)}</Typography>
+                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p1Red }}>{getDisplayName(matchData.playerOne!)}</Typography>
                   <CharacterSelect
                     onChange={id =>
                       setRounds(originalRounds =>
@@ -200,7 +201,7 @@ export default function MatchDetailsForm() {
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p2Blue }}>{getDisplayName(matchData.playerTwo)}</Typography>
+                  <Typography variant="h6" sx={{ color: SMASH_COLORS.p2Blue }}>{getDisplayName(matchData.playerTwo!)}</Typography>
                   <CharacterSelect
                     onChange={id =>
                       setRounds(originalRounds =>
@@ -238,8 +239,8 @@ export default function MatchDetailsForm() {
                   }}
                 >
                   <ToggleButton
-                    value={matchData.playerOne.userId}
-                    aria-label={`${getDisplayName(matchData.playerOne)} wins round ${round.roundNumber}`}
+                    value={matchData.playerOne!.userId}
+                    aria-label={`${getDisplayName(matchData.playerOne!)} wins round ${round.roundNumber}`}
                     sx={{
                       '&.Mui-selected': {
                         backgroundColor: `${SMASH_COLORS.p1Red}22`,
@@ -248,11 +249,11 @@ export default function MatchDetailsForm() {
                       },
                     }}
                   >
-                    {getDisplayName(matchData.playerOne)}
+                    {getDisplayName(matchData.playerOne!)}
                   </ToggleButton>
                   <ToggleButton
-                    value={matchData.playerTwo.userId}
-                    aria-label={`${getDisplayName(matchData.playerTwo)} wins round ${round.roundNumber}`}
+                    value={matchData.playerTwo!.userId}
+                    aria-label={`${getDisplayName(matchData.playerTwo!)} wins round ${round.roundNumber}`}
                     sx={{
                       '&.Mui-selected': {
                         backgroundColor: `${SMASH_COLORS.p2Blue}22`,
@@ -261,7 +262,7 @@ export default function MatchDetailsForm() {
                       },
                     }}
                   >
-                    {getDisplayName(matchData.playerTwo)}
+                    {getDisplayName(matchData.playerTwo!)}
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Box>

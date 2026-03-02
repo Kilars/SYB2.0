@@ -16,10 +16,10 @@ public class LeaguesController() : BaseApiController
     {
         return HandleResult(await Mediator.Send(new GetLeagueList.Query()));
     }
-    [HttpGet("{leagueId}")]
-    public async Task<ActionResult<LeagueDto>> GetLeagueDetails(string leagueId)
+    [HttpGet("{competitionId}")]
+    public async Task<ActionResult<LeagueDto>> GetLeagueDetails(string competitionId)
     {
-        return HandleResult(await Mediator.Send(new GetLeagueDetails.Query { Id = leagueId }));
+        return HandleResult(await Mediator.Send(new GetLeagueDetails.Query { Id = competitionId }));
     }
 
     [HttpPost]
@@ -27,32 +27,32 @@ public class LeaguesController() : BaseApiController
     {
         return HandleResult(await Mediator.Send(new CreateLeague.Command { LeagueDto = leagueDto }));
     }
-    [HttpPut("{leagueId}")]
-    [Authorize(Policy = "IsLeagueAdmin")]
-    [Authorize(Policy = "IsLeaguePlanned")]
-    public async Task<ActionResult> UpdateLeague(string leagueId, UpdateLeagueDto leagueDto)
+    [HttpPut("{competitionId}")]
+    [Authorize(Policy = "IsCompetitionAdmin")]
+    [Authorize(Policy = "IsCompetitionPlanned")]
+    public async Task<ActionResult> UpdateLeague(string competitionId, UpdateLeagueDto leagueDto)
     {
-        leagueDto.Id = leagueId;
+        leagueDto.Id = competitionId;
         return HandleResult(await Mediator.Send(new UpdateLeague.Command { UpdateLeagueDto = leagueDto }));
     }
-    [HttpPost("{leagueId}/status")]
-    [Authorize(Policy = "IsLeagueAdmin")]
-    public async Task<ActionResult> ChangeLeagueStatus(string leagueId, LeagueStatus status)
+    [HttpPost("{competitionId}/status")]
+    [Authorize(Policy = "IsCompetitionAdmin")]
+    public async Task<ActionResult> ChangeLeagueStatus(string competitionId, CompetitionStatus status)
     {
-        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = leagueId, NewStatus = status }));
+        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = competitionId, NewStatus = status }));
     }
-    [HttpDelete("{leagueId}")]
-    [Authorize(Policy = "IsLeagueAdmin")]
-    public async Task<ActionResult> DeleteLeague(string leagueId)
+    [HttpDelete("{competitionId}")]
+    [Authorize(Policy = "IsCompetitionAdmin")]
+    public async Task<ActionResult> DeleteLeague(string competitionId)
     {
-        return HandleResult(await Mediator.Send(new DeleteLeague.Command { LeagueId = leagueId }));
+        return HandleResult(await Mediator.Send(new DeleteLeague.Command { LeagueId = competitionId }));
     }
 
-    [HttpGet("{leagueId}/leaderboard")]
-    [Authorize(Policy = "IsLeagueMember")]
-    public async Task<ActionResult> GetLeagueLeaderboard(string leagueId)
+    [HttpGet("{competitionId}/leaderboard")]
+    [Authorize(Policy = "IsCompetitionMember")]
+    public async Task<ActionResult> GetLeagueLeaderboard(string competitionId)
     {
-        return HandleResult(await Mediator.Send(new GetLeagueLeaderboard.Query { Id = leagueId }));
+        return HandleResult(await Mediator.Send(new GetLeagueLeaderboard.Query { Id = competitionId }));
     }
 
 }

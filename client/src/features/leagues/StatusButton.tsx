@@ -5,13 +5,13 @@ import { useState } from "react";
 import { SMASH_COLORS } from "../../app/theme";
 
 type Props = {
-    leagueId: string;
+    competitionId: string;
     leagueStatus: number;
 }
-export default function StatusButton({ leagueId, leagueStatus }: Props) {
+export default function StatusButton({ competitionId, leagueStatus }: Props) {
     const [open, setOpen] = useState(false);
     const [pendingStatus, setPendingStatus] = useState<number | undefined>(undefined);
-    const { updateStatus } = useLeagues(leagueId);
+    const { updateStatus } = useLeagues(competitionId);
 
     const onSubmit = async (changeStatusTo: number) => {
         await updateStatus.mutateAsync(changeStatusTo);

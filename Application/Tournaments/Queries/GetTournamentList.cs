@@ -2,7 +2,6 @@ using System;
 using Application.Core;
 using Application.Tournaments.DTOs;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;

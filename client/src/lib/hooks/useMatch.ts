@@ -1,32 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import agent from "../api/agent"
 
-export const useMatch = (leagueId: string, split: number, matchNumber: number) => {
+export const useMatch = (competitionId: string, bracketNumber: number, matchNumber: number) => {
     const queryClient = useQueryClient();
 
     const { data: match, isLoading: isMatchLoading } = useQuery({
-        queryKey: ["match", leagueId, split, matchNumber],
+        queryKey: ["match", competitionId, bracketNumber, matchNumber],
         queryFn: async () => {
-            const res = await agent.get<Match>(`/matches/${leagueId}/split/${split}/match/${matchNumber}`);
+            const res = await agent.get<Match>(`/matches/${competitionId}/bracket/${bracketNumber}/match/${matchNumber}`);
             return res.data;
         }
     })
 
     const completeMatch = useMutation({
         mutationFn: async (rounds: Round[]) => {
-            await agent.post(`matches/${leagueId}/split/${split}/match/${matchNumber}/complete`, rounds);
+            await agent.post(`matches/${competitionId}/bracket/${bracketNumber}/match/${matchNumber}/complete`, rounds);
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ["match", leagueId, split, matchNumber] });
+            await queryClient.invalidateQueries({ queryKey: ["match", competitionId, bracketNumber, matchNumber] });
         }
     });
 
     const reopenMatch = useMutation({
         mutationFn: async () => {
-            await agent.post(`matches/${leagueId}/split/${split}/match/${matchNumber}/reopen`);
+            await agent.post(`matches/${competitionId}/bracket/${bracketNumber}/match/${matchNumber}/reopen`);
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ["match", leagueId, split, matchNumber] });
+            await queryClient.invalidateQueries({ queryKey: ["match", competitionId, bracketNumber, matchNumber] });
         }
     });
     return {

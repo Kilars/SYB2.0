@@ -17,7 +17,8 @@ export type TournamentSchema = z.infer<typeof tournamentSchema>;
 
 export const tournamentMatchSchema = z.array(
     z.object({
-        tournamentId: z.string(),
+        competitionId: z.string(),
+        bracketNumber: z.number(),
         matchNumber: z.number(),
         roundNumber: z.number(),
         completed: z.boolean().optional(),

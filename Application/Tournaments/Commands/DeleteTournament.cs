@@ -22,9 +22,9 @@ public class DeleteTournament
             if (tournament == null) return Result<Unit>.Failure("Tournament not found", 404);
 
             // Delete in FK-safe order (all FKs use OnDelete: NoAction)
-            context.RemoveRange(context.TournamentRounds.Where(r => r.TournamentId == tournament.Id));
-            context.RemoveRange(context.TournamentMatches.Where(m => m.TournamentId == tournament.Id));
-            context.RemoveRange(context.TournamentMembers.Where(tm => tm.TournamentId == tournament.Id));
+            context.RemoveRange(context.Rounds.Where(r => r.CompetitionId == tournament.Id));
+            context.RemoveRange(context.Matches.Where(m => m.CompetitionId == tournament.Id));
+            context.RemoveRange(context.CompetitionMembers.Where(cm => cm.CompetitionId == tournament.Id));
             context.Tournaments.Remove(tournament);
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;

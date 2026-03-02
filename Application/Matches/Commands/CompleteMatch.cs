@@ -1,7 +1,6 @@
 using System;
-using System.Text.RegularExpressions;
 using Application.Core;
-using Application.Leagues.DTOs;
+using Application.Matches.DTOs;
 using AutoMapper;
 using Domain;
 using MediatR;
@@ -14,8 +13,8 @@ public class CompleteMatch
 {
     public class Command : IRequest<Result<Unit>>
     {
-        public required string LeagueId { get; set; }
-        public required int Split { get; set; }
+        public required string CompetitionId { get; set; }
+        public required int BracketNumber { get; set; }
         public required int MatchNumber { get; set; }
         public required List<RoundDto> Rounds { get; set; }
     }
@@ -27,13 +26,13 @@ public class CompleteMatch
             foreach (var round in request.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)))
             {
                 var dbRound = await context.Rounds.FirstAsync(r =>
-                   r.LeagueId == round.LeagueId
-                    && r.Split == round.Split
+                   r.CompetitionId == round.CompetitionId
+                    && r.BracketNumber == round.BracketNumber
                     && r.MatchNumber == round.MatchNumber
                     && r.RoundNumber == round.RoundNumber,
                     cancellationToken: cancellationToken);
 
-                if (dbRound == null) return Result<Unit>.Failure($"Round ({round.LeagueId}, {round.Split}, {round.MatchNumber}, {round.RoundNumber}) does not exist", 400);
+                if (dbRound == null) return Result<Unit>.Failure($"Round ({round.CompetitionId}, {round.BracketNumber}, {round.MatchNumber}, {round.RoundNumber}) does not exist", 400);
 
                 round.Completed = true;
                 mapper.Map(round, dbRound);
@@ -43,8 +42,8 @@ public class CompleteMatch
             foreach (var round in request.Rounds.Where(r => string.IsNullOrEmpty(r.WinnerUserId)))
             {
                 var dbRound = await context.Rounds.FirstOrDefaultAsync(r =>
-                   r.LeagueId == request.LeagueId
-                    && r.Split == request.Split
+                   r.CompetitionId == request.CompetitionId
+                    && r.BracketNumber == request.BracketNumber
                     && r.MatchNumber == request.MatchNumber
                     && r.RoundNumber == round.RoundNumber,
                     cancellationToken: cancellationToken);
@@ -66,8 +65,8 @@ public class CompleteMatch
                 .First();
 
             var match = await context.Matches.FirstAsync(m =>
-                m.LeagueId == request.LeagueId
-                && m.Split == request.Split
+                m.CompetitionId == request.CompetitionId
+                && m.BracketNumber == request.BracketNumber
                 && m.MatchNumber == request.MatchNumber,
                 cancellationToken: cancellationToken
             );

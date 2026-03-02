@@ -1,8 +1,5 @@
 using System;
-using System.ComponentModel;
 using Application.Core;
-using Application.Leagues.DTOs;
-using AutoMapper;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +19,7 @@ public class GetLeagueLeaderboard
         public async Task<Result<List<LeaderboardUser>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var matches = await context.Matches
-                .Where(m => m.LeagueId == request.Id && !string.IsNullOrEmpty(m.WinnerUserId))
+                .Where(m => m.CompetitionId == request.Id && !string.IsNullOrEmpty(m.WinnerUserId))
                 .Include(x => x.PlayerOne)
                 .Include(x => x.PlayerOne!.User)
                 .Include(x => x.PlayerTwo)

@@ -12,6 +12,5 @@ public class User : IdentityUser
     public bool IsGuest { get; set; } = false;
 
     // Nav properties
-    public ICollection<LeagueMember> LeagueMembers { get; set; } = [];
-    public ICollection<TournamentMember> TournamentMembers { get; set; } = [];
+    public ICollection<CompetitionMember> CompetitionMembers { get; set; } = [];
 }

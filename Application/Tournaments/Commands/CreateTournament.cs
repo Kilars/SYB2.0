@@ -40,7 +40,7 @@ public class CreateTournament
             }
             else
             {
-                tournament.Members.Add(new TournamentMember
+                tournament.Members.Add(new CompetitionMember
                 {
                     UserId = user.Id,
                     IsAdmin = true

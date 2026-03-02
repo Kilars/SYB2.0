@@ -1,34 +1,34 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import agent from "../api/agent";
 
-export const useTournamentMatch = (tournamentId: string, matchNumber: number) => {
+export const useTournamentMatch = (competitionId: string, matchNumber: number) => {
     const queryClient = useQueryClient();
 
     const { data: match, isLoading: isMatchLoading } = useQuery({
-        queryKey: ["tournamentMatch", tournamentId, matchNumber],
+        queryKey: ["tournamentMatch", competitionId, matchNumber],
         queryFn: async () => {
-            const res = await agent.get<TournamentMatch>(`/tournaments/${tournamentId}/match/${matchNumber}`);
+            const res = await agent.get<Match>(`/tournaments/${competitionId}/match/${matchNumber}`);
             return res.data;
         }
     });
 
     const completeMatch = useMutation({
-        mutationFn: async (rounds: TournamentRound[]) => {
-            await agent.post(`/tournaments/${tournamentId}/match/${matchNumber}/complete`, rounds);
+        mutationFn: async (rounds: Round[]) => {
+            await agent.post(`/tournaments/${competitionId}/match/${matchNumber}/complete`, rounds);
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ["tournamentMatch", tournamentId, matchNumber] });
-            await queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId] });
+            await queryClient.invalidateQueries({ queryKey: ["tournamentMatch", competitionId, matchNumber] });
+            await queryClient.invalidateQueries({ queryKey: ["tournament", competitionId] });
         }
     });
 
     const reopenMatch = useMutation({
         mutationFn: async () => {
-            await agent.post(`/tournaments/${tournamentId}/match/${matchNumber}/reopen`);
+            await agent.post(`/tournaments/${competitionId}/match/${matchNumber}/reopen`);
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ["tournamentMatch", tournamentId, matchNumber] });
-            await queryClient.invalidateQueries({ queryKey: ["tournament", tournamentId] });
+            await queryClient.invalidateQueries({ queryKey: ["tournamentMatch", competitionId, matchNumber] });
+            await queryClient.invalidateQueries({ queryKey: ["tournament", competitionId] });
         }
     });
 

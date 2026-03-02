@@ -1,6 +1,6 @@
 using System;
-using Application.Leagues.DTOs;
 using Application.Matches.Commands;
+using Application.Matches.DTOs;
 using Application.Matches.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,27 +9,27 @@ namespace API.Controllers;
 
 public class MatchesController : BaseApiController
 {
-    [Authorize(Policy = "IsLeagueMember")]
-    [HttpGet("{leagueId}/split/{split}/match/{matchNumber}")]
-    public async Task<ActionResult<MatchDto>> GetMatch(string leagueId, int split, int matchNumber)
+    [Authorize(Policy = "IsCompetitionMember")]
+    [HttpGet("{competitionId}/bracket/{bracketNumber}/match/{matchNumber}")]
+    public async Task<ActionResult<MatchDto>> GetMatch(string competitionId, int bracketNumber, int matchNumber)
     {
-        return HandleResult(await Mediator.Send(new GetMatchDetails.Query { LeagueId = leagueId, Split = split, MatchNumber = matchNumber }));
+        return HandleResult(await Mediator.Send(new GetMatchDetails.Query { CompetitionId = competitionId, BracketNumber = bracketNumber, MatchNumber = matchNumber }));
     }
 
-    [HttpPost("{leagueId}/split/{split}/match/{matchNumber}/complete")]
-    [Authorize(Policy = "IsLeagueMember")]
+    [HttpPost("{competitionId}/bracket/{bracketNumber}/match/{matchNumber}/complete")]
+    [Authorize(Policy = "IsCompetitionMember")]
     [Authorize(Policy = "IsMatchEditable")]
-    public async Task<ActionResult<MatchDto>> CompleteMatch(string leagueId, int split, int matchNumber, List<RoundDto> rounds)
+    public async Task<ActionResult<MatchDto>> CompleteMatch(string competitionId, int bracketNumber, int matchNumber, List<RoundDto> rounds)
     {
-        return HandleResult(await Mediator.Send(new CompleteMatch.Command { LeagueId = leagueId, Split = split, MatchNumber = matchNumber, Rounds = rounds }));
+        return HandleResult(await Mediator.Send(new CompleteMatch.Command { CompetitionId = competitionId, BracketNumber = bracketNumber, MatchNumber = matchNumber, Rounds = rounds }));
     }
 
-    [HttpPost("{leagueId}/split/{split}/match/{matchNumber}/reopen")]
-    [Authorize(Policy = "IsLeagueMember")]
+    [HttpPost("{competitionId}/bracket/{bracketNumber}/match/{matchNumber}/reopen")]
+    [Authorize(Policy = "IsCompetitionMember")]
     [Authorize(Policy = "IsMatchComplete")]
-    public async Task<ActionResult<MatchDto>> ReopenMatch(string leagueId, int split, int matchNumber)
+    public async Task<ActionResult<MatchDto>> ReopenMatch(string competitionId, int bracketNumber, int matchNumber)
     {
-        return HandleResult(await Mediator.Send(new ReopenMatch.Command { LeagueId = leagueId, Split = split, MatchNumber = matchNumber }));
+        return HandleResult(await Mediator.Send(new ReopenMatch.Command { CompetitionId = competitionId, BracketNumber = bracketNumber, MatchNumber = matchNumber }));
     }
 
     [HttpGet("user/{id}")]
