@@ -54,6 +54,7 @@ export const useTournaments = (id?: string) => {
       await agent.delete(`/tournaments/${id}`);
     },
     onSuccess: async () => {
+      await queryClient.cancelQueries({ queryKey: ["tournament", id] });
       queryClient.removeQueries({ queryKey: ["tournament", id] });
       queryClient.setQueryData<Tournament[]>(["tournaments"], (old) =>
         old?.filter((t) => t.id !== id),

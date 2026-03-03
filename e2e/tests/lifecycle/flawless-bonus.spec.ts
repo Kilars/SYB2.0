@@ -126,10 +126,16 @@ test.describe('Flawless Bonus Recalculation', () => {
     const leaderboard = new LeaderboardPage(page);
     await leaderboard.waitForTable();
 
+    // Verify BEFORE reload — establish baseline
+    let stats = await leaderboard.getPlayerRow(winnerName);
+    expect(stats.points).toBe(5);
+    expect(stats.flawless).toBe(1);
+
     await page.reload();
     await leaderboard.waitForTable();
 
-    const stats = await leaderboard.getPlayerRow(winnerName);
+    // Verify AFTER reload — same values must persist
+    stats = await leaderboard.getPlayerRow(winnerName);
     expect(stats.points).toBe(5);
     expect(stats.flawless).toBe(1);
 

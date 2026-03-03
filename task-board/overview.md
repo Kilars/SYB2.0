@@ -10,59 +10,31 @@ UX & Accessibility audit — 22 tasks covering bugs, mobile responsiveness, inte
 |--------|-------|
 | Backlog | 0 |
 | In Progress | 0 |
-| Done | 23 |
+| Done | 31 |
 
 ## Top Priorities
 
-### Bugs (Fix First)
-1. **002-BUG-userstats-character-guids** — Character GUIDs shown instead of names
-2. **003-BUG-login-password-not-masked** — Password field visible as plain text
-3. **004-BUG-leaderboard-nan-no-matches** — NaN% win rate with zero matches
-4. **005-BUG-registerform-wrong-function-name** — Component function named `LoginForm`
-
-### High Impact
-5. **006-FEATURE-match-registration-redesign** — Redesign Bo3 match flow (toggle winners, inline validation, mobile layout)
-6. **007-FEATURE-mobile-responsiveness-pass** — Responsive breakpoints across all components
-7. **008-FEATURE-loading-empty-state-system** — Skeleton loaders + contextual empty states
-8. **009-FEATURE-navigation-wayfinding** — Breadcrumbs, back nav, prominent Create League
-
-### Accessibility
-9. **010-BUG-form-label-associations** — Winner checkboxes missing label associations
-10. **011-BUG-missing-aria-labels** — NavBar, CharacterSelect, StatusButton ARIA labels
-11. **012-BUG-missing-image-alt-text** — Character images missing alt text
-12. **013-BUG-color-only-information** — Win/loss indicators rely on color alone
-
-### Medium Impact
-13. **014-FEATURE-leaderboard-mobile-card-view** — Card layout for leaderboard on mobile
-14. **015-FEATURE-match-list-visual-polish** — Status indicators, image guards, click targets
-15. **016-FEATURE-match-details-view-improvements** — Score summary, larger images, reopen confirmation
-16. **017-FEATURE-status-button-ux** — Color/icon differentiation for status transitions
-17. **018-FEATURE-form-submission-feedback** — Loading spinners on form submit buttons
-18. **019-FEATURE-userstats-top-characters** — Character cards with images and stats
-
-### Low / Polish
-19. **020-REFACTOR-theme-configuration** — MUI ThemeProvider + design tokens
-20. **021-FEATURE-homepage-polish** — Game-themed hero, tagline, prominent CTA
-21. **022-REFACTOR-duplicate-league-statuses** — Extract shared constant
-22. **023-REFACTOR-clean-up-unused-files** — Delete App.css and unused CreateLeague.tsx
-
-## Key Dependencies
-
-- **019** blocked by **002** (fix GUIDs before enhancing character section)
-- **010** may be superseded by **006** (match redesign replaces checkboxes)
-- **014** extends work started in **007** (mobile pass covers basic table fix, 014 adds card view)
+_Backlog is empty. Run `backlog-scan` or `feature-planning` to add new tasks._
 
 ## Recently Completed
 
-1. **009-FEATURE-navigation-wayfinding** — Breadcrumbs, back navigation, prominent Create League button. Completed 2026-02-28.
-2. **008-FEATURE-loading-empty-state-system** — LoadingSkeleton + EmptyState components, replaced 13 loading/13 empty states. Completed 2026-02-28.
-2. **007-FEATURE-mobile-responsiveness-pass** — Responsive breakpoints across 9 components. Completed 2026-02-28.
-2. **006-FEATURE-match-registration-redesign** — Redesigned Bo3 match form with toggle buttons, responsive layout, score indicator. Completed 2026-02-28.
-2. **005-BUG-registerform-wrong-function-name** — Renamed LoginForm to RegisterForm. Completed 2026-02-28.
-2. **004-BUG-leaderboard-nan-no-matches** — Fixed NaN% win rate with zero-division guard. Completed 2026-02-28.
-2. **003-BUG-login-password-not-masked** — Added type="password" to login form. Completed 2026-02-28.
-2. **002-BUG-userstats-character-guids** — Fixed character GUIDs showing instead of names in UserStats. Completed 2026-02-28.
-2. **001-FEATURE-playwright-e2e-testing** — Playwright E2E testing infrastructure (34 tests, 4 spec files). Completed 2026-02-27.
+1. **036-BUG-e2e-test-workarounds** — Removed console error suppressions, tightened URL patterns, replaced hardcoded waits. Completed 2026-03-03.
+2. **035-BUG-tournament-delete-404** — Fixed race condition: cancel queries before remove to prevent 404 toast. Completed 2026-03-03.
+3. **034-BUG-league-create-404** — Fixed navigation to `/leagues/${id}/leaderboard` after create/update. Completed 2026-03-03.
+4. **033-BUG-gameboy-icon-home-navigation** — Replaced Box+NavLink with direct NavLink for reliable home navigation. Completed 2026-03-03.
+5. **032-FEATURE-members-grid-layout** — Added more grid columns at sm/md breakpoints. Completed 2026-03-03.
+6. **031-BUG-best-worst-matchup-duplicates** — Fixed overlap by filtering best from worst, requiring 4+ matchups. Completed 2026-03-03.
+7. **030-FEATURE-match-history-card-sizing** — Larger padding, fonts, images, scroll container. Completed 2026-03-03.
+8. **029-FEATURE-scatter-chart-xaxis-rounds** — X-axis now shows rounds played, uniform dot size. Completed 2026-03-03.
+9. **009-FEATURE-navigation-wayfinding** — Breadcrumbs, back navigation, prominent Create League button. Completed 2026-02-28.
+10. **008-FEATURE-loading-empty-state-system** — LoadingSkeleton + EmptyState components. Completed 2026-02-28.
+11. **007-FEATURE-mobile-responsiveness-pass** — Responsive breakpoints across 9 components. Completed 2026-02-28.
+12. **006-FEATURE-match-registration-redesign** — Redesigned Bo3 match form. Completed 2026-02-28.
+13. **005-BUG-registerform-wrong-function-name** — Renamed LoginForm to RegisterForm. Completed 2026-02-28.
+14. **004-BUG-leaderboard-nan-no-matches** — Fixed NaN% win rate. Completed 2026-02-28.
+15. **003-BUG-login-password-not-masked** — Added type="password". Completed 2026-02-28.
+16. **002-BUG-userstats-character-guids** — Fixed character GUIDs. Completed 2026-02-28.
+17. **001-FEATURE-playwright-e2e-testing** — Playwright E2E infrastructure. Completed 2026-02-27.
 
 ---
 

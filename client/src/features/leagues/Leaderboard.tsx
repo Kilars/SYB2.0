@@ -377,7 +377,7 @@ export default function Leaderboard() {
 
       <Box
         gap={1}
-        sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "auto auto auto" } }}
+        sx={{ display: "grid", gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 1fr", md: "1fr 1fr 1fr 1fr" } }}
       >
         {league.members.map((member) => (
           <UserChip

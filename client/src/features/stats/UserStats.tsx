@@ -311,10 +311,13 @@ export default function UserStats() {
             };
           });
 
-        const best = [...matchups].sort((a, b) => b.wr - a.wr || b.total - a.total).slice(0, 3);
-        const worst = [...matchups].sort((a, b) => a.wr - b.wr || b.total - a.total).slice(0, 3);
+        if (matchups.length < 4) return null;
 
-        if (matchups.length === 0) return null;
+        const best = [...matchups].sort((a, b) => b.wr - a.wr || b.total - a.total).slice(0, 3);
+        const worst = [...matchups]
+          .filter((m) => !best.includes(m))
+          .sort((a, b) => a.wr - b.wr || b.total - a.total)
+          .slice(0, 3);
 
         const MatchupCard = ({
           mu,

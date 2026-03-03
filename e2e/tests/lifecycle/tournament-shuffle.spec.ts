@@ -76,7 +76,7 @@ test.describe('Tournament Shuffle', () => {
     // Complete a semifinal match via UI
     const semis = await bracket.getSemifinalists();
     await bracket.clickMatchCard(semis.match1.p1);
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
     await matchPage.waitForForm();

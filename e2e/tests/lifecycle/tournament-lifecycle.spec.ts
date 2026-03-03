@@ -86,7 +86,7 @@ test.describe('Tournament Lifecycle', () => {
     await bracket.waitForBracket();
 
     await bracket.clickMatchCard(semifinals.match1.p1);
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
     await matchPage.waitForForm();
@@ -111,7 +111,7 @@ test.describe('Tournament Lifecycle', () => {
     await bracket.waitForBracket();
 
     await bracket.clickMatchCard(semifinals.match2.p1);
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
     await matchPage.waitForForm();
@@ -145,7 +145,7 @@ test.describe('Tournament Lifecycle', () => {
 
     // Click the final match card (last card in the bracket)
     await bracket.clickFinalCard();
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
     await matchPage.waitForForm();

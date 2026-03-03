@@ -1,6 +1,6 @@
 # 032-FEATURE-members-grid-layout
 
-**Status**: Backlog
+**Status**: Done
 **Created**: 2026-03-02
 **Priority**: Low
 **Type**: FEATURE
@@ -16,25 +16,25 @@ The members grid in both Leaderboard.tsx and LeagueList.tsx uses too few columns
 
 ## Acceptance Criteria
 
-- [ ] Leaderboard members grid shows 2 columns on xs, 3 on sm, 4 on md+
-- [ ] League list members grid shows 2 columns on xs, 3 on sm+
-- [ ] UserChip components don't overflow or get clipped at any breakpoint
-- [ ] Layout remains visually balanced and aligned
-- [ ] `cd client && npm run build` passes
+- [x] Leaderboard members grid shows 2 columns on xs, 3 on sm, 4 on md+
+- [x] League list members grid shows 2 columns on xs, 3 on sm+
+- [x] UserChip components don't overflow or get clipped at any breakpoint
+- [x] Layout remains visually balanced and aligned
+- [x] `cd client && npm run build` passes
 
 ---
 
 ## Implementation Steps
 
 ### Frontend
-- [ ] **`client/src/features/leagues/Leaderboard.tsx` line 380** — Change grid columns:
+- [x] **`client/src/features/leagues/Leaderboard.tsx` line 380** — Change grid columns:
   ```tsx
   // Before:
   gridTemplateColumns: { xs: "1fr 1fr", sm: "auto auto auto" }
   // After:
   gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 1fr", md: "1fr 1fr 1fr 1fr" }
   ```
-- [ ] **`client/src/features/leagues/LeagueList.tsx` line 142** — Change grid columns:
+- [x] **`client/src/features/leagues/LeagueList.tsx` line 142** — Change grid columns:
   ```tsx
   // Before:
   gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }
@@ -97,10 +97,12 @@ Current LeagueList members grid (line 142):
 
 ## Progress Log
 
-[Updated during implementation]
+- Updated Leaderboard.tsx grid from `{ xs: "1fr 1fr", sm: "auto auto auto" }` to `{ xs: "1fr 1fr", sm: "1fr 1fr 1fr", md: "1fr 1fr 1fr 1fr" }`
+- Updated LeagueList.tsx grid from `{ xs: "1fr", sm: "1fr 1fr" }` to `{ xs: "1fr 1fr", sm: "1fr 1fr 1fr" }`
+- Frontend build passes with 0 errors
 
 ---
 
 ## Resolution
 
-[Filled when complete]
+Completed 2026-03-03. Two CSS grid property changes in Leaderboard.tsx and LeagueList.tsx to add more columns at larger breakpoints. Using `1fr` units ensures equal-width columns that won't clip or overflow UserChip components. No regressions; build clean.

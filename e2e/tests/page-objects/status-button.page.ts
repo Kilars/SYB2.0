@@ -25,6 +25,9 @@ export class StatusButtonPage {
 
   async clickRevertToPlanning() {
     await this.page.getByRole('button', { name: /revert to draft/i }).click();
+    await expect(
+      this.page.getByText(/are you sure you want to move back to planning phase/i)
+    ).toBeVisible({ timeout: 5000 });
   }
 
   async confirmDeletion() {

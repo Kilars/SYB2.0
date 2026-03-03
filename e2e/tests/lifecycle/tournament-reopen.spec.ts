@@ -41,7 +41,7 @@ test.describe('Tournament Reopen', () => {
 
     semifinals = await bracket.getSemifinalists();
     await bracket.clickMatchCard(semifinals.match1.p1);
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
     await matchPage.waitForForm();
@@ -65,7 +65,7 @@ test.describe('Tournament Reopen', () => {
 
     // Click the completed semifinal match card
     await bracket.clickMatchCard(semifinals.match1.p1);
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
     await matchPage.waitForForm();
@@ -86,7 +86,7 @@ test.describe('Tournament Reopen', () => {
     await bracket.waitForBracket();
 
     await bracket.clickMatchCard(semifinals.match1.p1);
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
 
     const matchPage = new TournamentMatchPage(page);
     await matchPage.waitForForm();

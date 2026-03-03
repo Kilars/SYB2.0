@@ -76,7 +76,7 @@ test.describe('Tournament Permissions', () => {
     // Can click a match card and see match details
     const semis = await bracket.getSemifinalists();
     await bracket.clickMatchCard(semis.match1.p1);
-    await page.waitForURL(/\/match\//, { timeout: 10000 });
+    await page.waitForURL(/\/tournaments\/[^/]+\/bracket\/\d+\/match\/\d+/, { timeout: 10000 });
     await expect(
       page.getByRole('heading', { name: /match result/i })
     ).toBeVisible({ timeout: 15000 });

@@ -38,13 +38,13 @@ test.describe('League Lifecycle', () => {
 
     await form.clickCreate();
 
-    // After create, app navigates to /leagues/{id} (which 404s — no tab route).
-    // Extract the league ID from the URL.
-    await page.waitForURL(/\/leagues\/[^/]+$/, { timeout: 15000 });
+    // After create, app navigates to /leagues/{id}/leaderboard
+    await page.waitForURL(/\/leagues\/[^/]+\/leaderboard$/, { timeout: 15000 });
     const url = page.url();
-    leagueId = url.split('/leagues/')[1];
-
-    // Navigate to the description tab to verify league was created
+    leagueId = url.split('/leagues/')[1].split('/')[0];
+    // Verify we landed on a real page, not a 404
+    await expect(page.getByRole('tab', { name: /leaderboard/i })).toBeVisible({ timeout: 10000 });
+    // Navigate to description tab to continue the test flow
     await page.goto(`/leagues/${leagueId}/description`);
     await expect(page.getByRole('heading', { name: leagueName })).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/planned/i)).toBeVisible();

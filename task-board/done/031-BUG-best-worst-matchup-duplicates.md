@@ -1,6 +1,6 @@
 # 031-BUG-best-worst-matchup-duplicates
 
-**Status**: Backlog
+**Status**: Done
 **Created**: 2026-03-02
 **Priority**: High
 **Type**: BUG
@@ -22,19 +22,19 @@ const worst = [...matchups].sort((a, b) => a.wr - b.wr || b.total - a.total).sli
 
 ## Acceptance Criteria
 
-- [ ] Characters appearing in "Best Against" do NOT appear in "Worst Against"
-- [ ] If fewer than 4 qualifying matchups exist, the "Character Matchups" section is hidden entirely (not enough data for meaningful best/worst split)
-- [ ] When exactly 4-5 matchups qualify, best gets top entries and worst gets remaining bottom entries (no overlap)
-- [ ] Section still renders correctly with 6+ qualifying matchups
-- [ ] `cd client && npm run build` passes
+- [x] Characters appearing in "Best Against" do NOT appear in "Worst Against"
+- [x] If fewer than 4 qualifying matchups exist, the "Character Matchups" section is hidden entirely (not enough data for meaningful best/worst split)
+- [x] When exactly 4-5 matchups qualify, best gets top entries and worst gets remaining bottom entries (no overlap)
+- [x] Section still renders correctly with 6+ qualifying matchups
+- [x] `cd client && npm run build` passes
 
 ---
 
 ## Implementation Steps
 
 ### Frontend
-- [ ] **`client/src/features/stats/UserStats.tsx` line 317** — Change minimum matchup guard: `if (matchups.length === 0)` → `if (matchups.length < 4)` to require at least 4 distinct character matchups before showing the section
-- [ ] **`client/src/features/stats/UserStats.tsx` lines 314-315** — Filter best entries out before computing worst:
+- [x] **`client/src/features/stats/UserStats.tsx` line 317** — Change minimum matchup guard: `if (matchups.length === 0)` → `if (matchups.length < 4)` to require at least 4 distinct character matchups before showing the section
+- [x] **`client/src/features/stats/UserStats.tsx` lines 314-315** — Filter best entries out before computing worst:
   ```tsx
   const best = [...matchups].sort((a, b) => b.wr - a.wr || b.total - a.total).slice(0, 3);
   const worst = [...matchups]
@@ -86,10 +86,14 @@ if (matchups.length === 0) return null;
 
 ## Progress Log
 
-[Updated during implementation]
+- Moved the guard `if (matchups.length < 4) return null;` before best/worst computation (was previously `=== 0` and placed after)
+- Added `.filter((m) => !best.includes(m))` to worst computation to exclude entries already in best
+- Build passes with zero errors
 
 ---
 
 ## Resolution
 
-[Filled when complete]
+Fixed by two changes in `client/src/features/stats/UserStats.tsx`:
+1. Changed the minimum matchup guard from `matchups.length === 0` to `matchups.length < 4` and moved it before the best/worst computation so the section is hidden when there aren't enough matchups for a meaningful split.
+2. Added a filter on the worst computation to exclude entries already present in best, preventing duplicate characters from appearing in both lists.

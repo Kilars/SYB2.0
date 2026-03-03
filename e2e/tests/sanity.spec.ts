@@ -70,10 +70,8 @@ test.describe('Sanity Checks', () => {
         // Page must have rendered something
         await expect(page.locator('body')).toBeVisible();
 
-        // Wait for async content to load
-        await page.waitForLoadState('networkidle').catch(() => {
-          // Ignore timeout — networkidle can be slow with async data loading
-        });
+        // Wait for async content to load (generous timeout for slow network)
+        await page.waitForLoadState('networkidle', { timeout: 30000 });
 
         const healthErrors = await checkPageHealth(page);
         const criticalErrors = healthErrors.filter(
@@ -100,10 +98,8 @@ test.describe('Sanity Checks', () => {
         // Page must render body content
         await expect(page.locator('body')).toBeVisible();
 
-        // Wait for any loading states to resolve
-        await page.waitForLoadState('networkidle').catch(() => {
-          // Ignore timeout — networkidle can be slow with MUI hydration
-        });
+        // Wait for any loading states to resolve (generous timeout for MUI hydration)
+        await page.waitForLoadState('networkidle', { timeout: 30000 });
 
         const healthErrors = await checkPageHealth(page);
         const criticalErrors = healthErrors.filter(

@@ -90,11 +90,13 @@ export class TournamentMatchPage {
     }
 
     // Clear character autocomplete selections via hidden MUI clear button
+    const inputs = container.getByPlaceholder('Select character...');
     const clearBtns = container.locator('.MuiAutocomplete-clearIndicator');
     const clearCount = await clearBtns.count();
     for (let i = clearCount - 1; i >= 0; i--) {
       await clearBtns.nth(i).evaluate(btn => (btn as HTMLButtonElement).click());
-      await this.page.waitForTimeout(300);
+      // Wait for MUI to process the clear rather than using an arbitrary timeout
+      await expect(inputs.nth(i)).toHaveValue('', { timeout: 2000 });
     }
   }
 

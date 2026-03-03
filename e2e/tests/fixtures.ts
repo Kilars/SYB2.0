@@ -131,8 +131,6 @@ export const test = base.extend<{ pageErrors: string[] }>({
           !text.includes('favicon') &&
           !text.includes('net::ERR') &&
           !text.includes('Failed to load resource') &&
-          !text.includes('No routes matched location') &&
-          !text.includes('React Router default ErrorBoundary') &&
           !text.includes('unique "key" prop') &&
           !text.includes('value state of Autocomplete')
         ) {

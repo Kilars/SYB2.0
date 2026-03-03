@@ -1,6 +1,6 @@
 # 029-FEATURE-scatter-chart-xaxis-rounds
 
-**Status**: Backlog
+**Status**: Done
 **Created**: 2026-03-02
 **Priority**: Medium
 **Type**: FEATURE
@@ -18,29 +18,29 @@ Switching X-axis to "total rounds played" (numeric) makes the chart more meaning
 
 ## Acceptance Criteria
 
-- [ ] X-axis displays "Rounds Played" (numeric) instead of character name index
-- [ ] Y-axis remains "Win Rate" (0-100%)
-- [ ] Character portrait dots (CharacterDot component) render at a fixed uniform size
-- [ ] ZAxis is removed (no longer needed for bubble sizing)
-- [ ] Tooltip still shows character name, win rate %, and rounds played
-- [ ] Chart remains responsive on mobile
-- [ ] `cd client && npm run build` passes
+- [x] X-axis displays "Rounds Played" (numeric) instead of character name index
+- [x] Y-axis remains "Win Rate" (0-100%)
+- [x] Character portrait dots (CharacterDot component) render at a fixed uniform size
+- [x] ZAxis is removed (no longer needed for bubble sizing)
+- [x] Tooltip still shows character name, win rate %, and rounds played
+- [x] Chart remains responsive on mobile
+- [x] `cd client && npm run build` passes
 
 ---
 
 ## Implementation Steps
 
 ### Frontend
-- [ ] **`client/src/features/stats/LeagueStats.tsx` line 127-135** — Change `scatterData` mapping: use `x: s.total` instead of `x: i`
-- [ ] **`client/src/features/stats/LeagueStats.tsx` line 177-186** — XAxis changes:
+- [x] **`client/src/features/stats/LeagueStats.tsx` line 127-135** — Change `scatterData` mapping: use `x: s.total` instead of `x: i`
+- [x] **`client/src/features/stats/LeagueStats.tsx` line 177-186** — XAxis changes:
   - Change `domain` to `[0, Math.max(...scatterData.map(d => d.total)) + 1]`
   - Remove `ticks` prop (auto ticks for numeric axis)
   - Remove `tickFormatter` that maps index to character name
   - Add `label` prop: `{ value: "Rounds Played", position: "insideBottom", offset: -5 }`
   - Reduce `angle` / remove since labels are numeric now
-- [ ] **`client/src/features/stats/LeagueStats.tsx` line 200** — Remove `<ZAxis type="number" dataKey="total" range={[100, 400]} />`
-- [ ] **`client/src/features/stats/LeagueStats.tsx` line 144** — CharacterDot: replace dynamic `Math.max(28, Math.min(48, 20 + payload.total * 4))` with a fixed size (e.g., `const size = 36`)
-- [ ] **`client/src/features/stats/LeagueStats.tsx` line 27** — Remove `ZAxis` from recharts import
+- [x] **`client/src/features/stats/LeagueStats.tsx` line 200** — Remove `<ZAxis type="number" dataKey="total" range={[100, 400]} />`
+- [x] **`client/src/features/stats/LeagueStats.tsx` line 144** — CharacterDot: replace dynamic `Math.max(28, Math.min(48, 20 + payload.total * 4))` with a fixed size (e.g., `const size = 36`)
+- [x] **`client/src/features/stats/LeagueStats.tsx` line 27** — Remove `ZAxis` from recharts import
 
 ---
 
@@ -96,10 +96,10 @@ const size = Math.max(28, Math.min(48, 20 + payload.total * 4));
 
 ## Progress Log
 
-[Updated during implementation]
+- 2026-03-03: Implemented all changes in LeagueStats.tsx. Removed ZAxis import, changed scatterData x to s.total, fixed CharacterDot to uniform size 36, updated XAxis with numeric domain and "Rounds Played" label, removed ZAxis component. Build passes.
 
 ---
 
 ## Resolution
 
-[Filled when complete]
+All acceptance criteria met. Single file changed: `client/src/features/stats/LeagueStats.tsx`. The scatter chart now uses "Rounds Played" as the X-axis (numeric), character portrait dots are uniformly sized at 36px, and the ZAxis component has been fully removed. Tooltip continues to display character name, win rate %, and rounds played. Chart remains responsive via ResponsiveContainer.

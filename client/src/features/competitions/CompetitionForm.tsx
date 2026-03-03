@@ -69,13 +69,13 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
       const leagueData = data as LeagueSchema;
       if (!league) {
         await createLeague.mutateAsync(leagueData, {
-          onSuccess: (id) => navigate(`/leagues/${id}`),
+          onSuccess: (id) => navigate(`/leagues/${id}/leaderboard`),
         });
       } else {
         await updateLeague.mutateAsync(
           { ...league, ...leagueData },
           {
-            onSuccess: () => navigate(`/leagues/${league.id}`),
+            onSuccess: () => navigate(`/leagues/${league.id}/leaderboard`),
           },
         );
       }

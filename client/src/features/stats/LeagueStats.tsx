@@ -24,7 +24,6 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  ZAxis,
 } from "recharts";
 
 import EmptyState from "../../app/shared/components/EmptyState";
@@ -126,8 +125,8 @@ export default function LeagueStats() {
   // Scatter chart data — index for X, win rate for Y
   const scatterData = charStats
     .sort((a, b) => b.total - a.total)
-    .map((s, i) => ({
-      x: i,
+    .map((s) => ({
+      x: s.total,
       winRate: s.winRate,
       total: s.total,
       name: s.name,
@@ -141,7 +140,7 @@ export default function LeagueStats() {
   }) => {
     const { cx = 0, cy = 0, payload } = props;
     if (!payload?.imageUrl) return null;
-    const size = Math.max(28, Math.min(48, 20 + payload.total * 4));
+    const size = 36;
     return (
       <g>
         <defs>
@@ -177,13 +176,11 @@ export default function LeagueStats() {
                 <XAxis
                   type="number"
                   dataKey="x"
-                  domain={[-0.5, scatterData.length - 0.5]}
-                  ticks={scatterData.map((_, i) => i)}
-                  tickFormatter={(i) => scatterData[i]?.name || ""}
-                  angle={-45}
-                  textAnchor="end"
+                  domain={[0, Math.max(...scatterData.map((d) => d.total)) + 1]}
+                  textAnchor="middle"
                   height={60}
                   tick={{ fontSize: 11 }}
+                  label={{ value: "Rounds Played", position: "insideBottom", offset: -5 }}
                 />
                 <YAxis
                   type="number"
@@ -197,7 +194,6 @@ export default function LeagueStats() {
                     style: { fontSize: 12 },
                   }}
                 />
-                <ZAxis type="number" dataKey="total" range={[100, 400]} />
                 <Tooltip
                   content={({ payload }) => {
                     if (!payload || payload.length === 0) return null;

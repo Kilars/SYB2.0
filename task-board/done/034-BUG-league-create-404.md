@@ -30,25 +30,25 @@ onSuccess: () => navigate(`/leagues/${league.id}`)
 
 ## Acceptance Criteria
 
-- [ ] After creating a league, user is navigated to the league's leaderboard page (`/leagues/${id}/leaderboard`)
-- [ ] After updating a league, user is navigated to the league's leaderboard page
-- [ ] No blank/404 page is shown after league creation or update
-- [ ] E2E test updated — no longer works around the 404, asserts correct landing page
-- [ ] `cd client && npm run build` passes
+- [x] After creating a league, user is navigated to the league's leaderboard page (`/leagues/${id}/leaderboard`)
+- [x] After updating a league, user is navigated to the league's leaderboard page
+- [x] No blank/404 page is shown after league creation or update
+- [x] E2E test updated — no longer works around the 404, asserts correct landing page
+- [x] `cd client && npm run build` passes
 
 ---
 
 ## Implementation Steps
 
 ### Frontend
-- [ ] **`client/src/features/competitions/CompetitionForm.tsx` line 72** — Change create navigation:
+- [x] **`client/src/features/competitions/CompetitionForm.tsx` line 72** — Change create navigation:
   ```tsx
   // Before:
   onSuccess: (id) => navigate(`/leagues/${id}`)
   // After:
   onSuccess: (id) => navigate(`/leagues/${id}/leaderboard`)
   ```
-- [ ] **`client/src/features/competitions/CompetitionForm.tsx` line 78** — Change update navigation:
+- [x] **`client/src/features/competitions/CompetitionForm.tsx` line 78** — Change update navigation:
   ```tsx
   // Before:
   onSuccess: () => navigate(`/leagues/${league.id}`)
@@ -57,7 +57,7 @@ onSuccess: () => navigate(`/leagues/${league.id}`)
   ```
 
 ### E2E Test
-- [ ] **`e2e/tests/lifecycle/league-lifecycle.spec.ts` lines 41-48** — Fix the workaround that tolerates the 404:
+- [x] **`e2e/tests/lifecycle/league-lifecycle.spec.ts` lines 41-48** — Fix the workaround that tolerates the 404:
   ```typescript
   // Before (works around the bug):
   // After create, app navigates to /leagues/{id} (which 404s — no tab route).
@@ -121,10 +121,13 @@ Router definition (`client/src/app/router/Routes.tsx` lines 28-39) — no `/leag
 
 ## Progress Log
 
-[Updated during implementation]
+- 2026-03-03: Fixed create navigation in CompetitionForm.tsx (line 72): `/leagues/${id}` -> `/leagues/${id}/leaderboard`
+- 2026-03-03: Fixed update navigation in CompetitionForm.tsx (line 78): `/leagues/${league.id}` -> `/leagues/${league.id}/leaderboard`
+- 2026-03-03: Updated E2E test to assert correct `/leaderboard` URL, extract leagueId correctly, and verify leaderboard tab visibility
+- 2026-03-03: `cd client && npm run build` passes (0 errors, 1 pre-existing warning)
 
 ---
 
 ## Resolution
 
-[Filled when complete]
+Fixed by appending `/leaderboard` to the navigation paths in `CompetitionForm.tsx` for both create and update flows. The E2E test in `league-lifecycle.spec.ts` was updated to assert the correct URL pattern and verify the leaderboard tab is visible instead of working around the 404.

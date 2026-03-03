@@ -36,7 +36,7 @@ export default function MatchesList() {
           flexDirection="column"
           gap={2}
           sx={{
-            maxHeight: "60vh",
+            maxHeight: "75vh",
             overflowY: "auto",
             WebkitOverflowScrolling: "touch",
             scrollBehavior: "smooth",
@@ -67,7 +67,7 @@ export default function MatchesList() {
                 key={match.competitionId + match.bracketNumber + match.matchNumber}
                 component={Card}
                 elevation={match.completed ? 1 : 3}
-                p={2}
+                p={{ xs: 2, sm: 3 }}
                 role="link"
                 tabIndex={0}
                 aria-label={`Match #${match.matchNumber}: ${playerOne.displayName} vs ${playerTwo.displayName}${match.completed ? ` — Winner: ${winner}` : " — Pending"}`}
@@ -112,9 +112,8 @@ export default function MatchesList() {
                       variant="h4"
                       fontFamily="monospace"
                       fontStyle="italic"
-                      noWrap
                       sx={{
-                        fontSize: { xs: "0.9rem", sm: "1.5rem", md: "2.125rem" },
+                        fontSize: { xs: "1rem", sm: "1.75rem", md: "2.125rem" },
                         color:
                           match.winnerUserId === playerOne.userId
                             ? SMASH_COLORS.p1Red
@@ -122,6 +121,10 @@ export default function MatchesList() {
                         fontWeight: match.winnerUserId === playerOne.userId ? "bold" : "normal",
                         flex: 1,
                         minWidth: 0,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       {playerOne.displayName}
@@ -166,9 +169,8 @@ export default function MatchesList() {
                       variant="h4"
                       fontFamily="monospace"
                       fontStyle="italic"
-                      noWrap
                       sx={{
-                        fontSize: { xs: "0.9rem", sm: "1.5rem", md: "2.125rem" },
+                        fontSize: { xs: "1rem", sm: "1.75rem", md: "2.125rem" },
                         color:
                           match.winnerUserId === playerTwo.userId
                             ? SMASH_COLORS.p2Blue
@@ -177,6 +179,10 @@ export default function MatchesList() {
                         flex: 1,
                         minWidth: 0,
                         textAlign: "right",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
                       }}
                     >
                       {playerTwo.displayName}
@@ -213,8 +219,8 @@ export default function MatchesList() {
                             <img
                               alt={character?.fullName ?? ""}
                               style={{
-                                width: "clamp(40px, 10vw, 56px)",
-                                height: "clamp(40px, 10vw, 56px)",
+                                width: "clamp(48px, 12vw, 64px)",
+                                height: "clamp(48px, 12vw, 64px)",
                               }}
                               src={character?.imageUrl}
                             />
@@ -258,8 +264,8 @@ export default function MatchesList() {
                             <img
                               alt={character?.fullName ?? ""}
                               style={{
-                                width: "clamp(40px, 10vw, 56px)",
-                                height: "clamp(40px, 10vw, 56px)",
+                                width: "clamp(48px, 12vw, 64px)",
+                                height: "clamp(48px, 12vw, 64px)",
                               }}
                               src={character?.imageUrl}
                             />

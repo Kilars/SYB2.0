@@ -45,15 +45,16 @@ const NavBar = observer(function NavBar() {
         <Container maxWidth="xl">
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}>
-              <Box
-                component={NavLink}
+              <NavLink
                 to="/"
-                sx={{
+                style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 1,
+                  gap: 8,
                   textDecoration: "none",
-                  mr: 3,
+                  marginRight: 24,
+                  minHeight: 44,
+                  minWidth: 44,
                 }}
               >
                 <SportsEsports sx={{ color: "white", fontSize: 28 }} />
@@ -68,7 +69,7 @@ const NavBar = observer(function NavBar() {
                 >
                   SYB
                 </Typography>
-              </Box>
+              </NavLink>
               <MenuItemLink to="/leagues"> Leagues </MenuItemLink>
               <MenuItemLink to="/tournaments"> Tournaments </MenuItemLink>
             </Box>
