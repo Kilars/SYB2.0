@@ -87,9 +87,9 @@ test.describe('League Lifecycle', () => {
     // Wait for match cards and click first unregistered match card
     const cards = page.locator('[class*="MuiCard"]');
     await expect(cards.first()).toBeVisible({ timeout: 15000 });
-    // Find a card with "Register result" text (incomplete match) and click it
-    const registerCard = cards.filter({ hasText: /register result/i }).first();
-    await registerCard.click();
+    // Find a pending match card and click it
+    const pendingCard = cards.filter({ hasText: /play/i }).first();
+    await pendingCard.click();
     await page.waitForURL(/\/bracket\//, { timeout: 10000 });
 
     await matchForm.waitForForm();
@@ -100,8 +100,8 @@ test.describe('League Lifecycle', () => {
 
     await matchForm.clickComplete();
 
-    // Wait for success toast
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    // Wait for match to be marked completed (Reopen button appears)
+    await expect(page.getByRole('button', { name: /reopen match/i })).toBeVisible({ timeout: 10000 });
 
     expect(pageErrors).toEqual([]);
   });
@@ -130,11 +130,11 @@ test.describe('League Lifecycle', () => {
 
     await page.goto(`/leagues/${leagueId}/matches`);
 
-    // Click an unregistered match card (skip any completed matches)
+    // Click a pending match card (skip any completed matches)
     const cards = page.locator('[class*="MuiCard"]');
     await expect(cards.first()).toBeVisible({ timeout: 15000 });
-    const registerCard = cards.filter({ hasText: /register result/i }).first();
-    await registerCard.click();
+    const pendingCard = cards.filter({ hasText: /play/i }).first();
+    await pendingCard.click();
     await page.waitForURL(/\/bracket\//, { timeout: 10000 });
 
     await matchForm.waitForForm();
@@ -146,7 +146,8 @@ test.describe('League Lifecycle', () => {
 
     await matchForm.clickComplete();
 
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    // Wait for match to be marked completed (Reopen button appears)
+    await expect(page.getByRole('button', { name: /reopen match/i })).toBeVisible({ timeout: 10000 });
 
     // Verify leaderboard sorts by points
     await page.goto(`/leagues/${leagueId}/leaderboard`);

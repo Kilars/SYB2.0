@@ -53,7 +53,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       cwd: '..',
       timeout: 120000, // Allow time for .NET build + EF seeding
-      stdout: 'pipe',
+      stdout: 'ignore',
       stderr: 'pipe',
       ignoreHTTPSErrors: true,
     },

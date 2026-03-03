@@ -83,7 +83,7 @@ test.describe('Tournament Shuffle', () => {
     await matchPage.fillRound(1, CHARACTERS.wolf.fullName, CHARACTERS.yoshi.fullName, 'p1');
     await matchPage.fillRound(2, CHARACTERS.zelda.fullName, CHARACTERS.wario.fullName, 'p1');
     await matchPage.clickComplete();
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await matchPage.expectCompleted();
 
     await matchPage.clickBackToBracket();
     await page.waitForURL(/\/tournaments\/[^/]+$/, { timeout: 10000 });

@@ -240,6 +240,7 @@ export default function Leaderboard() {
                 <TableCell
                   sx={{ backgroundColor: "primary.main", color: "white", fontWeight: "bold" }}
                   align="center"
+                  aria-label="Points"
                 >
                   <Tooltip title="4 pts per win + 1 bonus for 2-0 sweep" arrow>
                     <Box display="inline-flex" alignItems="center" gap={0.5} sx={{ cursor: "help" }}>
@@ -272,6 +273,7 @@ export default function Leaderboard() {
                 <TableCell
                   sx={{ backgroundColor: "primary.main", color: "white", fontWeight: "bold" }}
                   align="center"
+                  aria-label="Flawless"
                 >
                   <Tooltip title="Flawless = 2-0 match victory" arrow>
                     <Box display="inline-flex" alignItems="center" gap={0.5} sx={{ cursor: "help" }}>

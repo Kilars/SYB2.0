@@ -155,40 +155,32 @@ cd /home/lars.skifjeld/Claude/SYB2.0/e2e && npm run test 2>&1
 **Check if servers are still responding:**
 
 ```bash
-# Check backend
-curl -sk -o /dev/null -w "%{http_code}" https://localhost:5002/api/leagues
-
-# Check frontend
-curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+cd /home/lars.skifjeld/Claude/SYB2.0/e2e && npm run health
 ```
 
-**If either server is down**, start them as background tasks and wait for readiness:
+**If either server reports DOWN**, start them as background tasks and wait for readiness:
 
 Backend (only if down):
 ```bash
 cd /home/lars.skifjeld/Claude/SYB2.0 && dotnet run --project API
 ```
-Run as `run_in_background: true`. Wait up to 120s:
-```bash
-for i in $(seq 1 60); do
-  if curl -sk -o /dev/null -w "%{http_code}" https://localhost:5002/api/leagues 2>/dev/null | grep -q "200"; then
-    echo "Backend ready after $((i*2))s"; break
-  fi
-  sleep 2
-done
-```
+Run as `run_in_background: true`.
 
 Frontend (only if down):
 ```bash
 cd /home/lars.skifjeld/Claude/SYB2.0/client && npm run dev
 ```
-Run as `run_in_background: true`. Wait up to 15s:
+Run as `run_in_background: true`.
+
+**After starting servers, poll with health check** (up to 120s):
 ```bash
-for i in $(seq 1 15); do
-  if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null | grep -q "200"; then
-    echo "Frontend ready after ${i}s"; break
+for i in $(seq 1 60); do
+  output=$(cd /home/lars.skifjeld/Claude/SYB2.0/e2e && npm run --silent health 2>/dev/null)
+  if echo "$output" | grep -q "Backend: OK" && echo "$output" | grep -q "Frontend: OK"; then
+    echo "Both servers ready after $((i*2))s"; break
   fi
-  sleep 1
+  if [ $i -eq 60 ]; then echo "Servers not ready after 120s"; fi
+  sleep 2
 done
 ```
 

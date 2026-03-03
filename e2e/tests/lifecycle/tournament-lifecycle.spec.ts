@@ -96,7 +96,7 @@ test.describe('Tournament Lifecycle', () => {
     await matchPage.fillRound(2, CHARACTERS.zelda.fullName, CHARACTERS.wario.fullName, 'p1');
     await matchPage.clickComplete();
 
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await matchPage.expectCompleted();
     semifinal1Winner = semifinals.match1.p1;
 
     await matchPage.clickBackToBracket();
@@ -122,7 +122,7 @@ test.describe('Tournament Lifecycle', () => {
     await matchPage.fillRound(3, CHARACTERS.zelda.fullName, CHARACTERS.wario.fullName, 'p1');
     await matchPage.clickComplete();
 
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await matchPage.expectCompleted();
     semifinal2Winner = semifinals.match2.p1;
 
     await matchPage.clickBackToBracket();
@@ -155,7 +155,7 @@ test.describe('Tournament Lifecycle', () => {
     await matchPage.fillRound(2, CHARACTERS.yoshi.fullName, CHARACTERS.joker.fullName, 'p1');
     await matchPage.clickComplete();
 
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await matchPage.expectCompleted();
 
     await matchPage.clickBackToBracket();
     await page.waitForURL(/\/tournaments\/[^/]+$/, { timeout: 10000 });

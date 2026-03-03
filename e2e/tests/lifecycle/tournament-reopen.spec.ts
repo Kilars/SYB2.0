@@ -51,7 +51,7 @@ test.describe('Tournament Reopen', () => {
     await matchPage.fillRound(2, CHARACTERS.zelda.fullName, CHARACTERS.wario.fullName, 'p1');
     await matchPage.clickComplete();
 
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await matchPage.expectCompleted();
     await matchPage.clickBackToBracket();
     await page.waitForURL(/\/tournaments\/[^/]+$/, { timeout: 10000 });
 
@@ -99,7 +99,7 @@ test.describe('Tournament Reopen', () => {
     await matchPage.fillRound(2, CHARACTERS.wolf.fullName, CHARACTERS.wario.fullName, 'p2');
     await matchPage.clickComplete();
 
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await matchPage.expectCompleted();
 
     expect(pageErrors).toEqual([]);
   });

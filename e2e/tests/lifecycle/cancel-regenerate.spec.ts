@@ -116,11 +116,11 @@ test.describe('Cancel & Regenerate', () => {
     const cards = page.locator('[class*="MuiCard"]');
     await expect(cards.first()).toBeVisible({ timeout: 15000 });
 
-    // All matches should show "Register result" text (none completed)
-    const registerTexts = page.getByText(/register result/i);
+    // All matches should show "Play" text (none completed)
+    const playTexts = page.getByText(/^play$/i);
     const winnerTexts = page.getByText(/winner:/i);
 
-    await expect(registerTexts.first()).toBeVisible();
+    await expect(playTexts.first()).toBeVisible();
     expect(await winnerTexts.count()).toBe(0);
 
     expect(pageErrors).toEqual([]);

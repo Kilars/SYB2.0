@@ -55,7 +55,7 @@ test.describe('Flawless Bonus Recalculation', () => {
     await matchForm.fillRound(3, CHARACTERS.yoshi.fullName, CHARACTERS.wario.fullName, 'p1');
 
     await matchForm.clickComplete();
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('button', { name: /reopen match/i })).toBeVisible({ timeout: 10000 });
 
     // Check leaderboard: winner should have 4 points, 0 flawless
     await page.goto(`/leagues/${leagueId}/leaderboard`);
@@ -107,7 +107,7 @@ test.describe('Flawless Bonus Recalculation', () => {
     await matchForm.fillRound(2, CHARACTERS.yoshi.fullName, CHARACTERS.wolf.fullName, 'p1');
 
     await matchForm.clickComplete();
-    await expect(page.getByText(/succes/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('button', { name: /reopen match/i })).toBeVisible({ timeout: 10000 });
 
     // Check leaderboard: winner should have 5 points, 1 flawless
     await page.goto(`/leagues/${leagueId}/leaderboard`);

@@ -8,7 +8,8 @@
     "test:full": "npx playwright test --project=full",
     "test:ui": "npx playwright test --ui",
     "report": "npx playwright show-report",
-    "screenshots": "npx tsx take-screenshots.ts"
+    "screenshots": "npx tsx take-screenshots.ts",
+    "health": "curl -skf https://localhost:5002/api/leagues -o /dev/null && echo 'Backend: OK' || echo 'Backend: DOWN'; curl -sf http://localhost:3000 -o /dev/null && echo 'Frontend: OK' || echo 'Frontend: DOWN'"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",
