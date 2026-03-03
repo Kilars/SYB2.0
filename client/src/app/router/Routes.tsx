@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 
 import LoginForm from "../../features/account/LoginForm";
 import RegisterForm from "../../features/account/RegisterForm";
+import CasualPage from "../../features/casual/CasualPage";
 import CompetitionForm from "../../features/competitions/CompetitionForm";
 import ServerError from "../../features/error/ServerError";
 import LeagueList from "../../features/leagues/LeagueList";
@@ -11,6 +12,7 @@ import UserStats from "../../features/stats/UserStats";
 import BracketView from "../../features/tournaments/BracketView";
 import TournamentList from "../../features/tournaments/TournamentList";
 import App from "../layout/App";
+import SwipeableModesLayout from "../layout/SwipeableModesLayout";
 import RequireAuth from "./RequireAuth";
 
 export const router = createBrowserRouter([
@@ -49,8 +51,15 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      { path: "leagues", element: <LeagueList /> },
-      { path: "tournaments", element: <TournamentList /> },
+      // Swipeable mode pages (list views)
+      {
+        element: <SwipeableModesLayout />,
+        children: [
+          { path: "casual", element: <CasualPage /> },
+          { path: "leagues", element: <LeagueList /> },
+          { path: "tournaments", element: <TournamentList /> },
+        ],
+      },
       { path: "login", element: <LoginForm /> },
       { path: "register", element: <RegisterForm /> },
       { path: "server-error", element: <ServerError /> },

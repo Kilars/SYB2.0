@@ -77,6 +77,31 @@ type Character = {
   imageUrl: string;
 };
 
+type CreateCasualMatchInput = {
+  playerOneUserId: string;
+  playerTwoUserId: string;
+  playerOneCharacterId: string;
+  playerTwoCharacterId: string;
+  winnerUserId: string;
+};
+
+type CharacterWinRate = {
+  characterId: string;
+  name: string;
+  imageUrl: string;
+  winRate: number;
+  wins: number;
+  total: number;
+};
+
+type PlayerWinRate = {
+  userId: string;
+  displayName: string;
+  winRate: number;
+  wins: number;
+  losses: number;
+};
+
 type LeaderboardUser = {
   wins: number;
   losses: number;

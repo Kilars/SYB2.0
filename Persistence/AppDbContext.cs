@@ -11,6 +11,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public required DbSet<Competition> Competitions { get; set; }
     public required DbSet<League> Leagues { get; set; }
     public required DbSet<Tournament> Tournaments { get; set; }
+    public required DbSet<Casual> Casuals { get; set; }
     public required DbSet<CompetitionMember> CompetitionMembers { get; set; }
     public required DbSet<Match> Matches { get; set; }
     public required DbSet<Round> Rounds { get; set; }
@@ -24,7 +25,8 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         builder.Entity<Competition>()
             .HasDiscriminator<string>("CompetitionType")
             .HasValue<League>("League")
-            .HasValue<Tournament>("Tournament");
+            .HasValue<Tournament>("Tournament")
+            .HasValue<Casual>("Casual");
 
         // Composite keys
         builder.Entity<CompetitionMember>(x => x.HasKey(m => new { m.UserId, m.CompetitionId }));

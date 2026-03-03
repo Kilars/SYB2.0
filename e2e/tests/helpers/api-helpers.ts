@@ -233,6 +233,47 @@ export async function completeTournamentMatchViaApi(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Casual helpers
+// ---------------------------------------------------------------------------
+
+interface CreateCasualMatchOptions {
+  playerOneUserId: string;
+  playerTwoUserId: string;
+  playerOneCharacterId: string;
+  playerTwoCharacterId: string;
+  winnerUserId: string;
+}
+
+/**
+ * Create a casual match via the API.
+ */
+export async function createCasualMatchViaApi(
+  context: BrowserContext,
+  options: CreateCasualMatchOptions
+): Promise<void> {
+  const res = await context.request.post(`${BASE}/api/casual`, {
+    data: options,
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok()) {
+    throw new Error(`createCasualMatchViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+}
+
+/**
+ * Get casual matches via the API.
+ */
+export async function getCasualMatchesViaApi(
+  context: BrowserContext
+): Promise<MatchData[]> {
+  const res = await context.request.get(`${BASE}/api/casual`);
+  if (!res.ok()) {
+    throw new Error(`getCasualMatchesViaApi failed: ${res.status()} ${await res.text()}`);
+  }
+  return res.json();
+}
+
 /**
  * Login via API and return an authenticated browser context.
  */

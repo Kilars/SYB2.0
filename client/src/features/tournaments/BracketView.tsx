@@ -1,5 +1,8 @@
-import { Delete, EmojiEvents, PlayArrow, Shuffle } from "@mui/icons-material";
+import { Delete, EmojiEvents, ExpandMore, PlayArrow, Shuffle } from "@mui/icons-material";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Card,
@@ -22,8 +25,11 @@ import EmptyState from "../../app/shared/components/EmptyState";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import { SMASH_COLORS } from "../../app/theme";
 import { useAccount } from "../../lib/hooks/useAccount";
+import { useCharacters } from "../../lib/hooks/useCharacters";
 import { useTournaments } from "../../lib/hooks/useTournaments";
 import { COMPETITION_STATUSES } from "../../lib/util/constants";
+import { computeCharacterWinRates, computePlayerWinRates } from "../../lib/util/statUtils";
+import { CharacterWinRateScatter, CharacterWinRateTable, PlayerWinRateBar } from "../stats/charts";
 
 const ROUND_LABELS: Record<number, string> = {
   1: "Round 1",
@@ -188,12 +194,14 @@ export default function BracketView() {
   const { tournament, isTournamentLoading, startTournament, shuffleBracket, deleteTournament } =
     useTournaments(competitionId);
   const { currentUser } = useAccount();
+  const { characters } = useCharacters();
   const { meta } = useAppTheme();
   const navigate = useNavigate();
   const [isStarting, setIsStarting] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [statsExpanded, setStatsExpanded] = useState(false);
 
   if (isTournamentLoading) return <LoadingSkeleton variant="detail" />;
   if (!tournament)
@@ -229,6 +237,8 @@ export default function BracketView() {
     setIsShuffling(true);
     try {
       await shuffleBracket.mutateAsync();
+    } catch {
+      toast("Failed to shuffle bracket", { type: "error" });
     } finally {
       setIsShuffling(false);
     }
@@ -443,6 +453,57 @@ export default function BracketView() {
             })}
           </Box>
         </Box>
+      )}
+
+      {/* Stats section */}
+      {tournament.status > 0 && tournament.matches.some((m) => m.completed) && characters && (
+        <Accordion sx={{ mt: 3 }} onChange={(_, expanded) => setStatsExpanded(expanded)}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Typography variant="h6" fontWeight="bold">
+              Stats
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {statsExpanded &&
+              (() => {
+                const completedMatches = tournament.matches.filter((m) => m.completed);
+                const charStats = computeCharacterWinRates(completedMatches, characters);
+                const players = tournament.members.map((m) => ({
+                  userId: m.userId,
+                  displayName: m.displayName,
+                }));
+                const playerStats = computePlayerWinRates(completedMatches, players);
+                return (
+                  <>
+                    {charStats.length > 0 && (
+                      <Box mb={3}>
+                        <Typography variant="subtitle1" fontWeight="bold" mb={1} sx={{ color: "primary.main" }}>
+                          Character Win Rates
+                        </Typography>
+                        <CharacterWinRateScatter data={charStats} />
+                      </Box>
+                    )}
+                    {playerStats.length > 0 && (
+                      <Box mb={3}>
+                        <Typography variant="subtitle1" fontWeight="bold" mb={1} sx={{ color: "primary.main" }}>
+                          Player Win Rates
+                        </Typography>
+                        <PlayerWinRateBar data={playerStats} />
+                      </Box>
+                    )}
+                    {charStats.length > 0 && (
+                      <Box>
+                        <Typography variant="subtitle1" fontWeight="bold" mb={1} sx={{ color: "primary.main" }}>
+                          Character Details
+                        </Typography>
+                        <CharacterWinRateTable data={charStats} minRounds={1} />
+                      </Box>
+                    )}
+                  </>
+                );
+              })()}
+          </AccordionDetails>
+        </Accordion>
       )}
 
       {/* Delete confirmation dialog */}

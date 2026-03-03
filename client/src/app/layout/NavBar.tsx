@@ -70,6 +70,7 @@ const NavBar = observer(function NavBar() {
                   SYB
                 </Typography>
               </NavLink>
+              <MenuItemLink to="/casual"> Casual </MenuItemLink>
               <MenuItemLink to="/leagues"> Leagues </MenuItemLink>
               <MenuItemLink to="/tournaments"> Tournaments </MenuItemLink>
             </Box>

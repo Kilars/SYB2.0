@@ -307,7 +307,7 @@ function ActiveLeagues() {
                 transition: "transform 0.15s ease",
                 "&:hover": { transform: "translateX(4px)" },
               }}
-              onClick={() => navigate(`/leagues/${league.id}`)}
+              onClick={() => navigate(`/leagues/${league.id}/leaderboard`)}
             >
               <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">

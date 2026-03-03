@@ -34,11 +34,12 @@ public class ShuffleBracket
             if (tournament.Matches.Any(m => m.Completed))
                 return Result<Unit>.Failure("Cannot shuffle bracket after matches have been completed", 400);
 
-            // Remove existing matches and rounds
+            // Remove existing matches and rounds first (separate save to avoid key collisions)
             context.RemoveRange(context.Rounds.Where(r => r.CompetitionId == tournament.Id));
             context.RemoveRange(context.Matches.Where(m => m.CompetitionId == tournament.Id));
+            await context.SaveChangesAsync(cancellationToken);
 
-            // Regenerate bracket
+            // Regenerate bracket with new seeding
             var members = tournament.Members.ToList();
             Shuffle(members);
 
