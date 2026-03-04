@@ -47,6 +47,11 @@ export default function UserStats() {
       />
     );
 
+  const player = userMatches[0].playerOne?.userId === userId
+    ? userMatches[0].playerOne
+    : userMatches[0].playerTwo;
+  const displayName = player?.displayName ?? "Player";
+
   const stats = userMatches.flatMap((match) =>
     match.rounds
       .filter((round) => round.winnerUserId)
@@ -81,6 +86,9 @@ export default function UserStats() {
 
   return (
     <Box>
+      <Typography variant="h4" fontWeight="bold" mb={3}>
+        {displayName}'s Stats
+      </Typography>
       <Typography variant="h4" mb={2}>
         Top characters
       </Typography>

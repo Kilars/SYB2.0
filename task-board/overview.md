@@ -8,13 +8,16 @@ UX & Accessibility audit — 22 tasks covering bugs, mobile responsiveness, inte
 
 | Status | Count |
 |--------|-------|
-| Backlog | 0 |
+| Backlog | 4 |
 | In Progress | 0 |
 | Done | 31 |
 
 ## Top Priorities
 
-_Backlog is empty. Run `backlog-scan` or `feature-planning` to add new tasks._
+1. **037-FEATURE-homepage-background-scroll-fix** — Prevent scroll on logged-out homepage
+2. **038-FEATURE-match-card-spacing** — Increase internal card spacing in match list
+3. **039-FEATURE-mobile-navbar-redesign** — Compact navbar for mobile, add logout to hamburger
+4. **040-FEATURE-userstats-player-name-title** — Add player name heading to stats page
 
 ## Recently Completed
 

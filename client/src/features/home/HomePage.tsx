@@ -26,7 +26,7 @@ function HeroSection() {
         gap: 4,
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "calc(100vh - 96px)",
+        minHeight: "100vh",
         py: { xs: 8, sm: 12 },
         px: 3,
         backgroundImage: meta.heroGradient,
@@ -417,7 +417,11 @@ export default function HomePage() {
   }
 
   if (!currentUser) {
-    return <HeroSection />;
+    return (
+      <Box sx={{ height: "100vh", overflow: "hidden" }}>
+        <HeroSection />
+      </Box>
+    );
   }
 
   return (

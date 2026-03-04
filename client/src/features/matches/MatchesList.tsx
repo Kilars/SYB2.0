@@ -67,7 +67,7 @@ export default function MatchesList() {
                 key={match.competitionId + match.bracketNumber + match.matchNumber}
                 component={Card}
                 elevation={match.completed ? 1 : 3}
-                p={{ xs: 2, sm: 3 }}
+                p={{ xs: 2.5, sm: 3.5 }}
                 role="link"
                 tabIndex={0}
                 aria-label={`Match #${match.matchNumber}: ${playerOne.displayName} vs ${playerTwo.displayName}${match.completed ? ` — Winner: ${winner}` : " — Pending"}`}
@@ -100,7 +100,7 @@ export default function MatchesList() {
                   },
                 }}
               >
-                <Box>
+                <Box display="flex" flexDirection="column" gap={{ xs: 1.5, sm: 2 }}>
                   <Box
                     display="flex"
                     justifyContent="space-between"
@@ -208,7 +208,7 @@ export default function MatchesList() {
                             sx={{
                               border: "3px solid",
                               borderRadius: 1,
-                              m: 0.5,
+                              m: { xs: 0.75, sm: 1 },
                               borderColor: isWin ? SMASH_COLORS.p4Green : SMASH_COLORS.p1Red,
                               display: "flex",
                               alignItems: "center",
@@ -253,7 +253,7 @@ export default function MatchesList() {
                             sx={{
                               border: "3px solid",
                               borderRadius: 1,
-                              m: 0.5,
+                              m: { xs: 0.75, sm: 1 },
                               borderColor: isWin ? SMASH_COLORS.p4Green : SMASH_COLORS.p1Red,
                               display: "flex",
                               alignItems: "center",
@@ -283,7 +283,7 @@ export default function MatchesList() {
                   </Box>
                 </Box>
                 <Box
-                  sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}
+                  sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", mt: { xs: 1.5, sm: 2 } }}
                 >
                   <Box>
                     <Typography> Match #{match.matchNumber} </Typography>

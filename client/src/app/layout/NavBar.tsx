@@ -1,4 +1,4 @@
-import { Add, EmojiEvents, Menu as MenuIcon, Person, SportsEsports } from "@mui/icons-material";
+import { Add, EmojiEvents, Logout, Menu as MenuIcon, Person, SportsEsports } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -20,7 +20,7 @@ import MenuItemLink from "../shared/components/MenuItemLink";
 import ThemeSelector from "../shared/components/ThemeSelector";
 
 const NavBar = observer(function NavBar() {
-  const { currentUser } = useAccount();
+  const { currentUser, logoutUser } = useAccount();
   const { meta } = useAppTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -45,6 +45,7 @@ const NavBar = observer(function NavBar() {
         <Container maxWidth="xl">
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}>
+              <Box sx={{ marginRight: { xs: 1, sm: 3 } }}>
               <NavLink
                 to="/"
                 style={{
@@ -52,7 +53,6 @@ const NavBar = observer(function NavBar() {
                   alignItems: "center",
                   gap: 8,
                   textDecoration: "none",
-                  marginRight: 24,
                   minHeight: 44,
                   minWidth: 44,
                 }}
@@ -70,9 +70,12 @@ const NavBar = observer(function NavBar() {
                   SYB
                 </Typography>
               </NavLink>
+              </Box>
               <MenuItemLink to="/casual"> Casual </MenuItemLink>
               <MenuItemLink to="/leagues"> Leagues </MenuItemLink>
-              <MenuItemLink to="/tournaments"> Tournaments </MenuItemLink>
+              <Box sx={{ display: { xs: "none", sm: "flex" } }}>
+                <MenuItemLink to="/tournaments"> Tournaments </MenuItemLink>
+              </Box>
             </Box>
             <Box>
               <Button
@@ -114,6 +117,16 @@ const NavBar = observer(function NavBar() {
                 </Box>
               )}
               {currentUser && (
+                <MenuItem
+                  component={NavLink}
+                  to="/tournaments"
+                  onClick={handleClose}
+                  sx={{ display: { xs: "flex", sm: "none" } }}
+                >
+                  <EmojiEvents sx={{ mr: 1 }} fontSize="small" /> Tournaments
+                </MenuItem>
+              )}
+              {currentUser && (
                 <MenuItem component={NavLink} to="/createLeague" onClick={handleClose}>
                   <Add sx={{ mr: 1 }} fontSize="small" /> Create League
                 </MenuItem>
@@ -121,6 +134,16 @@ const NavBar = observer(function NavBar() {
               {currentUser && (
                 <MenuItem component={NavLink} to="/createTournament" onClick={handleClose}>
                   <EmojiEvents sx={{ mr: 1 }} fontSize="small" /> Create Tournament
+                </MenuItem>
+              )}
+              {currentUser && (
+                <MenuItem
+                  onClick={() => {
+                    logoutUser.mutate();
+                    handleClose();
+                  }}
+                >
+                  <Logout sx={{ mr: 1 }} fontSize="small" /> Logout
                 </MenuItem>
               )}
               <Divider sx={{ my: 1 }} />
