@@ -41,7 +41,7 @@ export default function MatchDetailsView({
   if (!playerOne || !playerTwo) return null;
 
   const getDisplayName = (player: Player) =>
-    player.isGuest ? `${player.displayName} (guest)` : player.displayName;
+    player.isGuest ? `${player.displayName} (Guest)` : player.displayName;
 
   const completedRounds = matchData.rounds.filter((r) => !!r.winnerUserId);
   const playerOneWins = completedRounds.filter((r) => r.winnerUserId === playerOne.userId).length;
