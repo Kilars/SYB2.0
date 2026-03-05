@@ -6,10 +6,10 @@
 
 ## Current Task
 
-**File**: `backlog/040-FEATURE-userstats-player-name-title.md`
+**File**: E2E tests for tasks 037-040
 **Started**: 2026-03-04
-**Status**: Phase 1 — Implementation
-**Progress**: 0/5 acceptance criteria met
+**Status**: Phase 1 — Writing tests
+**Progress**: 0/4 test groups
 
 <!--
 When a task is active, replace the above with:
