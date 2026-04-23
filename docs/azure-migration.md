@@ -368,6 +368,7 @@ runs-on: ubuntu-latest
 | Application Insights | Free (up to 5GB/month) | $0 |
 | Log Analytics Workspace | PerGB2018 (free at low volume) | $0 |
 | Entra ID (App Registration) | Free | $0 |
+| Cloudflare (Free plan) | Free | $0 |
 | **Total** | | **~$5/month** |
 
 ### F1 Free Tier Limitations
@@ -595,3 +596,142 @@ echo "========================================="
 ```
 
 > After running this script, proceed to **Section 4** (Portal-based OIDC setup), then **Section 6** (YAML changes), then **Section 8** (verification).
+
+---
+
+## 11. Custom Domain via Cloudflare (Free)
+
+The F1 Free App Service tier does not support binding custom hostnames or custom SSL certificates. Upgrading to B1 Basic to unlock that feature costs ~$13/month — which would nearly quadruple the total bill for this project.
+
+Instead, Cloudflare's free plan is used as a reverse proxy in front of `syb-app.azurewebsites.net`:
+
+- Cloudflare terminates SSL for the custom domain (free Universal SSL cert)
+- Cloudflare proxies requests to `syb-app.azurewebsites.net`
+- A Cloudflare **Origin Rule** rewrites the `Host` header on the way to Azure so that Azure's multi-tenant front door routes the request to the correct App Service (since F1 has no hostname binding, the only hostname Azure will accept is `syb-app.azurewebsites.net`)
+
+Net result: the browser sees `https://<your-domain>`, Azure sees `Host: syb-app.azurewebsites.net`, and the total monthly cost stays at ~$5.
+
+### 11.1 — Prerequisites
+
+- A registered domain
+- Access to the domain registrar's nameserver settings
+- A Cloudflare account (free tier)
+- The Azure App Service is already deployed and responding at `https://syb-app.azurewebsites.net`
+
+### 11.2 — Add the domain to Cloudflare
+
+1. Log in to [https://dash.cloudflare.com](https://dash.cloudflare.com)
+2. Click **Add a site** → enter the domain → select the **Free** plan
+3. Cloudflare scans existing DNS records — skip or accept the import (they'll be replaced in 11.3)
+4. Cloudflare assigns two nameservers (e.g. `ada.ns.cloudflare.com`, `bob.ns.cloudflare.com`)
+5. At the domain registrar, replace the current nameservers with the two Cloudflare nameservers
+6. Wait for propagation — Cloudflare emails when the zone goes **Active** (usually minutes, up to 24h)
+
+### 11.3 — DNS records
+
+In **Cloudflare → DNS → Records**, remove any auto-imported records and add:
+
+| Type | Name | Target | Proxy status |
+|------|------|--------|--------------|
+| CNAME | `@` (apex) | `syb-app.azurewebsites.net` | Proxied (orange cloud) |
+| CNAME | `www` | `syb-app.azurewebsites.net` | Proxied (orange cloud) |
+
+> Cloudflare supports CNAME-at-apex via CNAME flattening automatically on the Free plan — no A record needed.
+
+### 11.4 — SSL/TLS mode
+
+**Cloudflare → SSL/TLS → Overview**:
+
+- Set encryption mode to **Full** (not "Full (Strict)")
+- Reason: Azure serves a `*.azurewebsites.net` cert which does not match the custom domain, so strict validation would fail. **Full** still encrypts edge → origin but skips cert hostname verification.
+
+**Cloudflare → SSL/TLS → Edge Certificates**:
+
+- Ensure **Always Use HTTPS** is **On**
+- Ensure **Automatic HTTPS Rewrites** is **On**
+- Universal SSL (the free cert for the custom domain) provisions automatically within a few minutes
+
+### 11.5 — Host header rewrite (Origin Rules)
+
+This is the key trick that makes F1 work without a custom domain binding.
+
+**Cloudflare → Rules → Origin Rules → Create rule**:
+
+- **Rule name**: `Rewrite Host to Azure App Service`
+- **When incoming requests match**: `Hostname` equals `<your-domain>` (add an **OR** for `www.<your-domain>`)
+- **Then**:
+  - **Host Header**: Rewrite to → `syb-app.azurewebsites.net`
+- Click **Deploy**
+
+Without this rule, Azure's multi-tenant front door receives `Host: <your-domain>`, finds no app bound to that hostname, and returns a 404.
+
+### 11.6 — (Optional) Performance & caching
+
+**Cloudflare → Caching → Configuration**:
+
+- **Caching Level**: Standard (default)
+- **Browser Cache TTL**: Respect Existing Headers
+
+Cloudflare caches static assets (JS/CSS/images under `/assets/*`) automatically. `/api/*` responses are not cached by default because ASP.NET returns `no-cache` headers for them. No Page Rules needed for a typical setup.
+
+### 11.7 — Verification
+
+```bash
+# Resolves to Cloudflare IPs (104.x / 172.x), not Azure
+dig +short <your-domain>
+
+# Returns 200 and the React index.html
+curl -I https://<your-domain>
+
+# Response should include:
+#   server: cloudflare
+#   cf-ray: <id>
+curl -sI https://<your-domain> | grep -iE 'server|cf-ray'
+```
+
+Browser checks:
+
+- Open `https://<your-domain>` → the React SPA renders
+- The certificate in the padlock shows a Cloudflare-issued cert for the custom domain (not `*.azurewebsites.net`)
+- Login flow works (cookie auth) — register a test user, log in, log out, log back in
+- Create/edit a league → confirms API writes succeed end-to-end
+
+### 11.8 — Troubleshooting
+
+**Issue**: 404 from Azure ("Default Web Site" or "The resource you are looking for has been removed")
+
+- The host header rewrite isn't in place. Re-check the Origin Rule in **11.5** and confirm it's **deployed** (not just saved as draft).
+
+**Issue**: Redirect loop / "too many redirects"
+
+- SSL/TLS mode is set to **Flexible** instead of **Full**. Change to **Full** in **11.4**. Flexible strips HTTPS between Cloudflare and Azure, and ASP.NET then redirects back to HTTPS, causing the loop.
+
+**Issue**: Login cookies don't stick / user appears logged out on refresh
+
+- Usually fine by default because the Identity cookie has no explicit `Domain` attribute and the browser scopes it to `<your-domain>`. If issues arise, add `UseForwardedHeaders` middleware to `API/Program.cs` just before `UseAuthentication`:
+
+  ```csharp
+  app.UseForwardedHeaders(new ForwardedHeadersOptions
+  {
+      ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+  });
+  ```
+
+  Cloudflare sends `X-Forwarded-Proto: https`, which tells ASP.NET the original scheme was HTTPS.
+
+**Issue**: Universal SSL stuck on "Initializing" for > 1 hour
+
+- Verify nameservers at the registrar point to Cloudflare:
+  ```bash
+  dig NS <your-domain>
+  ```
+  If they still point to the old provider, Cloudflare cannot provision the cert.
+
+### 11.9 — Rollback
+
+To detach Cloudflare entirely:
+
+1. At the registrar, revert nameservers to the registrar's defaults (or the previous DNS provider)
+2. Optionally delete the site from Cloudflare
+
+The Azure side has no custom-domain binding to remove (F1 doesn't support any), so there is nothing to undo in Azure.
