@@ -5,7 +5,7 @@ import {
   SportsKabaddi,
   TrendingUp,
 } from "@mui/icons-material";
-import { Box, Button, Card, CardContent, Chip, Paper, Skeleton, Typography } from "@mui/material";
+import  Box, Button, Card, CardContent, Chip, Paper, Skeleton, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router";
 
 import { useAppTheme } from "../../app/context/ThemeContext";
