@@ -6,10 +6,7 @@
 
 ## Current Task
 
-**File**: `backlog/040-FEATURE-userstats-player-name-title.md`
-**Started**: 2026-03-04
-**Status**: Phase 1 — Implementation
-**Progress**: 0/5 acceptance criteria met
+_None — backlog empty._
 
 <!--
 When a task is active, replace the above with:

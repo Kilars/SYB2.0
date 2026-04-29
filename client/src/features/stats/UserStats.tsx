@@ -9,6 +9,7 @@ import {
   ThumbUp,
 } from "@mui/icons-material";
 import { Avatar, Box, Button, Card, CardContent, Paper, Typography } from "@mui/material";
+import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
@@ -36,6 +37,19 @@ export default function UserStats() {
   const { characters, charactersIsLoading } = useCharacters();
   const navigate = useNavigate();
   const { userMatches, isUserMatchesLoading } = useUserMatches(userId || "");
+
+  const [pieDims, setPieDims] = useState<{ w: number; h: number } | null>(null);
+  const pieContainerRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      if (width <= 0 || height <= 0) return;
+      setPieDims((prev) =>
+        prev?.w === width && prev?.h === height ? prev : { w: width, h: height },
+      );
+    });
+    observer.observe(node);
+  }, []);
 
   if (isUserMatchesLoading || charactersIsLoading)
     return <LoadingSkeleton variant="card" count={3} />;
@@ -238,8 +252,9 @@ export default function UserStats() {
           <Typography variant="h5" mb={2} fontWeight="bold">
             Character Usage
           </Typography>
-          <Box sx={{ width: "100%", height: 250 }}>
-            <ResponsiveContainer width="100%" height="100%">
+          <Box ref={pieContainerRef} sx={{ width: "100%", height: 250 }}>
+            {pieDims && (
+            <ResponsiveContainer width={pieDims.w} height={pieDims.h}>
               <PieChart>
                 <Pie
                   data={Object.entries(charStats)
@@ -275,6 +290,7 @@ export default function UserStats() {
                 />
               </PieChart>
             </ResponsiveContainer>
+            )}
           </Box>
         </Box>
       )}

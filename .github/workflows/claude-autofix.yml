@@ -1,0 +1,151 @@
+name: Claude Autofix
+on:
+  workflow_run:
+    workflows: ["PR Build"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: claude-autofix-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  autofix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.event == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR head
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const pr = run.pull_requests?.[0];
+            if (!pr) { core.setFailed('No PR linked to workflow_run'); return; }
+            core.setOutput('number', pr.number);
+            core.setOutput('head_ref', run.head_branch);
+            core.setOutput('head_sha', run.head_sha);
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.head_ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - run: npm ci
+        working-directory: client
+
+      - name: Fetch failed job logs
+        run: |
+          mkdir -p .autofix
+          gh run view ${{ github.event.workflow_run.id }} --log-failed > .autofix/failed.log 2>&1 || true
+          tail -n 600 .autofix/failed.log > .autofix/failed.tail.log
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download Playwright report (if e2e failed)
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+          path: .autofix/playwright-report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--model claude-opus-4-7 --max-turns 15'
+          prompt: |
+            You are fixing a failing CI build on PR #${{ steps.pr.outputs.number }} (branch `${{ steps.pr.outputs.head_ref }}`).
+            The "PR Build" workflow failed on one or more of: frontend, backend, e2e.
+
+            You MUST follow the Research → Plan → Implement (RPI) methodology. Do not skip phases. Do not start editing code until you have completed Research and stated a Plan.
+
+            ---
+
+            # Phase 1 — Research
+
+            Goal: understand what broke, why, and what constraints apply. No edits in this phase.
+
+            Required reading, in order:
+            1. `CLAUDE.md` (project root). Internalize:
+               - The 5 domain invariants (round-robin integrity, composite key safety, statistics integrity, guest merge safety, authorization consistency).
+               - Layer order: Domain → Application → Persistence → Infrastructure → API → Frontend.
+               - Refactoring policy: only touch code directly related to the failure. No drive-by cleanup, renames, or reformatting.
+               - "No comments unless the WHY is non-obvious."
+            2. `.autofix/failed.tail.log` — actual CI failure output. Locate the first error per failed job; ignore downstream noise.
+            3. `.autofix/playwright-report/` (if present) — for e2e failures, inspect screenshots and `trace.zip`. Visuals often reveal the cause faster than logs.
+            4. The specific source files implicated by the errors. Read them. Read the code they call into.
+            5. `git log -p -n 5 -- <path>` for each implicated file — see what this PR changed.
+
+            Re-run a failing check locally ONLY if the artifacts are insufficient to identify the cause:
+            - frontend: `cd client && npm run build`
+            - backend: `dotnet build --configuration Release`
+            - e2e: `cd e2e && npm test` (start SQL: `docker-compose up -d sql`)
+
+            Exit Research only when you can name the root cause. Not the first plausible cause — the actual one.
+
+            ---
+
+            # Phase 2 — Plan
+
+            Before any edit, state a short plan in your reasoning, structured exactly:
+
+            - **Root cause:** one sentence. "X fails because Y in `path/to/file.ext` does Z."
+            - **Fix target:** application code OR test (default is application code; see hierarchy below).
+            - **Files to change:** explicit paths.
+            - **Domain invariant check:** state which (if any) of the 5 invariants the fix touches. If it touches composite keys, round-robin generation, the points formula, guest merge, or auth route params — STOP and use the stop-conditions below.
+            - **Why this is not a hack:** one sentence affirming the fix addresses the cause, not the symptom.
+
+            Fix hierarchy:
+            1. **Application code first.** Default. If a controller, handler, component, hook, migration, DI registration, or schema regressed, repair it.
+            2. **Edit a test only if the test encodes wrong expectations.** Use judgment. If you edit a test, the commit message must explain *why the test was wrong* — not just "test was failing." A reviewer should agree the new assertion is the right one.
+            3. **Never hack either side.** Forbidden on both production code and tests:
+               - Loosening assertions without a domain reason (`toBe(4)` → `toBeGreaterThan(0)`)
+               - Skipping/`.skip`-ing tests, adding `[Skip]`/`[Ignore]` attributes, commenting tests out
+               - `// @ts-ignore`, `// eslint-disable`, `#pragma warning disable` to silence diagnostics
+               - `try/catch` that swallows the real error
+               - "Defensive" null checks, fallbacks, or branches that exist purely to dodge the failure
+               - Hardcoded values to satisfy a check
+               - Catching exceptions in production code only to make a test green
+               If you reach for any of these, return to Research — you have not found the root cause yet.
+            4. **Stay in scope.** Minimum diff that makes the build green and is correct on its own merits.
+
+            Stop conditions — post a PR comment summarizing what you found and exit without pushing if:
+            - The failure looks intentional (deliberate breaking change with no matching test/code update).
+            - Multiple plausible root causes; choosing wrong would mask a real bug.
+            - The fix would change composite keys, round-robin generation, the points formula, the guest-merge transaction, or auth route-param contracts — these need human review per CLAUDE.md.
+            - You cannot reproduce the failure and the artifacts are ambiguous.
+
+            ---
+
+            # Phase 3 — Implement
+
+            Only enter this phase after stating the Plan above.
+
+            1. Make the change. Stay within the files listed in the Plan; if you discover a new file is required, return to Plan and update it before editing.
+            2. Re-run every previously-failing check locally and confirm it passes:
+               - frontend: `cd client && npm run build`
+               - backend: `dotnet build --configuration Release`
+               - e2e: `cd e2e && npm test`
+            3. If a fix to one job breaks another, return to Research — you have not found the root cause.
+            4. Do not push until all checks are green locally.
+
+            Commit message format:
+            - Subject: one line summarizing the fix.
+            - Body: **What failed**, **Root cause**, **What changed** (and *why*, if you edited a test).
+
+            Push to `${{ steps.pr.outputs.head_ref }}`, then enable auto-merge:
+            `gh pr merge ${{ steps.pr.outputs.number }} --auto --squash`
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

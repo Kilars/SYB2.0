@@ -14,7 +14,7 @@ export default defineConfig({
 
   reporter: [
     ['html', { outputFolder: '../playwright-report' }],
-    ['list'],
+    ['dot'],
   ],
 
   // Global setup: authenticate once and cache storage state
