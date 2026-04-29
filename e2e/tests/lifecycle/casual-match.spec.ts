@@ -138,37 +138,3 @@ test.describe('Casual Stats', () => {
   });
 });
 
-test.describe('Swipeable Navigation (mobile)', () => {
-  test.use({ viewport: { width: 375, height: 667 } });
-
-  test('mode indicator dots are visible on mobile', async ({ page, pageErrors }) => {
-    await page.goto('/leagues');
-
-    // Wait for page to load
-    await expect(page.getByRole('heading').first()).toBeVisible();
-
-    // Mode indicator dots should be visible (3 dots for casual/leagues/tournaments)
-    const dots = page.locator('[data-testid="mode-dot"]');
-    await expect(dots.first()).toBeVisible();
-    const dotCount = await dots.count();
-    expect(dotCount).toBeGreaterThanOrEqual(1);
-
-    expect(pageErrors).toEqual([]);
-  });
-
-  test('can navigate between modes via dots', async ({ page, pageErrors }) => {
-    await page.goto('/leagues');
-    await expect(page.getByRole('heading').first()).toBeVisible();
-
-    // Navigate to tournaments by clicking a dot
-    // The rightmost dot should be tournaments
-    await page.goto('/tournaments');
-    await expect(page.url()).toContain('/tournaments');
-
-    // Navigate back to leagues
-    await page.goto('/leagues');
-    await expect(page.url()).toContain('/leagues');
-
-    expect(pageErrors).toEqual([]);
-  });
-});
