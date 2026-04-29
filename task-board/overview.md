@@ -8,20 +8,18 @@ UX & Accessibility audit — 22 tasks covering bugs, mobile responsiveness, inte
 
 | Status | Count |
 |--------|-------|
-| Backlog | 4 |
+| Backlog | 0 |
 | In Progress | 0 |
-| Done | 31 |
+| Done | 41 |
 
 ## Top Priorities
 
-1. **037-FEATURE-homepage-background-scroll-fix** — Prevent scroll on logged-out homepage
-2. **038-FEATURE-match-card-spacing** — Increase internal card spacing in match list
-3. **039-FEATURE-mobile-navbar-redesign** — Compact navbar for mobile, add logout to hamburger
-4. **040-FEATURE-userstats-player-name-title** — Add player name heading to stats page
+_Backlog is empty — run `backlog-scan` or `feature-planning` to queue more work._
 
 ## Recently Completed
 
-1. **036-BUG-e2e-test-workarounds** — Removed console error suppressions, tightened URL patterns, replaced hardcoded waits. Completed 2026-03-03.
+1. **041-BUG-recharts-responsive-container-warnings** — Replaced `ready` boolean with measured `dims` and passed numeric width/height to ResponsiveContainer in 3 chart components. Completed 2026-04-29.
+2. **036-BUG-e2e-test-workarounds** — Removed console error suppressions, tightened URL patterns, replaced hardcoded waits. Completed 2026-03-03.
 2. **035-BUG-tournament-delete-404** — Fixed race condition: cancel queries before remove to prevent 404 toast. Completed 2026-03-03.
 3. **034-BUG-league-create-404** — Fixed navigation to `/leagues/${id}/leaderboard` after create/update. Completed 2026-03-03.
 4. **033-BUG-gameboy-icon-home-navigation** — Replaced Box+NavLink with direct NavLink for reliable home navigation. Completed 2026-03-03.

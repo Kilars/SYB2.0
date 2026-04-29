@@ -29,15 +29,15 @@ type Props = {
 
 export default function CharacterWinRateScatter({ data }: Props) {
   const theme = useTheme();
-  const [ready, setReady] = useState(false);
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const containerRef = useCallback((node: HTMLDivElement | null) => {
     if (!node) return;
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) {
-        setReady(true);
-        observer.disconnect();
-      }
+      if (width <= 0 || height <= 0) return;
+      setDims((prev) =>
+        prev?.w === width && prev?.h === height ? prev : { w: width, h: height },
+      );
     });
     observer.observe(node);
   }, []);
@@ -110,8 +110,8 @@ export default function CharacterWinRateScatter({ data }: Props) {
           No characters with {MIN_ROUNDS}+ rounds played.
         </Typography>
       )}
-      {ready && scatterData.length > 0 && (
-        <ResponsiveContainer width="100%" height="100%">
+      {dims && scatterData.length > 0 && (
+        <ResponsiveContainer width={dims.w} height={dims.h}>
           <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 20 }}>
             <CartesianGrid
               strokeDasharray="3 3"

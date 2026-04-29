@@ -38,15 +38,15 @@ type Props = {
 };
 
 export default function PlayerWinRateBar({ data }: Props) {
-  const [ready, setReady] = useState(false);
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const containerRef = useCallback((node: HTMLDivElement | null) => {
     if (!node) return;
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) {
-        setReady(true);
-        observer.disconnect();
-      }
+      if (width <= 0 || height <= 0) return;
+      setDims((prev) =>
+        prev?.w === width && prev?.h === height ? prev : { w: width, h: height },
+      );
     });
     observer.observe(node);
   }, []);
@@ -63,8 +63,8 @@ export default function PlayerWinRateBar({ data }: Props) {
 
   return (
     <Box ref={containerRef} sx={{ width: "100%", height }}>
-      {ready && (
-        <ResponsiveContainer width="100%" height="100%">
+      {dims && (
+        <ResponsiveContainer width={dims.w} height={dims.h}>
           <BarChart
             layout="vertical"
             data={chartData}
