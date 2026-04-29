@@ -1,6 +1,6 @@
 import {
   CheckCircle,
-  EmojiEvents,
+  EmojiEvents
   SportsEsports,
   SportsKabaddi,
   TrendingUp,
