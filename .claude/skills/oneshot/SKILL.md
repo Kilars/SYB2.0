@@ -37,17 +37,15 @@ Run these checks. If any fail, abort with a clear message and make no further ch
    ```
    If not on `main`, abort. If behind `origin/main`, abort: "Local main is behind origin — pull first."
 
-3. **`gh` authenticated**:
-   ```bash
-   gh auth status
-   ```
-   Non-zero exit → abort.
+3. **GitHub access available**:
+   - Preferred: GitHub MCP tools (`mcp__github__*`). These are available in Claude Code on the web.
+   - Fallback: the `gh` CLI (`gh auth status` returns 0).
+   - If neither is available, abort: "No GitHub access — install `gh` or enable the GitHub MCP server."
 
-4. **Repo has auto-merge enabled**:
-   ```bash
-   gh repo view --json autoMergeAllowed --jq .autoMergeAllowed
-   ```
-   Must print `true`. If `false`, abort: "GitHub auto-merge not enabled on this repo. Enable it in Settings → General → 'Allow auto-merge' before running /oneshot."
+4. **Repo has auto-merge enabled**: GitHub auto-merge must be turned on in repo settings.
+   - With `gh`: `gh repo view --json autoMergeAllowed --jq .autoMergeAllowed` must print `true`.
+   - With MCP only: there's no direct check, so proceed and treat a later `enable_pr_auto_merge` rejection with `auto-merge is not enabled for the repository` as the abort signal.
+   - If disabled, abort: "GitHub auto-merge not enabled on this repo. Enable it in Settings → General → 'Allow auto-merge' before running /oneshot."
 
 5. **Create branch** (slug = first ~40 chars of description, lowercased, non-alnum → `-`, collapsed):
    ```bash
@@ -116,7 +114,7 @@ Mechanical work — no subagent needed.
 
 2. **Derive title from task file**: read the H1 of the moved task file in `done/`; use it as the PR title prefixed with a conventional-commit type inferred from the changes (`feat:`, `fix:`, `refactor:`, etc.).
 
-3. **Commit, push, PR, enable auto-merge**:
+3. **Commit and push**:
    ```bash
    git add -A
    git commit -m "$(cat <<'EOF'
@@ -128,23 +126,61 @@ Mechanical work — no subagent needed.
    EOF
    )"
    git push -u origin "$BRANCH"
-   PR_URL=$(gh pr create --title "<title>" --body "$(cat <<'EOF'
-   ## Summary
-   $SUMMARY
-
-   ## Task
-   See `<task_path>` for the full plan and acceptance criteria.
-
-   ## Auto-merge
-   This PR was opened by `/oneshot` and is configured to auto-merge once required checks pass.
-
-   🤖 Generated with /oneshot
-   EOF
-   )")
-   gh pr merge --auto --squash --delete-branch "$PR_URL"
    ```
 
-4. **Report**: print the PR URL and a one-line status: "PR opened with auto-merge enabled. Will land on green CI."
+4. **Open the PR**:
+   - With MCP: call `mcp__github__create_pull_request` (`base: "main"`, `head: $BRANCH`, `draft: false`). Capture the returned `number` as `$PR_NUMBER`.
+   - With `gh`: `PR_URL=$(gh pr create --title "<title>" --body "...")` then derive `$PR_NUMBER` from the URL.
+
+5. **Enable auto-merge — robustly** (this is the part that historically broke):
+
+   **Why it's tricky:** GitHub computes `mergeable_state` asynchronously after a PR is opened. Calling `enable_pr_auto_merge` while the state is `unknown` or while checks are still queueing returns an error like `"The pull request is in unstable status (required checks are failing)"` — even when no check has actually failed. **A failed call does NOT set the auto-merge flag**, so if you don't retry, the PR will sit forever after CI goes green.
+
+   Use this loop (MCP form shown; `gh pr merge --auto --squash` for the CLI form):
+
+   ```
+   for attempt in 1..6:
+     status = mcp__github__pull_request_read(method="get", pullNumber=$PR_NUMBER)
+     mergeable_state = status.mergeable_state
+     # possible values: unknown, clean, unstable, blocked, behind, dirty, has_hooks, draft
+
+     if mergeable_state == "clean":
+       # All required checks already passed — just merge now, no auto-merge needed.
+       mcp__github__merge_pull_request(pullNumber=$PR_NUMBER, merge_method="squash")
+       BREAK with success
+
+     if mergeable_state in ("unstable", "blocked", "behind"):
+       # unstable = mergeable but checks running/failing
+       # blocked = required reviews/checks not satisfied yet
+       # These are valid auto-merge targets — try to schedule.
+       try:
+         mcp__github__enable_pr_auto_merge(pullNumber=$PR_NUMBER, mergeMethod="SQUASH")
+         BREAK with success ("auto-merge scheduled")
+       except error:
+         if "auto-merge is not enabled for the repository" in error:
+           ABORT — repo setting is off
+         # otherwise transient — fall through to retry
+
+     if mergeable_state == "dirty":
+       ABORT — merge conflict, needs human resolution
+
+     if mergeable_state == "draft":
+       ABORT — PR was created as draft, cannot auto-merge
+
+     # mergeable_state == "unknown" or transient enable_pr_auto_merge failure
+     sleep 5 seconds
+     # continue loop
+
+   if no BREAK:
+     ABORT — "Could not enable auto-merge after 6 attempts. PR $PR_NUMBER is open; enable manually."
+   ```
+
+   **Verification (mandatory):** after a successful `enable_pr_auto_merge`, re-fetch the PR and confirm `auto_merge` is non-null. If it's null, retry once more, then abort with instructions.
+
+6. **Report**: print the PR URL and one of:
+   - "PR #N merged directly (CI was already green)."
+   - "PR #N opened with auto-merge scheduled (squash). Will land on green CI."
+   - "PR #N opened but auto-merge could not be scheduled — enable manually: <reason>."
 
 ---
 
@@ -156,7 +192,10 @@ Mechanical work — no subagent needed.
 | Phase 1 subagent produces bad output | Branch exists but no commits. Tell user to delete with `git checkout main && git branch -D $BRANCH`. |
 | Phase 2 subagent fails | Task file may be in `in-progress.md`. Branch has working-tree changes. Leave for user inspection. |
 | Phase 3 build fails | Don't push. Same cleanup as Phase 2 failure. |
-| `gh pr create` fails | Branch is pushed but no PR. User can open manually or delete the branch. |
-| `gh pr merge --auto` fails | PR exists without auto-merge. User can enable manually via GitHub UI. |
+| PR creation fails (`gh pr create` / `mcp__github__create_pull_request`) | Branch is pushed but no PR. User can open manually or delete the branch. |
+| `enable_pr_auto_merge` rejected with `unstable` / `unknown` state | Re-fetch PR status and retry per the loop in Phase 3 step 5. A single failed call leaves auto-merge UNSET — never assume it succeeded without verifying `auto_merge` is non-null on the PR. |
+| `enable_pr_auto_merge` rejected with `auto-merge is not enabled for the repository` | Repo setting is off. Abort and ask the user to enable it in Settings → General. |
+| `mergeable_state == "dirty"` | Merge conflict — abort and ask the user to rebase. Auto-merge cannot proceed. |
+| All retries exhausted | PR is open, auto-merge is NOT scheduled. Report the PR URL and tell the user to either merge manually or enable auto-merge from the GitHub UI. |
 
 In every failure case: **report what happened, the branch name, and the next step the user should take. Never silently fail.**
