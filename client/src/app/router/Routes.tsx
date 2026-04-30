@@ -40,6 +40,10 @@ export const router = createBrowserRouter([
           },
           { path: "leagues/:competitionId/stats", element: <LeagueTabs key="stats" tab="stats" /> },
           {
+            path: "leagues/:competitionId/mockups",
+            element: <LeagueTabs key="mockups" tab="mockups" />,
+          },
+          {
             path: "leagues/:competitionId/bracket/:bracketNumber/match/:matchNumber",
             element: <MatchDetails type="league" />,
           },
