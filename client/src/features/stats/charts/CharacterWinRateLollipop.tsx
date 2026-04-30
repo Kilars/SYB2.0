@@ -4,17 +4,16 @@ import { useCallback, useMemo, useState } from "react";
 import CharacterPortraitDot from "./CharacterPortraitDot";
 
 const MIN_ROUNDS = 5;
-const MIN_SIZE = 22;
-const MAX_SIZE = 40;
+const DOT_SIZE = 32;
 const PAD_LEFT = 56;
 const PAD_RIGHT = 16;
 const PAD_TOP = 24;
-const PAD_BOTTOM = 64;
+const PAD_BOTTOM = 72;
 const BASELINE_PCT = 50;
 
 type Props = { data: CharacterWinRate[] };
 
-export default function MockupD_Lollipop({ data }: Props) {
+export default function CharacterWinRateLollipop({ data }: Props) {
   const theme = useTheme();
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -29,23 +28,19 @@ export default function MockupD_Lollipop({ data }: Props) {
   }, []);
 
   const sorted = useMemo(
-    () => data.filter((s) => s.total >= MIN_ROUNDS).sort((a, b) => b.total - a.total),
+    () => data.filter((s) => s.total >= MIN_ROUNDS).sort((a, b) => a.total - b.total),
     [data],
   );
 
   if (!sorted.length) {
     return (
-      <Box sx={{ width: "100%", height: 500 }}>
+      <Box sx={{ width: "100%", height: 520 }}>
         <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
           No characters with {MIN_ROUNDS}+ rounds played.
         </Typography>
       </Box>
     );
   }
-
-  const minTotal = Math.min(...sorted.map((s) => s.total));
-  const maxTotal = Math.max(...sorted.map((s) => s.total));
-  const totalRange = maxTotal - minTotal || 1;
 
   return (
     <Box ref={containerRef} sx={{ width: "100%", height: 520 }}>
@@ -94,7 +89,7 @@ export default function MockupD_Lollipop({ data }: Props) {
             fontSize={11}
             fill={theme.palette.text.secondary}
           >
-            ← Most played            Least played →
+            Rounds played (least → most)
           </text>
           {sorted.map((c, i) => {
             const plotW = dims.w - PAD_LEFT - PAD_RIGHT;
@@ -105,11 +100,10 @@ export default function MockupD_Lollipop({ data }: Props) {
                 : PAD_LEFT + (i / (sorted.length - 1)) * plotW;
             const cy = PAD_TOP + plotH - (c.winRate / 100) * plotH;
             const baselineY = PAD_TOP + plotH - (BASELINE_PCT / 100) * plotH;
-            const sizeNorm = (c.total - minTotal) / totalRange;
-            const size = MIN_SIZE + sizeNorm * (MAX_SIZE - MIN_SIZE);
             const above = c.winRate >= BASELINE_PCT;
             const stroke = above ? theme.palette.success.main : theme.palette.error.main;
             const isHovered = hovered === c.characterId;
+            const countY = PAD_TOP + plotH + 16;
             return (
               <g
                 key={c.characterId}
@@ -129,16 +123,26 @@ export default function MockupD_Lollipop({ data }: Props) {
                 <CharacterPortraitDot
                   cx={cx}
                   cy={cy}
-                  size={size}
+                  size={DOT_SIZE}
                   imageUrl={c.imageUrl}
                   name={c.name}
                   uid="ll"
                 />
+                <text
+                  x={cx}
+                  y={countY}
+                  textAnchor="middle"
+                  fontSize={11}
+                  fontWeight={600}
+                  fill={theme.palette.text.primary}
+                >
+                  {c.total}
+                </text>
                 {isHovered && (
                   <g>
                     <rect
                       x={cx - 60}
-                      y={cy - size / 2 - 44}
+                      y={cy - DOT_SIZE / 2 - 44}
                       width={120}
                       height={36}
                       rx={4}
@@ -147,7 +151,7 @@ export default function MockupD_Lollipop({ data }: Props) {
                     />
                     <text
                       x={cx}
-                      y={cy - size / 2 - 28}
+                      y={cy - DOT_SIZE / 2 - 28}
                       textAnchor="middle"
                       fontSize={11}
                       fontWeight="bold"
@@ -157,7 +161,7 @@ export default function MockupD_Lollipop({ data }: Props) {
                     </text>
                     <text
                       x={cx}
-                      y={cy - size / 2 - 14}
+                      y={cy - DOT_SIZE / 2 - 14}
                       textAnchor="middle"
                       fontSize={10}
                       fill={theme.palette.text.secondary}

@@ -2,7 +2,6 @@ import {
   BarChart,
   Description as DescriptionIcon,
   EmojiEvents,
-  Science as ScienceIcon,
   SportsEsports,
 } from "@mui/icons-material";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
@@ -13,7 +12,6 @@ import EmptyState from "../../app/shared/components/EmptyState";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import MatchesList from "../matches/MatchesList";
-import CharacterWinRateMockups from "../stats/CharacterWinRateMockups";
 import LeagueStats from "../stats/LeagueStats";
 import Description from "./Description";
 import Leaderboard from "./Leaderboard";
@@ -25,7 +23,7 @@ export default function LeagueTabs({ tab }: Props) {
   const { competitionId } = useParams();
   const navigate = useNavigate();
   const { league, isLeagueLoading } = useLeagues(competitionId);
-  const pathMap = ["description", "leaderboard", "matches", "stats", "mockups"];
+  const pathMap = ["description", "leaderboard", "matches", "stats"];
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     navigate(`/leagues/${competitionId}/${pathMap[newValue]}`);
@@ -81,7 +79,6 @@ export default function LeagueTabs({ tab }: Props) {
             <Tab icon={<EmojiEvents fontSize="small" />} iconPosition="start" label="Leaderboard" />
             <Tab icon={<SportsEsports fontSize="small" />} iconPosition="start" label="Matches" />
             <Tab icon={<BarChart fontSize="small" />} iconPosition="start" label="Stats" />
-            <Tab icon={<ScienceIcon fontSize="small" />} iconPosition="start" label="Mockups" />
           </Tabs>
         </Box>
         <Box
@@ -98,7 +95,6 @@ export default function LeagueTabs({ tab }: Props) {
           {tab === "leaderboard" && <Leaderboard />}
           {tab === "matches" && <MatchesList />}
           {tab === "stats" && <LeagueStats />}
-          {tab === "mockups" && <CharacterWinRateMockups />}
         </Box>
       </Box>
     </Box>

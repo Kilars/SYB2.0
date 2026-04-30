@@ -10,7 +10,7 @@ import { useCasual } from "../../lib/hooks/useCasual";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 import { computeCharacterWinRates, computePlayerWinRates } from "../../lib/util/statUtils";
 import { formatDate } from "../../lib/util/util";
-import { CharacterWinRateScatter, CharacterWinRateTable, PlayerWinRateBar } from "../stats/charts";
+import { CharacterWinRateLogScatter, CharacterWinRateTable, PlayerWinRateBar } from "../stats/charts";
 import CasualMatchForm from "./CasualMatchForm";
 
 export default function CasualPage() {
@@ -198,7 +198,7 @@ export default function CasualPage() {
                     <Typography variant="h6" fontWeight="bold" mb={1} sx={{ color: "primary.main" }}>
                       Character Win Rates
                     </Typography>
-                    <CharacterWinRateScatter data={charStats} />
+                    <CharacterWinRateLogScatter data={charStats} />
                   </Box>
                 )}
                 {playerStats.length > 0 && (
