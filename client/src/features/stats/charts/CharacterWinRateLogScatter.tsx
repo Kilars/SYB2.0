@@ -14,21 +14,11 @@ import {
 import CharacterPortraitDot from "./CharacterPortraitDot";
 
 const MIN_ROUNDS = 5;
-const MIN_SIZE = 22;
-const MAX_SIZE = 46;
-
-function seededRandom(seed: string) {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  return ((hash & 0x7fffffff) % 1000) / 1000;
-}
+const DOT_SIZE = 32;
 
 type Props = { data: CharacterWinRate[] };
 
-export default function MockupA_VerticalBubble({ data }: Props) {
+export default function CharacterWinRateLogScatter({ data }: Props) {
   const theme = useTheme();
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const containerRef = useCallback((node: HTMLDivElement | null) => {
@@ -42,21 +32,16 @@ export default function MockupA_VerticalBubble({ data }: Props) {
   }, []);
 
   const scatterData = useMemo(() => {
-    const filtered = data.filter((s) => s.total >= MIN_ROUNDS);
-    const minTotal = Math.min(...filtered.map((s) => s.total));
-    const maxTotal = Math.max(...filtered.map((s) => s.total));
-    const range = maxTotal - minTotal || 1;
-    return filtered.map((s) => {
-      const norm = (s.total - minTotal) / range;
-      const size = MIN_SIZE + norm * (MAX_SIZE - MIN_SIZE);
-      return {
-        x: (seededRandom(s.name + "vb") - 0.5) * 0.8,
-        y: s.winRate,
-        size: Math.round(size),
-        ...s,
-      };
-    });
+    return data.filter((s) => s.total >= MIN_ROUNDS).map((s) => ({ ...s, x: s.total, y: s.winRate }));
   }, [data]);
+
+  const xDomain = useMemo(() => {
+    if (scatterData.length === 0) return [1, 10];
+    const totals = scatterData.map((d) => d.total);
+    const min = Math.max(1, Math.min(...totals));
+    const max = Math.max(...totals);
+    return [Math.max(1, Math.floor(min * 0.8)), Math.ceil(max * 1.1)];
+  }, [scatterData]);
 
   return (
     <Box ref={containerRef} sx={{ width: "100%", height: 500 }}>
@@ -67,9 +52,22 @@ export default function MockupA_VerticalBubble({ data }: Props) {
       ) : (
         dims && (
           <ResponsiveContainer width={dims.w} height={dims.h}>
-            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.3} vertical={false} />
-              <XAxis type="number" dataKey="x" domain={[-1, 1]} hide />
+            <ScatterChart margin={{ top: 20, right: 24, bottom: 50, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+              <XAxis
+                type="number"
+                dataKey="x"
+                scale="log"
+                domain={xDomain}
+                allowDataOverflow
+                tickFormatter={(v) => String(Math.round(v))}
+                label={{
+                  value: "Rounds Played (log)",
+                  position: "insideBottom",
+                  offset: -10,
+                  style: { fontSize: 12 },
+                }}
+              />
               <YAxis
                 type="number"
                 dataKey="y"
@@ -126,10 +124,10 @@ export default function MockupA_VerticalBubble({ data }: Props) {
                     <CharacterPortraitDot
                       cx={p.cx}
                       cy={p.cy}
-                      size={p.payload.size}
+                      size={DOT_SIZE}
                       imageUrl={p.payload.imageUrl}
                       name={p.payload.name}
-                      uid="vb"
+                      uid="ls"
                     />
                   );
                 }}
