@@ -10,7 +10,7 @@ UX & Accessibility audit — 22 tasks covering bugs, mobile responsiveness, inte
 |--------|-------|
 | Backlog | 0 |
 | In Progress | 0 |
-| Done | 41 |
+| Done | 42 |
 
 ## Top Priorities
 
@@ -18,7 +18,8 @@ _Backlog is empty — run `backlog-scan` or `feature-planning` to queue more wor
 
 ## Recently Completed
 
-1. **041-BUG-recharts-responsive-container-warnings** — Replaced `ready` boolean with measured `dims` and passed numeric width/height to ResponsiveContainer in 3 chart components. Completed 2026-04-29.
+1. **042-FEATURE-character-select-top-picks** — Added top-5 most-used character picks to CharacterSelect dropdown with "Most likely picks" grouped header. New backend endpoint `GET /api/characters/user/{userId}/top`, new `useTopCharacters` hook, and MUI grouped Autocomplete. Completed 2026-05-06.
+2. **041-BUG-recharts-responsive-container-warnings** — Replaced `ready` boolean with measured `dims` and passed numeric width/height to ResponsiveContainer in 3 chart components. Completed 2026-04-29.
 2. **036-BUG-e2e-test-workarounds** — Removed console error suppressions, tightened URL patterns, replaced hardcoded waits. Completed 2026-03-03.
 2. **035-BUG-tournament-delete-404** — Fixed race condition: cancel queries before remove to prevent 404 toast. Completed 2026-03-03.
 3. **034-BUG-league-create-404** — Fixed navigation to `/leagues/${id}/leaderboard` after create/update. Completed 2026-03-03.

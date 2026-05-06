@@ -229,6 +229,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                       )
                     }
                     selectedId={round.playerOneCharacterId}
+                    userId={playerOne.userId}
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
@@ -244,6 +245,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                       )
                     }
                     selectedId={round.playerTwoCharacterId}
+                    userId={playerTwo.userId}
                   />
                 </Box>
               </Box>
