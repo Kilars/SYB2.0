@@ -44,9 +44,10 @@ type Props = {
   selectedId?: string;
   onChange: (id?: string) => void;
   userId?: string;
+  disabledIds?: string[];
 };
 
-export default function CharacterSelect({ selectedId, onChange, userId }: Props) {
+export default function CharacterSelect({ selectedId, onChange, userId, disabledIds = [] }: Props) {
   const { characters, charactersIsLoading } = useCharacters();
   const { topCharacterIds } = useTopCharacters(userId);
 
@@ -83,6 +84,11 @@ export default function CharacterSelect({ selectedId, onChange, userId }: Props)
 
   const selectedCharacter = options.find((c) => c.id === selectedId);
 
+  // Filter out the currently-selected character so it's never disabled in its own slot
+  const effectiveDisabledIds = disabledIds.filter((id) => id !== selectedId);
+
+  const isOptionDisabled = (option: GroupedCharacter) => effectiveDisabledIds.includes(option.id);
+
   return (
     <Autocomplete
       options={options}
@@ -92,6 +98,7 @@ export default function CharacterSelect({ selectedId, onChange, userId }: Props)
       getOptionLabel={(option) => option.fullName}
       groupBy={hasTopPicks ? (option) => option.group : undefined}
       isOptionEqualToValue={(option, value) => option.id === value.id}
+      getOptionDisabled={isOptionDisabled}
       slotProps={{
         listbox: {
           style: {
@@ -151,20 +158,30 @@ export default function CharacterSelect({ selectedId, onChange, userId }: Props)
           />
         );
       }}
-      renderOption={(props, item) => (
-        <StyledMenuItem {...props} key={`${item.group}-${item.id}`} value={item.id}>
-          <img
-            src={item.imageUrl}
-            alt={item.fullName}
-            width="44"
-            height="44"
-            style={{ borderRadius: 4 }}
-          />
-          <Typography variant="body2" fontWeight="inherit">
-            {item.fullName}
-          </Typography>
-        </StyledMenuItem>
-      )}
+      renderOption={(props, item) => {
+        const disabled = isOptionDisabled(item);
+        return (
+          <StyledMenuItem
+            {...props}
+            key={`${item.group}-${item.id}`}
+            value={item.id}
+            aria-disabled={disabled}
+            title={disabled ? "Already used in an earlier round" : undefined}
+            sx={disabled ? { opacity: 0.4 } : undefined}
+          >
+            <img
+              src={item.imageUrl}
+              alt={item.fullName}
+              width="44"
+              height="44"
+              style={{ borderRadius: 4 }}
+            />
+            <Typography variant="body2" fontWeight="inherit">
+              {item.fullName}
+            </Typography>
+          </StyledMenuItem>
+        );
+      }}
     />
   );
 }
