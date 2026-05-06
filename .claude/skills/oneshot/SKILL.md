@@ -29,27 +29,19 @@ Run these checks. If any fail, abort with a clear message and make no further ch
    ```
    Must be empty. If not, abort: "Working tree dirty — commit or stash before running /oneshot."
 
-2. **On main, up to date**:
+2. **On main (or designated branch), up to date with origin/main**:
    ```bash
    git rev-parse --abbrev-ref HEAD
    git fetch origin main
    git rev-list --count HEAD..origin/main
    ```
-   If not on `main`, abort. If behind `origin/main`, abort: "Local main is behind origin — pull first."
+   If the harness has pinned a development branch (system reminder names a branch like `claude/...`), use that branch instead of creating a new one and skip step 5. Otherwise must be on `main`. Either way, if behind `origin/main`, abort: "Local branch is behind origin/main — pull or rebase first."
 
-3. **`gh` authenticated**:
-   ```bash
-   gh auth status
-   ```
-   Non-zero exit → abort.
+3. **GitHub MCP tools available**: this skill uses `mcp__github__*` tools (NOT the `gh` CLI — the harness doesn't have it). Confirm `mcp__github__create_pull_request`, `mcp__github__enable_pr_auto_merge`, `mcp__github__merge_pull_request`, and `mcp__github__pull_request_read` are loadable via `ToolSearch`. If any are missing, abort: "GitHub MCP tools unavailable — cannot proceed."
 
-4. **Repo has auto-merge enabled**:
-   ```bash
-   gh repo view --json autoMergeAllowed --jq .autoMergeAllowed
-   ```
-   Must print `true`. If `false`, abort: "GitHub auto-merge not enabled on this repo. Enable it in Settings → General → 'Allow auto-merge' before running /oneshot."
+4. **Repo allows auto-merge**: there is no MCP tool that exposes `autoMergeAllowed`. Skip the explicit check and rely on the Phase 3 enable-auto-merge call to surface the failure. The skill MUST handle a "auto-merge not enabled on this repo" error gracefully (see Phase 3).
 
-5. **Create branch** (slug = first ~40 chars of description, lowercased, non-alnum → `-`, collapsed):
+5. **Create branch** (skip if the harness has pinned a branch — see step 2). Slug = first ~40 chars of description, lowercased, non-alnum → `-`, collapsed:
    ```bash
    TS=$(date +%Y%m%d-%H%M%S)
    SLUG=<derive from description>
@@ -116,35 +108,58 @@ Mechanical work — no subagent needed.
 
 2. **Derive title from task file**: read the H1 of the moved task file in `done/`; use it as the PR title prefixed with a conventional-commit type inferred from the changes (`feat:`, `fix:`, `refactor:`, etc.).
 
-3. **Commit, push, PR, enable auto-merge**:
+3. **Commit and push** (git via Bash):
    ```bash
    git add -A
    git commit -m "$(cat <<'EOF'
    <title>
 
    <body: one-line summary, then a "Task: <task_path>" line, then $SUMMARY>
-
-   🤖 Generated with /oneshot
    EOF
    )"
    git push -u origin "$BRANCH"
-   PR_URL=$(gh pr create --title "<title>" --body "$(cat <<'EOF'
-   ## Summary
-   $SUMMARY
-
-   ## Task
-   See `<task_path>` for the full plan and acceptance criteria.
-
-   ## Auto-merge
-   This PR was opened by `/oneshot` and is configured to auto-merge once required checks pass.
-
-   🤖 Generated with /oneshot
-   EOF
-   )")
-   gh pr merge --auto --squash --delete-branch "$PR_URL"
    ```
 
-4. **Report**: print the PR URL and a one-line status: "PR opened with auto-merge enabled. Will land on green CI."
+4. **Open the PR** with `mcp__github__create_pull_request`. Use the title from step 2; body should contain the Summary and a "Task: `<task_path>`" reference. Save the returned `number` as `$PR_NUMBER`.
+
+5. **Enable auto-merge — robust loop**. Call `mcp__github__enable_pr_auto_merge` with `mergeMethod: "SQUASH"`. The MCP tool has two known quirks that the skill MUST handle:
+
+   - **Quirk A — pre-CI gating**: when the PR's `mergeable_state` is `unstable` (= GitHub's term for "checks pending"), the tool returns `"required checks are failing"` even though no check has actually failed. This contradicts the whole purpose of auto-merge.
+   - **Quirk B — post-CI gating**: when `mergeable_state` is `clean` (all checks passed), the tool refuses with `"already in clean status — merge directly"`.
+
+   Handle both:
+
+   ```
+   result = enable_pr_auto_merge(SQUASH)
+   if result is success:
+       report success and exit
+   if result.error contains "already" or "clean":
+       # Quirk B — checks passed during the window between push and call
+       merge_pull_request(merge_method: "squash") and exit
+   if result.error contains "failing" or "unstable":
+       # Could be Quirk A (pending) OR genuinely failed checks. Disambiguate:
+       check_runs = pull_request_read(method: "get_check_runs")
+       any_failed = any run with conclusion in {failure, cancelled, timed_out, action_required}
+       all_done   = every run has status == "completed"
+       if any_failed:
+           abort: "CI failed before auto-merge could engage. PR #$PR_NUMBER left open for inspection. Failing checks: <list>."
+       if all_done and not any_failed:
+           # All green during the window — merge directly
+           merge_pull_request(merge_method: "squash") and exit
+       # else: still pending — this is Quirk A. Subscribe and wait.
+       subscribe_pr_activity(prNumber: $PR_NUMBER)
+       report: "Auto-merge enable was rejected by MCP tool while CI pending (known quirk). Subscribed to PR #$PR_NUMBER — will merge on green CI via webhook handler."
+       exit (the session's webhook handler will merge when checks complete)
+   if result.error contains "auto-merge" and "not enabled":
+       # Repo doesn't allow auto-merge
+       abort: "Repo has auto-merge disabled. Enable in Settings → General → 'Allow auto-merge', then merge PR #$PR_NUMBER manually."
+   # any other error
+   abort: "Failed to enable auto-merge on PR #$PR_NUMBER: <error>. PR is open; resolve manually."
+   ```
+
+   When handling the webhook in the "still pending" case, on each `<github-webhook-activity>` event for this PR: re-check `get_check_runs`. If all complete with no failures, call `merge_pull_request(squash)`. If any failed, report and stop.
+
+6. **Report**: print the PR URL and the actual outcome — one of: "auto-merge enabled, will land on green CI" / "merged directly (CI was already green)" / "subscribed to PR — will merge when CI completes" / "merge blocked: <reason>".
 
 ---
 
@@ -156,7 +171,7 @@ Mechanical work — no subagent needed.
 | Phase 1 subagent produces bad output | Branch exists but no commits. Tell user to delete with `git checkout main && git branch -D $BRANCH`. |
 | Phase 2 subagent fails | Task file may be in `in-progress.md`. Branch has working-tree changes. Leave for user inspection. |
 | Phase 3 build fails | Don't push. Same cleanup as Phase 2 failure. |
-| `gh pr create` fails | Branch is pushed but no PR. User can open manually or delete the branch. |
-| `gh pr merge --auto` fails | PR exists without auto-merge. User can enable manually via GitHub UI. |
+| `mcp__github__create_pull_request` fails | Branch is pushed but no PR. User can open manually or delete the branch. |
+| `mcp__github__enable_pr_auto_merge` fails | Phase 3 step 5 logic dispatches to direct merge, webhook subscription, or hard abort depending on the error. The skill never just leaves a PR with no plan. |
 
 In every failure case: **report what happened, the branch name, and the next step the user should take. Never silently fail.**
