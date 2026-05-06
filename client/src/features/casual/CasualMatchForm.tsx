@@ -147,7 +147,7 @@ export default function CasualMatchForm({ open, onClose }: Props) {
                 name="playerOneCharacterId"
                 control={control}
                 render={({ field }) => (
-                  <CharacterSelect selectedId={field.value} onChange={(id) => field.onChange(id || "")} />
+                  <CharacterSelect selectedId={field.value} onChange={(id) => field.onChange(id || "")} userId={playerOneUserId || undefined} />
                 )}
               />
               {errors.playerOneCharacterId && (
@@ -164,7 +164,7 @@ export default function CasualMatchForm({ open, onClose }: Props) {
                 name="playerTwoCharacterId"
                 control={control}
                 render={({ field }) => (
-                  <CharacterSelect selectedId={field.value} onChange={(id) => field.onChange(id || "")} />
+                  <CharacterSelect selectedId={field.value} onChange={(id) => field.onChange(id || "")} userId={playerTwoUserId || undefined} />
                 )}
               />
               {errors.playerTwoCharacterId && (

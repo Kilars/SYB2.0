@@ -1,10 +1,11 @@
-import { Skeleton, Typography } from "@mui/material";
+import { Divider, ListSubheader, Skeleton, Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 
 import { useCharacters } from "../../lib/hooks/useCharacters";
+import { useTopCharacters } from "../../lib/hooks/useTopCharacters";
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -37,13 +38,17 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
+type GroupedCharacter = Character & { group: string };
+
 type Props = {
   selectedId?: string;
   onChange: (id?: string) => void;
+  userId?: string;
 };
 
-export default function CharacterSelect({ selectedId, onChange }: Props) {
+export default function CharacterSelect({ selectedId, onChange, userId }: Props) {
   const { characters, charactersIsLoading } = useCharacters();
+  const { topCharacterIds } = useTopCharacters(userId);
 
   if (charactersIsLoading) return <Skeleton variant="rectangular" width="100%" height={40} />;
   if (!characters)
@@ -53,15 +58,40 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
       </Typography>
     );
 
-  const selectedCharacter = characters.find((char) => char.id === selectedId);
+  const hasTopPicks = topCharacterIds.length > 0;
+
+  let options: GroupedCharacter[];
+  if (hasTopPicks) {
+    const topPickSet = new Set(topCharacterIds);
+    const topPicks: GroupedCharacter[] = topCharacterIds
+      .map((id) => characters.find((c) => c.id === id))
+      .filter((c): c is Character => c !== undefined)
+      .map((c) => ({ ...c, group: "Most likely picks" }));
+
+    const remaining: GroupedCharacter[] = characters
+      .filter((c) => !topPickSet.has(c.id))
+      .sort((a, b) => a.fullName.localeCompare(b.fullName) || a.id.localeCompare(b.id))
+      .map((c) => ({ ...c, group: "All characters" }));
+
+    options = [...topPicks, ...remaining];
+  } else {
+    options = characters
+      .slice()
+      .sort((a, b) => a.fullName.localeCompare(b.fullName) || a.id.localeCompare(b.id))
+      .map((c) => ({ ...c, group: "" }));
+  }
+
+  const selectedCharacter = options.find((c) => c.id === selectedId);
 
   return (
     <Autocomplete
-      options={characters}
+      options={options}
       fullWidth
-      value={selectedCharacter}
+      value={selectedCharacter ?? null}
       onChange={(_event, newValue) => onChange(newValue?.id)}
       getOptionLabel={(option) => option.fullName}
+      groupBy={hasTopPicks ? (option) => option.group : undefined}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
       slotProps={{
         listbox: {
           style: {
@@ -71,6 +101,30 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
           },
         },
       }}
+      renderGroup={(params) => (
+        <li key={params.key}>
+          <ListSubheader
+            component="div"
+            sx={(theme) => ({
+              background: theme.palette.background.paper,
+              borderLeft: `3px solid ${theme.palette.primary.main}`,
+              color: theme.palette.primary.main,
+              fontWeight: theme.typography.fontWeightBold,
+              fontSize: "0.75rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              lineHeight: "2rem",
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+            })}
+          >
+            {params.group}
+          </ListSubheader>
+          <ul style={{ padding: 0 }}>{params.children}</ul>
+          {params.group === "Most likely picks" && <Divider />}
+        </li>
+      )}
       renderInput={(params) => {
         const optionalCharacterImage = selectedCharacter && (
           <img
@@ -98,7 +152,7 @@ export default function CharacterSelect({ selectedId, onChange }: Props) {
         );
       }}
       renderOption={(props, item) => (
-        <StyledMenuItem {...props} key={item.id} value={item.id}>
+        <StyledMenuItem {...props} key={`${item.group}-${item.id}`} value={item.id}>
           <img
             src={item.imageUrl}
             alt={item.fullName}
