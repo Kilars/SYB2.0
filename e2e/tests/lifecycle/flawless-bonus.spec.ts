@@ -51,7 +51,7 @@ test.describe('Flawless Bonus Recalculation', () => {
 
     // 2-1 result: P1 wins R1, P2 wins R2, P1 wins R3
     await matchForm.fillRound(1, CHARACTERS.wolf.fullName, CHARACTERS.yoshi.fullName, 'p1');
-    await matchForm.fillRound(2, CHARACTERS.wolf.fullName, CHARACTERS.sora.fullName, 'p2');
+    await matchForm.fillRound(2, CHARACTERS.zelda.fullName, CHARACTERS.sora.fullName, 'p2');
     await matchForm.fillRound(3, CHARACTERS.yoshi.fullName, CHARACTERS.wario.fullName, 'p1');
 
     await matchForm.clickComplete();
