@@ -10,7 +10,7 @@ UX & Accessibility audit — 22 tasks covering bugs, mobile responsiveness, inte
 |--------|-------|
 | Backlog | 0 |
 | In Progress | 0 |
-| Done | 42 |
+| Done | 43 |
 
 ## Top Priorities
 
@@ -18,7 +18,8 @@ _Backlog is empty — run `backlog-scan` or `feature-planning` to queue more wor
 
 ## Recently Completed
 
-1. **042-FEATURE-character-select-top-picks** — Added top-5 most-used character picks to CharacterSelect dropdown with "Most likely picks" grouped header. New backend endpoint `GET /api/characters/user/{userId}/top`, new `useTopCharacters` hook, and MUI grouped Autocomplete. Completed 2026-05-06.
+1. **043-FEATURE-unselectable-played-characters-bo-n** — Enforced per-player, per-match character lockout in Bo-N matches. Backend validators and handlers reject duplicate-character submissions; frontend disables already-used characters in CharacterSelect dropdowns; Zod schemas provide frontend parity. Completed 2026-05-06.
+2. **042-FEATURE-character-select-top-picks** — Added top-5 most-used character picks to CharacterSelect dropdown with "Most likely picks" grouped header. New backend endpoint `GET /api/characters/user/{userId}/top`, new `useTopCharacters` hook, and MUI grouped Autocomplete. Completed 2026-05-06.
 2. **041-BUG-recharts-responsive-container-warnings** — Replaced `ready` boolean with measured `dims` and passed numeric width/height to ResponsiveContainer in 3 chart components. Completed 2026-04-29.
 2. **036-BUG-e2e-test-workarounds** — Removed console error suppressions, tightened URL patterns, replaced hardcoded waits. Completed 2026-03-03.
 2. **035-BUG-tournament-delete-404** — Fixed race condition: cancel queries before remove to prevent 404 toast. Completed 2026-03-03.

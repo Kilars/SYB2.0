@@ -58,6 +58,38 @@ export const matchSchema = z.array(roundInputSchema).superRefine((rounds, ctx) =
       input: rounds,
     });
   }
+
+  // No character reuse per player within the same match (parity with backend)
+  const playerOneUsed = new Map<string, number>();
+  const playerTwoUsed = new Map<string, number>();
+  rounds.forEach((round, i) => {
+    if (!round.winnerUserId) return;
+    const roundNum = i + 1;
+    if (round.playerOneCharacterId) {
+      if (playerOneUsed.has(round.playerOneCharacterId)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Player 1 cannot reuse character (Round ${playerOneUsed.get(round.playerOneCharacterId)})`,
+          path: [i, "playerOneCharacterId"],
+          input: round.playerOneCharacterId,
+        });
+      } else {
+        playerOneUsed.set(round.playerOneCharacterId, roundNum);
+      }
+    }
+    if (round.playerTwoCharacterId) {
+      if (playerTwoUsed.has(round.playerTwoCharacterId)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Player 2 cannot reuse character (Round ${playerTwoUsed.get(round.playerTwoCharacterId)})`,
+          path: [i, "playerTwoCharacterId"],
+          input: round.playerTwoCharacterId,
+        });
+      } else {
+        playerTwoUsed.set(round.playerTwoCharacterId, roundNum);
+      }
+    }
+  });
 });
 
 export type MatchSchema = z.infer<typeof matchSchema>;
@@ -88,4 +120,37 @@ export const tournamentMatchSchema = z
       return Object.values(winCounts).some((c) => c >= requiredWins);
     },
     { message: "A player must win the majority of rounds" },
-  );
+  )
+  .superRefine((rounds, ctx) => {
+    // No character reuse per player within the same match (parity with backend)
+    const playerOneUsed = new Map<string, number>();
+    const playerTwoUsed = new Map<string, number>();
+    rounds.forEach((round, i) => {
+      if (!round.winnerUserId) return;
+      const roundNum = round.roundNumber;
+      if (round.playerOneCharacterId) {
+        if (playerOneUsed.has(round.playerOneCharacterId)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Player 1 cannot reuse character (Round ${playerOneUsed.get(round.playerOneCharacterId)})`,
+            path: [i, "playerOneCharacterId"],
+            input: round.playerOneCharacterId,
+          });
+        } else {
+          playerOneUsed.set(round.playerOneCharacterId, roundNum);
+        }
+      }
+      if (round.playerTwoCharacterId) {
+        if (playerTwoUsed.has(round.playerTwoCharacterId)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Player 2 cannot reuse character (Round ${playerTwoUsed.get(round.playerTwoCharacterId)})`,
+            path: [i, "playerTwoCharacterId"],
+            input: round.playerTwoCharacterId,
+          });
+        } else {
+          playerTwoUsed.set(round.playerTwoCharacterId, roundNum);
+        }
+      }
+    });
+  });
