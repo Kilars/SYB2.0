@@ -27,7 +27,7 @@ public class CompleteTournamentMatchValidator : AbstractValidator<CompleteTourna
         }).WithMessage("Not enough rounds played to be decisive")
         // No character reuse per player within the same match
         .Must(rounds => CharacterReuseViolation(rounds) == null)
-        .WithMessage(rounds => CharacterReuseViolation(rounds)!);
+        .WithMessage((_, rounds) => CharacterReuseViolation(rounds)!);
     }
 
     private static string? CharacterReuseViolation(IList<RoundDto> rounds)
