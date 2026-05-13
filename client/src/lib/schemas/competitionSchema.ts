@@ -21,6 +21,12 @@ const baseCompetitionSchema = z.object({
 export const leagueSchema = baseCompetitionSchema.extend({
   bestOf: baseCompetitionSchema.shape.bestOf.optional(),
   members: baseMember.extend({ id: z.string().optional() }).array(),
+  playerCount: z
+    .literal(2)
+    .or(z.literal(3))
+    .or(z.literal(4))
+    .optional()
+    .default(2),
 });
 
 export const tournamentSchema = baseCompetitionSchema;
