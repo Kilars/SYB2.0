@@ -13,4 +13,7 @@ public class RoundDto
     public DateTime? RegisteredTime { get; set; }
     public string? PlayerOneCharacterId { get; set; }
     public string? PlayerTwoCharacterId { get; set; }
+    // Character selections for N>2 rounds (string, not int — Character.Id is string)
+    public string? PlayerThreeCharacterId { get; set; }
+    public string? PlayerFourCharacterId { get; set; }
 }

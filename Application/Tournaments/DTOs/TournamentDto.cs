@@ -14,7 +14,7 @@ public class TournamentDto
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public int BestOf { get; set; }
-    public int PlayerCount { get; set; }
+    public int BracketSize { get; set; }
     public string? WinnerUserId { get; set; }
     public required ICollection<CompetitionMemberDto> Members { get; set; }
     public required ICollection<MatchDto> Matches { get; set; }

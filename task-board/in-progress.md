@@ -6,7 +6,7 @@
 
 ## Current Task
 
-_None — backlog empty._
+_None — 042 just completed. Next: 043 (Podium Picker UI primitives) — see `backlog/043-FEATURE-podium-picker-ui-primitives.md`._
 
 <!--
 When a task is active, replace the above with:

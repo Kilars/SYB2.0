@@ -81,7 +81,7 @@ public class CompleteTournamentMatch
             AdvanceWinner(tournament, match, matchWinnerUserId!);
 
             // Check if tournament is complete (final match completed)
-            var totalRounds = (int)Math.Log2(tournament.PlayerCount);
+            var totalRounds = (int)Math.Log2(tournament.BracketSize);
             if (match.BracketNumber == totalRounds)
             {
                 tournament.WinnerUserId = matchWinnerUserId;
@@ -97,7 +97,7 @@ public class CompleteTournamentMatch
 
         private void AdvanceWinner(Tournament tournament, Match completedMatch, string winnerUserId)
         {
-            var totalRounds = (int)Math.Log2(tournament.PlayerCount);
+            var totalRounds = (int)Math.Log2(tournament.BracketSize);
             if (completedMatch.BracketNumber >= totalRounds) return; // Final match, no next round
 
             // Calculate position within this bracket round

@@ -21,14 +21,20 @@ public class GetUserMatches
             var matches = await context.Matches
                 .Where(
                     match =>
+                        match.PlayerOneUserId == request.Id ||
                         match.PlayerTwoUserId == request.Id ||
-                        match.PlayerOneUserId == request.Id
+                        match.PlayerThreeUserId == request.Id ||
+                        match.PlayerFourUserId == request.Id
                 )
                 .Include(m => m.Rounds)
                 .Include(m => m.PlayerOne)
                 .Include(m => m.PlayerOne!.User)
                 .Include(m => m.PlayerTwo)
                 .Include(m => m.PlayerTwo!.User)
+                .Include(m => m.PlayerThree)
+                .Include(m => m.PlayerThree!.User)
+                .Include(m => m.PlayerFour)
+                .Include(m => m.PlayerFour!.User)
                 .ToListAsync(cancellationToken: cancellationToken);
 
             var mapped = mapper.Map<List<MatchDto>>(matches);
