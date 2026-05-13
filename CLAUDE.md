@@ -64,10 +64,13 @@ When implementing a new feature, follow this order:
 | Entity | Primary Key | Notes |
 |--------|-------------|-------|
 | User | Id (IdentityUser) | DisplayName, Bio, ImageUrl, IsGuest |
-| League | Id (GUID string) | Title, Description, Status (Planned/Active/Complete) |
-| LeagueMember | (UserId, LeagueId) | IsAdmin, DateJoined |
-| Match | (LeagueId, MatchNumber, Split) | PlayerOneUserId, PlayerTwoUserId, WinnerUserId |
-| Round | (LeagueId, MatchNumber, Split, RoundNumber) | Character selections, WinnerUserId |
+| Competition (abstract, TPH base) | Id (GUID string) | Base for League / Casual / Tournament; Title, Description, Status (Planned/Active/Complete) |
+| League : Competition | Id | League-specific behavior |
+| Tournament : Competition | Id | PlayerCount (bracket size), WinnerUserId, BestOf |
+| Casual : Competition | Id | Singleton (`casual-global`) hosting all ad-hoc matches |
+| CompetitionMember | (UserId, CompetitionId) | IsAdmin, DateJoined |
+| Match | (CompetitionId, BracketNumber, MatchNumber) | PlayerOneUserId, PlayerTwoUserId, WinnerUserId, Completed |
+| Round | (CompetitionId, BracketNumber, MatchNumber, RoundNumber) | Per-player character selections, WinnerUserId |
 | Character | Id | FullName, ShorthandName, ImageUrl |
 
 ---
@@ -76,17 +79,17 @@ When implementing a new feature, follow this order:
 
 These rules MUST be checked before any domain-touching change:
 
-### 1. Round-Robin Integrity
-- `n*(n-1)/2` unique pairings per split, 2 splits total
-- Side-swap symmetry: if A is P1 in split 1, A is P2 in split 2 for the same pairing
+### 1. Round-Robin Integrity (League N=2 path)
+- `n*(n-1)/2` unique pairings per bracket, 2 brackets total (the historical "splits"; field is `Match.BracketNumber`)
+- Side-swap symmetry: if A is P1 in bracket 1, A is P2 in bracket 2 for the same pairing
 - Pairings use `(i + j) % 2` for deterministic side assignment, Fisher-Yates shuffle for match order
 - NEVER regenerate matches for an Active league — delete all and regenerate on status revert to Planned
-- 3 rounds per match (Bo3 format)
+- 3 rounds per match (Bo3 format) for N=2; single round for N>2 (see N-player initiative)
 
 ### 2. Composite Key Safety
-- **Match PK**: `{LeagueId, MatchNumber, Split}` — configured in AppDbContext
-- **Round PK**: `{LeagueId, MatchNumber, Split, RoundNumber}` — configured in AppDbContext
-- **LeagueMember PK**: `{UserId, LeagueId}` — configured in AppDbContext
+- **Match PK**: `{CompetitionId, BracketNumber, MatchNumber}` — configured in `Persistence/AppDbContext.cs`
+- **Round PK**: `{CompetitionId, BracketNumber, MatchNumber, RoundNumber}` — configured in `Persistence/AppDbContext.cs`
+- **CompetitionMember PK**: `{UserId, CompetitionId}` — configured in `Persistence/AppDbContext.cs`
 - All FKs use `OnDelete: NoAction` to prevent cascade disasters
 - NEVER modify composite key columns without a migration review and explicit task-board approval
 
@@ -97,16 +100,17 @@ These rules MUST be checked before any domain-touching change:
 - Frontend NEVER computes points or statistics — it only displays backend results
 
 ### 4. Guest Merge Safety
-- When merging a guest into a registered user, all FK references (LeagueMember, Match.PlayerOneUserId, Match.PlayerTwoUserId, Match.WinnerUserId, Round.WinnerUserId) are migrated from the guest's UserId to the target user's UserId in a single transaction
+- When merging a guest into a registered user, all FK references (CompetitionMember, Match.PlayerOneUserId, Match.PlayerTwoUserId, Match.WinnerUserId, Round.WinnerUserId) are migrated from the guest's UserId to the target user's UserId in a single transaction
 - The guest User record is deleted after migration
-- Conflict check: target user must not already be a member of any league the guest belongs to
-- New LeagueMember records for the target user must be inserted BEFORE Match FK updates (composite FK constraint)
+- Conflict check: target user must not already be a member of any competition the guest belongs to
+- New CompetitionMember records for the target user must be inserted BEFORE Match FK updates (composite FK constraint)
 
 ### 5. Authorization Consistency
-- `IsAdminRequirement` reads route param `"leagueId"`
-- `IsLeagueMember` reads route param `"leagueId"`
-- `IsMatchEditable` and `IsMatchComplete` read `"leagueId"`, `"split"`, `"matchNumber"`
-- Route param names in controllers MUST match what authorization handlers expect
+- `IsCompetitionAdmin` reads route param `"competitionId"`
+- `IsCompetitionMember` reads route param `"competitionId"`
+- `IsCompetitionPlanned` reads route param `"competitionId"`
+- `IsMatchEditable` and `IsMatchComplete` read `"competitionId"`, `"bracketNumber"`, `"matchNumber"`
+- Route param names in controllers MUST match what authorization handlers expect (handlers live in `Infrastructure/Security/`)
 
 ---
 
@@ -152,18 +156,20 @@ docker-compose up -d
 | Method | Route | Auth Policy | Handler |
 |--------|-------|-------------|---------|
 | GET | `/api/leagues` | AllowAnonymous | GetLeagueList |
-| GET | `/api/leagues/{leagueId}` | Authenticated | GetLeagueDetails |
+| GET | `/api/leagues/{competitionId}` | Authenticated | GetLeagueDetails |
 | POST | `/api/leagues` | Authenticated | CreateLeague |
-| PUT | `/api/leagues/{leagueId}` | IsLeagueAdmin + IsLeaguePlanned | UpdateLeague |
-| POST | `/api/leagues/{leagueId}/status` | IsLeagueAdmin | ChangeLeagueStatus |
-| GET | `/api/leagues/{leagueId}/leaderboard` | IsLeagueMember | GetLeagueLeaderboard |
+| PUT | `/api/leagues/{competitionId}` | IsCompetitionAdmin + IsCompetitionPlanned | UpdateLeague |
+| POST | `/api/leagues/{competitionId}/status` | IsCompetitionAdmin | ChangeLeagueStatus |
+| GET | `/api/leagues/{competitionId}/leaderboard` | IsCompetitionMember | GetLeagueLeaderboard |
+
+(Route param name is `competitionId` because League inherits from Competition; the URL still appears under `/api/leagues/` for discoverability.)
 
 ### Matches (`/api/matches`)
 | Method | Route | Auth Policy | Handler |
 |--------|-------|-------------|---------|
-| GET | `/api/matches/{leagueId}/split/{split}/match/{matchNumber}` | IsLeagueMember | GetMatchDetails |
-| POST | `.../complete` | IsLeagueMember + IsMatchEditable | CompleteMatch |
-| POST | `.../reopen` | IsLeagueMember + IsMatchComplete | ReopenMatch |
+| GET | `/api/matches/{competitionId}/bracket/{bracketNumber}/match/{matchNumber}` | IsCompetitionMember | GetMatchDetails |
+| POST | `.../complete` | IsCompetitionMember + IsMatchEditable | CompleteMatch |
+| POST | `.../reopen` | IsCompetitionMember + IsMatchComplete | ReopenMatch |
 | GET | `/api/matches/user/{id}` | Authenticated | GetUserMatches |
 
 ### Account
@@ -179,11 +185,11 @@ docker-compose up -d
 
 | Policy | Requirement Class | Route Params Read |
 |--------|-------------------|-------------------|
-| IsLeagueAdmin | IsAdminRequirement | `"leagueId"` |
-| IsLeagueMember | IsLeagueMember | `"leagueId"` |
-| IsMatchEditable | IsMatchEditable | `"leagueId"`, `"split"`, `"matchNumber"` |
-| IsLeaguePlanned | IsPlannedRequirement | `"leagueId"` |
-| IsMatchComplete | IsMatchComplete | `"leagueId"`, `"split"`, `"matchNumber"` |
+| IsCompetitionAdmin | IsCompetitionAdmin | `"competitionId"` |
+| IsCompetitionMember | IsCompetitionMember | `"competitionId"` |
+| IsCompetitionPlanned | IsCompetitionPlanned | `"competitionId"` |
+| IsMatchEditable | IsMatchEditable | `"competitionId"`, `"bracketNumber"`, `"matchNumber"` |
+| IsMatchComplete | IsMatchComplete | `"competitionId"`, `"bracketNumber"`, `"matchNumber"` |
 
 ---
 
@@ -229,10 +235,9 @@ A task is complete when:
 
 ## Known Tech Debt
 
-- `LeagueMember.Leagueid` in TypeScript types has lowercase 'id' (should be `leagueId`) — front-end type mismatch
 - MobX is used minimally (just uiStore + observer on NavBar) — could be removed in favor of React Query + context
 - `requiredString` utility is defined in both `util.ts` and `leagueSchema.ts` — needs consolidation
-- Match details form uses local `useState` instead of React Hook Form for round state management
+- Match details form uses local `useState` instead of React Hook Form for round state management (scheduled for retirement in task 047)
 - No error boundary components (only ServerError page for 500s)
 
 ---

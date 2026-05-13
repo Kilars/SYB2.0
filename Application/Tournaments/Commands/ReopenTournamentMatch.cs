@@ -31,7 +31,7 @@ public class ReopenTournamentMatch
             if (!match.Completed) return Result<Unit>.Failure("Match is not completed", 400);
 
             // Check if winner has advanced and next match has been played
-            var totalRounds = (int)Math.Log2(tournament.PlayerCount);
+            var totalRounds = (int)Math.Log2(tournament.BracketSize);
             if (match.BracketNumber < totalRounds)
             {
                 // Find position within bracket round

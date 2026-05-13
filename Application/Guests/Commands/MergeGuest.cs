@@ -54,6 +54,23 @@ public class MergeGuest
             if (conflictingCompetitions.Any())
                 return Result<Unit>.Failure("Target user is already a member of a competition the guest belongs to", 400);
 
+            // NEW conflict check: same-match participant collision.
+            // Reject the merge if any Match exists where the guest occupies one participant slot AND
+            // the target user occupies a different participant slot. Remapping would collapse two
+            // distinct participants into one userId and violate CK_Match_Participants_Distinct.
+            var guestId = request.GuestUserId;
+            var targetId = request.TargetUserId;
+            var sameMatchCollision = await context.Matches
+                .AnyAsync(m =>
+                    (m.PlayerOneUserId == guestId || m.PlayerTwoUserId == guestId || m.PlayerThreeUserId == guestId || m.PlayerFourUserId == guestId)
+                    && (m.PlayerOneUserId == targetId || m.PlayerTwoUserId == targetId || m.PlayerThreeUserId == targetId || m.PlayerFourUserId == targetId),
+                    ct);
+            if (sameMatchCollision)
+                return Result<Unit>.Failure(
+                    "Cannot merge: guest and target user are both participants in the same match. " +
+                    "Remapping would produce a match with two identical participant slots. Resolve manually before merging.",
+                    400);
+
             using var transaction = await context.Database.BeginTransactionAsync(ct);
 
             try
@@ -71,7 +88,11 @@ public class MergeGuest
                 context.CompetitionMembers.AddRange(newMembers);
                 await context.SaveChangesAsync(ct);
 
-                // 2. Update Match FK references
+                // 2. Update Match FK references.
+                // NOTE: This transaction now contains 9 ExecuteUpdate round-trips (PlayerOne, PlayerTwo,
+                // PlayerThree, PlayerFour, WinnerUserId, SecondPlace, ThirdPlace, FourthPlace on Match,
+                // plus WinnerUserId on Round). If contention grows under load, consider elevating to
+                // IsolationLevel.Serializable on the surrounding transaction — not changed in this task.
                 await context.Matches
                     .Where(m => m.PlayerOneUserId == request.GuestUserId)
                     .ExecuteUpdateAsync(s => s.SetProperty(m => m.PlayerOneUserId, request.TargetUserId), ct);
@@ -81,8 +102,28 @@ public class MergeGuest
                     .ExecuteUpdateAsync(s => s.SetProperty(m => m.PlayerTwoUserId, request.TargetUserId), ct);
 
                 await context.Matches
+                    .Where(m => m.PlayerThreeUserId == request.GuestUserId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.PlayerThreeUserId, request.TargetUserId), ct);
+
+                await context.Matches
+                    .Where(m => m.PlayerFourUserId == request.GuestUserId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.PlayerFourUserId, request.TargetUserId), ct);
+
+                await context.Matches
                     .Where(m => m.WinnerUserId == request.GuestUserId)
                     .ExecuteUpdateAsync(s => s.SetProperty(m => m.WinnerUserId, request.TargetUserId), ct);
+
+                await context.Matches
+                    .Where(m => m.SecondPlaceUserId == request.GuestUserId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.SecondPlaceUserId, request.TargetUserId), ct);
+
+                await context.Matches
+                    .Where(m => m.ThirdPlaceUserId == request.GuestUserId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.ThirdPlaceUserId, request.TargetUserId), ct);
+
+                await context.Matches
+                    .Where(m => m.FourthPlaceUserId == request.GuestUserId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(m => m.FourthPlaceUserId, request.TargetUserId), ct);
 
                 // 3. Update Round FK references
                 await context.Rounds

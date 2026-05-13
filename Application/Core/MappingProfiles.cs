@@ -23,6 +23,11 @@ public class MappingProfiles : Profile
             .ForMember(x => x.IsGuest, o => o.MapFrom(s => s.User.IsGuest));
         CreateMap<Match, MatchDto>();
         CreateMap<Round, RoundDto>();
-        CreateMap<RoundDto, Round>();
+        // Reverse map: guard NEW Three/Four character fields to prevent silent null overwrites on
+        // partial updates. PlayerOne/Two are intentionally UNGUARDED so the existing form can still
+        // clear a character selection by setting it to null.
+        CreateMap<RoundDto, Round>()
+            .ForMember(d => d.PlayerThreeCharacterId, o => o.Condition(s => s.PlayerThreeCharacterId != null))
+            .ForMember(d => d.PlayerFourCharacterId, o => o.Condition(s => s.PlayerFourCharacterId != null));
     }
 }

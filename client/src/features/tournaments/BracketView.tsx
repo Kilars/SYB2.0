@@ -211,7 +211,7 @@ export default function BracketView() {
 
   const isAdmin =
     currentUser && tournament.members.some((m) => m.userId === currentUser.id && m.isAdmin);
-  const totalRounds = Math.log2(tournament.playerCount);
+  const totalRounds = Math.log2(tournament.bracketSize);
 
   // Group matches by bracket number (round)
   const matchesByRound: Record<number, Match[]> = {};
@@ -296,7 +296,7 @@ export default function BracketView() {
               sx={{ fontWeight: "bold" }}
             />
             <Chip label={`Best of ${tournament.bestOf}`} variant="outlined" />
-            <Chip label={`${tournament.playerCount} players`} variant="outlined" />
+            <Chip label={`${tournament.bracketSize} players`} variant="outlined" />
           </Box>
         </Box>
         <Box display="flex" gap={1} flexWrap="wrap">

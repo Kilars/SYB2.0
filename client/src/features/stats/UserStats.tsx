@@ -11,7 +11,7 @@ import {
 import { Avatar, Box, Button, Card, CardContent, Paper, Typography } from "@mui/material";
 import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import  Cell, Pie, PieChart, ResponsiveContainer, Tooltip  from "recharts";
 
 import EmptyState from "../../app/shared/components/EmptyState";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";

@@ -16,4 +16,6 @@ public class CompetitionMember
 
     public ICollection<Match> MatchesAsPlayerOne = [];
     public ICollection<Match> MatchesAsPlayerTwo = [];
+    public ICollection<Match> MatchesAsPlayerThree = [];
+    public ICollection<Match> MatchesAsPlayerFour = [];
 }

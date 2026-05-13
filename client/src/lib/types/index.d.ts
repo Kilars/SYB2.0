@@ -10,10 +10,12 @@ type Competition = {
   matches: Match[];
 };
 
-type League = Competition;
+type League = Competition & {
+  playerCount?: number;
+};
 
 type Tournament = Competition & {
-  playerCount: number;
+  bracketSize: number;
   winnerUserId?: string;
 };
 
@@ -43,8 +45,16 @@ type Match = {
   matchNumber: number;
   winnerUserId?: string;
   registeredTime?: Date;
+  playerCount?: number;
   playerOne?: Player;
   playerTwo?: Player;
+  playerThree?: Player;
+  playerFour?: Player;
+  playerThreeUserId?: string;
+  playerFourUserId?: string;
+  secondPlaceUserId?: string;
+  thirdPlaceUserId?: string;
+  fourthPlaceUserId?: string;
   rounds: Round[];
 };
 
@@ -68,6 +78,8 @@ type Round = {
   playerOneCharacter?: Character;
   playerTwoCharacterId?: string;
   playerTwoCharacter?: Character;
+  playerThreeCharacterId?: string;
+  playerFourCharacterId?: string;
 };
 
 type Character = {

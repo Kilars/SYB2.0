@@ -8,13 +8,21 @@ UX & Accessibility audit — 22 tasks covering bugs, mobile responsiveness, inte
 
 | Status | Count |
 |--------|-------|
-| Backlog | 0 |
+| Backlog | 7 |
 | In Progress | 0 |
 | Done | 43 |
 
 ## Top Priorities
 
-_Backlog is empty — run `backlog-scan` or `feature-planning` to queue more work._
+N-player support initiative — sub-plans 2 onward. Dependency order: 043 → 047 → 044 → (045, 046a → 046b) → 048.
+
+1. **043-FEATURE-podium-picker-ui-primitives** — Podium Picker UI primitives + RHF adapter
+2. **047-REFACTOR-matchdetailsform-rhf-conversion** — MatchDetailsForm RHF conversion (prerequisite for 044)
+3. **044-FEATURE-league-n-player-integration** — League schedule + stats + match-entry
+4. **045-FEATURE-casual-n-player-integration** — Casual N-player integration
+5. **046a-FEATURE-tournament-n-player-backend** — Tournament backend (schema + StartTournament + BracketSizing/Builder)
+6. **046b-FEATURE-tournament-n-player-frontend** — Tournament frontend (Complete/Reopen + bracket UI + SlotMapping)
+7. **048-TEST-3p-league-lifecycle-e2e** — 3-player league lifecycle E2E test
 
 ## Recently Completed
 

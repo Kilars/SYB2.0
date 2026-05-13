@@ -52,7 +52,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .HasForeignKey(x => x.CompetitionId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        // Match → CompetitionMember (PlayerOne/Two)
+        // Match → CompetitionMember (PlayerOne/Two/Three/Four)
         builder.Entity<Match>()
             .HasOne(x => x.PlayerOne)
             .WithMany(x => x.MatchesAsPlayerOne)
@@ -67,6 +67,20 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
 
+        builder.Entity<Match>()
+            .HasOne(x => x.PlayerThree)
+            .WithMany(x => x.MatchesAsPlayerThree)
+            .HasForeignKey(x => new { x.PlayerThreeUserId, x.CompetitionId })
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<Match>()
+            .HasOne(x => x.PlayerFour)
+            .WithMany(x => x.MatchesAsPlayerFour)
+            .HasForeignKey(x => new { x.PlayerFourUserId, x.CompetitionId })
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
         // Round → Match
         builder.Entity<Round>()
             .HasOne(x => x.Match)
@@ -74,18 +88,44 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .HasForeignKey(x => new { x.CompetitionId, x.BracketNumber, x.MatchNumber })
             .OnDelete(DeleteBehavior.NoAction);
 
-        // Round → Character
+        // Round → Character (PlayerOne/Two/Three/Four)
         builder.Entity<Round>()
             .HasOne(x => x.PlayerOneCharacter)
             .WithMany(x => x.RoundsAsPlayerOne)
             .HasForeignKey(x => x.PlayerOneCharacterId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Round>()
             .HasOne(x => x.PlayerTwoCharacter)
             .WithMany(x => x.RoundsAsPlayerTwo)
             .HasForeignKey(x => x.PlayerTwoCharacterId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<Round>()
+            .HasOne(x => x.PlayerThreeCharacter)
+            .WithMany(x => x.RoundsAsPlayerThree)
+            .HasForeignKey(x => x.PlayerThreeCharacterId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<Round>()
+            .HasOne(x => x.PlayerFourCharacter)
+            .WithMany(x => x.RoundsAsPlayerFour)
+            .HasForeignKey(x => x.PlayerFourCharacterId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // TPH column disjunction: Tournament.BracketSize and League.PlayerCount map to
+        // distinct physical columns to avoid EF colliding both onto the old shared "PlayerCount" column.
+        builder.Entity<Tournament>()
+            .Property(t => t.BracketSize)
+            .HasColumnName("BracketSize");
+
+        builder.Entity<League>()
+            .Property(l => l.PlayerCount)
+            .HasColumnName("LeaguePlayerCount");
 
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),

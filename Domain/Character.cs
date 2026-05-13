@@ -15,4 +15,8 @@ public class Character
     public ICollection<Round> RoundsAsPlayerOne { get; set; } = [];
     [JsonIgnore]
     public ICollection<Round> RoundsAsPlayerTwo { get; set; } = [];
+    [JsonIgnore]
+    public ICollection<Round> RoundsAsPlayerThree { get; set; } = [];
+    [JsonIgnore]
+    public ICollection<Round> RoundsAsPlayerFour { get; set; } = [];
 }

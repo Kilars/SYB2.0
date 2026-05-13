@@ -31,7 +31,7 @@ public class CreateTournament
             if (!validBestOf.Contains(request.TournamentDto.BestOf))
                 return Result<string>.Failure("BestOf must be 1, 3, or 5.", 400);
 
-            tournament.PlayerCount = tournament.Members.Count;
+            tournament.BracketSize = tournament.Members.Count;
             tournament.BestOf = request.TournamentDto.BestOf;
 
             if (tournament.Members.Any(m => m.UserId == user.Id))
@@ -45,9 +45,9 @@ public class CreateTournament
                     UserId = user.Id,
                     IsAdmin = true
                 });
-                tournament.PlayerCount = tournament.Members.Count;
-                if (!validCounts.Contains(tournament.PlayerCount))
-                    return Result<string>.Failure($"Tournament must have exactly 4, 8, 16, or 32 players (including you). Got {tournament.PlayerCount}.", 400);
+                tournament.BracketSize = tournament.Members.Count;
+                if (!validCounts.Contains(tournament.BracketSize))
+                    return Result<string>.Failure($"Tournament must have exactly 4, 8, 16, or 32 players (including you). Got {tournament.BracketSize}.", 400);
             }
 
             context.Tournaments.Add(tournament);
