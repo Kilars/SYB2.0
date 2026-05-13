@@ -13,12 +13,11 @@ import {
 } from "@mui/material";
 import { startOfToday } from "date-fns";
 import { useEffect } from "react";
-import { type Control, Controller, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 
 import DateTimeInput from "../../app/shared/components/DateTimeInput";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
-import PlayerCountToggle from "../../app/shared/components/PlayerCountToggle";
 import TextInput from "../../app/shared/components/TextInput";
 import UserSelectInput from "../../app/shared/components/UserSelectInput";
 import { useAccount } from "../../lib/hooks/useAccount";
@@ -89,7 +88,7 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
   };
 
   useEffect(() => {
-    if (league) reset({ ...league, playerCount: (league.playerCount ?? 2) as 2 | 3 | 4 });
+    if (league) reset({ ...league });
   }, [reset, league]);
 
   if (isEditMode && isLeagueLoading) return <LoadingSkeleton variant="detail" />;
@@ -136,25 +135,6 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
       <Box display="flex" flexDirection="column" gap={3}>
         <TextInput label="Title" control={control} name="title" />
         <TextInput label="Description" control={control} name="description" />
-        {isLeague && (
-          <Controller
-            name="playerCount"
-            control={control as unknown as Control}
-            defaultValue={2}
-            render={({ field }) => (
-              <PlayerCountToggle
-                value={((field.value as number) || 2) as 2 | 3 | 4}
-                onChange={field.onChange}
-                disabled={!!(league?.status && league.status !== 0)}
-                helperText={
-                  league?.status && league.status !== 0
-                    ? "Locked once league is activated"
-                    : undefined
-                }
-              />
-            )}
-          />
-        )}
         <DateTimeInput
           label="Date"
           control={control}
