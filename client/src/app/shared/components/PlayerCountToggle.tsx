@@ -34,7 +34,7 @@ export default function PlayerCountToggle({
 
   return (
     <div>
-      <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
         Format
       </Typography>
       <ToggleButtonGroup
@@ -51,7 +51,7 @@ export default function PlayerCountToggle({
             <Typography variant="body2" fontWeight={600} component="span">
               2
             </Typography>
-            <Typography variant="caption" display="block" component="span" sx={{ lineHeight: 1.2, display: "block" }}>
+            <Typography variant="caption" component="span" sx={{ lineHeight: 1.2, display: "block" }}>
               {resolvedLabels.two}
             </Typography>
           </span>
@@ -61,7 +61,7 @@ export default function PlayerCountToggle({
             <Typography variant="body2" fontWeight={600} component="span">
               3
             </Typography>
-            <Typography variant="caption" display="block" component="span" sx={{ lineHeight: 1.2, display: "block" }}>
+            <Typography variant="caption" component="span" sx={{ lineHeight: 1.2, display: "block" }}>
               {resolvedLabels.three}
             </Typography>
           </span>
@@ -71,7 +71,7 @@ export default function PlayerCountToggle({
             <Typography variant="body2" fontWeight={600} component="span">
               4
             </Typography>
-            <Typography variant="caption" display="block" component="span" sx={{ lineHeight: 1.2, display: "block" }}>
+            <Typography variant="caption" component="span" sx={{ lineHeight: 1.2, display: "block" }}>
               {resolvedLabels.four}
             </Typography>
           </span>

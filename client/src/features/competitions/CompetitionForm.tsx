@@ -89,7 +89,7 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
   };
 
   useEffect(() => {
-    if (league) reset(league);
+    if (league) reset({ ...league, playerCount: (league.playerCount ?? 2) as 2 | 3 | 4 });
   }, [reset, league]);
 
   if (isEditMode && isLeagueLoading) return <LoadingSkeleton variant="detail" />;

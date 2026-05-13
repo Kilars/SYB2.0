@@ -111,7 +111,7 @@ export default function PodiumDemo() {
           PlayerCountToggle
         </Typography>
         <PlayerCountToggle value={playerCount} onChange={setPlayerCount} />
-        <Typography variant="caption" color="text.secondary" mt={1} display="block">
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
           Selected: {playerCount}
         </Typography>
         <Box mt={2}>

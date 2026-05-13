@@ -25,8 +25,9 @@ export const leagueSchema = baseCompetitionSchema.extend({
     .literal(2)
     .or(z.literal(3))
     .or(z.literal(4))
+    .nullable()
     .optional()
-    .default(2),
+    .transform((v) => v ?? 2),
 });
 
 export const tournamentSchema = baseCompetitionSchema;
