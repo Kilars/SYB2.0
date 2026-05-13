@@ -65,7 +65,7 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: '--model claude-opus-4-7 --max-turns 15'
+          claude_args: '--model claude-opus-4-7 --max-turns 60 --permission-mode bypassPermissions'
           prompt: |
             You are fixing a failing CI build on PR #${{ steps.pr.outputs.number }} (branch `${{ steps.pr.outputs.head_ref }}`).
             The "PR Build" workflow failed on one or more of: frontend, backend, e2e.

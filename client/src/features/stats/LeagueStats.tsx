@@ -7,7 +7,12 @@ import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { computeCharacterWinRates } from "../../lib/util/statUtils";
-import { CharacterWinRateScatter, CharacterWinRateTable, PlayerWinRateBar } from "./charts";
+import {
+  CharacterWinRateLogScatter,
+  CharacterWinRateLollipop,
+  CharacterWinRateTable,
+  PlayerWinRateBar,
+} from "./charts";
 
 export default function LeagueStats() {
   const { competitionId } = useParams();
@@ -38,12 +43,21 @@ export default function LeagueStats() {
   return (
     <Box>
       {charStats.length > 0 && (
-        <Box mb={4}>
-          <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: "primary.main" }}>
-            Character Win Rates
-          </Typography>
-          <CharacterWinRateScatter data={charStats} />
-        </Box>
+        <>
+          <Box mb={4}>
+            <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: "primary.main" }}>
+              Character Win Rates — Volume vs Win %
+            </Typography>
+            <CharacterWinRateLogScatter data={charStats} />
+          </Box>
+
+          <Box mb={4}>
+            <Typography variant="h6" fontWeight="bold" mb={2} sx={{ color: "primary.main" }}>
+              Character Win Rates — Sorted by Rounds Played
+            </Typography>
+            <CharacterWinRateLollipop data={charStats} />
+          </Box>
+        </>
       )}
 
       {playerWinRates.length > 0 && (

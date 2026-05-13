@@ -23,6 +23,25 @@ public class CompleteMatch
     {
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
+            // Defensive check: no character reuse per player within the same match
+            var playerOneUsed = new Dictionary<string, int>();
+            var playerTwoUsed = new Dictionary<string, int>();
+            foreach (var round in request.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)).OrderBy(r => r.RoundNumber))
+            {
+                if (!string.IsNullOrEmpty(round.PlayerOneCharacterId))
+                {
+                    if (playerOneUsed.TryGetValue(round.PlayerOneCharacterId, out var p1Prev))
+                        return Result<Unit>.Failure($"Player 1 cannot reuse character (Round {p1Prev})", 400);
+                    playerOneUsed[round.PlayerOneCharacterId] = round.RoundNumber;
+                }
+                if (!string.IsNullOrEmpty(round.PlayerTwoCharacterId))
+                {
+                    if (playerTwoUsed.TryGetValue(round.PlayerTwoCharacterId, out var p2Prev))
+                        return Result<Unit>.Failure($"Player 2 cannot reuse character (Round {p2Prev})", 400);
+                    playerTwoUsed[round.PlayerTwoCharacterId] = round.RoundNumber;
+                }
+            }
+
             foreach (var round in request.Rounds.Where(r => !string.IsNullOrEmpty(r.WinnerUserId)))
             {
                 var dbRound = await context.Rounds.FirstAsync(r =>

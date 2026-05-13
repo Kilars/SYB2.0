@@ -184,6 +184,15 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
         const isDecidedEarly = matchDecided && !round.winnerUserId;
         const borderColor = ROUND_STATUS_COLORS[roundStatus];
 
+        // Compute which characters are locked out for each player in this round:
+        // any character used in an earlier round (lower index) that already has a winner set.
+        const playerOneDisabled = rounds
+          .filter((r, idx) => idx < i && r.winnerUserId && r.playerOneCharacterId)
+          .map((r) => r.playerOneCharacterId as string);
+        const playerTwoDisabled = rounds
+          .filter((r, idx) => idx < i && r.winnerUserId && r.playerTwoCharacterId)
+          .map((r) => r.playerTwoCharacterId as string);
+
         return (
           <Card
             key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
@@ -229,6 +238,8 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                       )
                     }
                     selectedId={round.playerOneCharacterId}
+                    userId={playerOne.userId}
+                    disabledIds={playerOneDisabled}
                   />
                 </Box>
                 <Box sx={{ flex: 1 }}>
@@ -244,6 +255,8 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                       )
                     }
                     selectedId={round.playerTwoCharacterId}
+                    userId={playerTwo.userId}
+                    disabledIds={playerTwoDisabled}
                   />
                 </Box>
               </Box>

@@ -1,13 +1,13 @@
 using System;
-using Application.Matches.Commands;
 using Application.Matches.DTOs;
+using Application.Tournaments.Commands;
 using FluentValidation;
 
-namespace Application.Matches.Validators;
+namespace Application.Tournaments.Validators;
 
-public class CompleteMatchValidator : AbstractValidator<CompleteMatch.Command>
+public class CompleteTournamentMatchValidator : AbstractValidator<CompleteTournamentMatch.Command>
 {
-    public CompleteMatchValidator()
+    public CompleteTournamentMatchValidator()
     {
         RuleFor(x => x.Rounds)
         // No partial fill
@@ -15,13 +15,16 @@ public class CompleteMatchValidator : AbstractValidator<CompleteMatch.Command>
             && !(string.IsNullOrEmpty(r.WinnerUserId) && string.IsNullOrEmpty(r.PlayerOneCharacterId) && string.IsNullOrEmpty(r.PlayerTwoCharacterId))))
             .WithMessage("Partially filled rounds are not allowed")
         // Enough rounds to decide the match
-        .Must(rounds => rounds
-            .Where(r => !string.IsNullOrEmpty(r.WinnerUserId))
-            .GroupBy(r => r.WinnerUserId)
-            .Select(g => g.Count())
-            .DefaultIfEmpty(0)
-            .Max() >= 2
-        ).WithMessage("Not enough rounds played to be decisive")
+        .Must(rounds =>
+        {
+            var requiredWins = (int)Math.Ceiling(rounds.Count / 2.0);
+            return rounds
+                .Where(r => !string.IsNullOrEmpty(r.WinnerUserId))
+                .GroupBy(r => r.WinnerUserId)
+                .Select(g => g.Count())
+                .DefaultIfEmpty(0)
+                .Max() >= requiredWins;
+        }).WithMessage("Not enough rounds played to be decisive")
         // No character reuse per player within the same match
         .Must(rounds => CharacterReuseViolation(rounds) == null)
         .WithMessage((_, rounds) => CharacterReuseViolation(rounds)!);

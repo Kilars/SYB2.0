@@ -29,7 +29,7 @@ import { useCharacters } from "../../lib/hooks/useCharacters";
 import { useTournaments } from "../../lib/hooks/useTournaments";
 import { COMPETITION_STATUSES } from "../../lib/util/constants";
 import { computeCharacterWinRates, computePlayerWinRates } from "../../lib/util/statUtils";
-import { CharacterWinRateScatter, CharacterWinRateTable, PlayerWinRateBar } from "../stats/charts";
+import { CharacterWinRateLogScatter, CharacterWinRateTable, PlayerWinRateBar } from "../stats/charts";
 
 const ROUND_LABELS: Record<number, string> = {
   1: "Round 1",
@@ -480,7 +480,7 @@ export default function BracketView() {
                         <Typography variant="subtitle1" fontWeight="bold" mb={1} sx={{ color: "primary.main" }}>
                           Character Win Rates
                         </Typography>
-                        <CharacterWinRateScatter data={charStats} />
+                        <CharacterWinRateLogScatter data={charStats} />
                       </Box>
                     )}
                     {playerStats.length > 0 && (
