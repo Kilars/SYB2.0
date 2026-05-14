@@ -46,14 +46,44 @@ jobs:
         working-directory: client
 
       - name: Fetch failed job logs
+        id: fetch_logs
         run: |
           mkdir -p .autofix
-          gh run view ${{ github.event.workflow_run.id }} --log-failed > .autofix/failed.log 2>&1 || true
-          tail -n 600 .autofix/failed.log > .autofix/failed.tail.log
+          set +e
+          gh run view ${{ github.event.workflow_run.id }} --log-failed > .autofix/failed.log 2> .autofix/gh-stderr.log
+          gh_exit=$?
+          set -e
+          if [ "$gh_exit" -ne 0 ]; then
+            echo "::warning::gh run view --log-failed exited with $gh_exit"
+            cat .autofix/gh-stderr.log >&2 || true
+          fi
+          # Always produce a tail file, even if fetch failed
+          tail -n 600 .autofix/failed.log > .autofix/failed.tail.log 2>/dev/null || true
+          bytes=$(wc -c < .autofix/failed.tail.log 2>/dev/null || echo 0)
+          echo "log_bytes=$bytes" >> "$GITHUB_OUTPUT"
+          echo "gh_exit=$gh_exit" >> "$GITHUB_OUTPUT"
+          echo "Fetched $bytes bytes of failed logs (gh exit=$gh_exit)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post autofix-started PR comment
+        if: ${{ steps.pr.outputs.number != '' }}
+        run: |
+          gh pr comment ${{ steps.pr.outputs.number }} --body "$(cat <<EOF
+          🤖 **claude-autofix started** for failed run [#${{ github.event.workflow_run.id }}](${{ github.event.workflow_run.html_url }}).
+
+          - Triggering workflow: \`${{ github.event.workflow_run.name }}\` · conclusion: \`${{ github.event.workflow_run.conclusion }}\`
+          - Autofix run: [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - Failed-log bytes captured: ${{ steps.fetch_logs.outputs.log_bytes }} (gh exit: ${{ steps.fetch_logs.outputs.gh_exit }})
+
+          I'll either push a fix on top of \`${{ steps.pr.outputs.head_ref }}\` or comment again with what I found.
+          EOF
+          )"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Playwright report (if e2e failed)
+        id: download_pw
         uses: actions/download-artifact@v4
         with:
           name: playwright-report
@@ -61,6 +91,10 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
+
+      - name: Capture head SHA before Claude runs
+        id: pre_sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -148,5 +182,56 @@ jobs:
 
             Push to `${{ steps.pr.outputs.head_ref }}`, then enable auto-merge:
             `gh pr merge ${{ steps.pr.outputs.number }} --auto --squash`
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Detect whether a fix was pushed
+        if: always()
+        id: post_check
+        run: |
+          git fetch origin "${{ steps.pr.outputs.head_ref }}" --depth=1 --quiet || true
+          remote_sha=$(git rev-parse "origin/${{ steps.pr.outputs.head_ref }}" 2>/dev/null || echo "")
+          local_sha=$(git rev-parse HEAD 2>/dev/null || echo "")
+          echo "pre_sha=${{ steps.pre_sha.outputs.sha }}"
+          echo "local_sha=$local_sha"
+          echo "remote_sha=$remote_sha"
+          pushed="false"
+          if [ -n "$remote_sha" ] && [ "$remote_sha" != "${{ steps.pre_sha.outputs.sha }}" ]; then
+            pushed="true"
+          fi
+          echo "pushed=$pushed" >> "$GITHUB_OUTPUT"
+
+      - name: Upload autofix debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autofix-debug-${{ github.run_id }}
+          path: .autofix/
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Post autofix-result PR comment
+        if: ${{ always() && steps.pr.outputs.number != '' }}
+        run: |
+          status="${{ job.status }}"
+          pushed="${{ steps.post_check.outputs.pushed }}"
+          if [ "$pushed" = "true" ]; then
+            outcome="✅ pushed a fix"
+          elif [ "$status" = "success" ]; then
+            outcome="ℹ️ ran without pushing (stop condition hit or no actionable fix found)"
+          else
+            outcome="❌ autofix workflow itself failed — see run logs"
+          fi
+          gh pr comment ${{ steps.pr.outputs.number }} --body "$(cat <<EOF
+          🤖 **claude-autofix finished**: $outcome
+
+          - Autofix run: [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - Job status: \`$status\`
+          - Failed-log bytes captured: ${{ steps.fetch_logs.outputs.log_bytes }} (gh exit: ${{ steps.fetch_logs.outputs.gh_exit }})
+          - Debug artifact: \`autofix-debug-${{ github.run_id }}\` (failed logs, planning notes, Playwright report if downloaded)
+
+          If outcome is \`ran without pushing\`, download the debug artifact to see what was captured and what the prompt would have seen.
+          EOF
+          )"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
