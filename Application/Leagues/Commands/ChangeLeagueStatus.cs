@@ -204,7 +204,7 @@ public class ChangeLeagueStatus
 
             for (int seed = 0; seed < MaxSeeds; seed++)
             {
-                var seededRng = new Random(rng.Next() ^ (seed * 0x9e3779b9));
+                var seededRng = new Random(unchecked(rng.Next() ^ (int)(seed * 0x9e3779b9)));
                 var (groups, imbalance) = TryGenerateFfaGroups(members, n, R, matchesPerBracket, seededRng);
 
                 if (imbalance < bestImbalance)
