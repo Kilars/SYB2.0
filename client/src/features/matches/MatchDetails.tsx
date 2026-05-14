@@ -14,6 +14,7 @@ import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useTournaments } from "../../lib/hooks/useTournaments";
 import { matchSchema, tournamentMatchSchema } from "../../lib/schemas/matchSchema";
 import { getPlayerDisplayName } from "../../lib/util/util";
+import FfaMatchForm from "./FfaMatchForm";
 import MatchDetailsForm from "./MatchDetailsForm";
 import MatchDetailsView from "./MatchDetailsView";
 
@@ -137,6 +138,8 @@ export default function MatchDetails({ type }: MatchDetailsProps) {
           onReopen={handleReopen}
           isReopening={reopenMatch.isPending}
         />
+      ) : (matchData.playerCount ?? 2) > 2 ? (
+        <FfaMatchForm matchData={matchData} />
       ) : (
         <MatchDetailsForm
           matchData={matchData}

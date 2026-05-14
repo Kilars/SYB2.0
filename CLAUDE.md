@@ -85,6 +85,8 @@ These rules MUST be checked before any domain-touching change:
 - Pairings use `(i + j) % 2` for deterministic side assignment, Fisher-Yates shuffle for match order
 - NEVER regenerate matches for an Active league — delete all and regenerate on status revert to Planned
 - 3 rounds per match (Bo3 format) for N=2; single round for N>2 (see N-player initiative)
+- **Legacy null coalesce**: any handler/query reading `league.PlayerCount` MUST coalesce null to 2 — `var n = league.PlayerCount ?? 2`. Pre-042 leagues have null and represent N=2 leagues.
+- **For N>2 leagues**: the schedule generator uses a BIBD-style greedy fill. Pair co-occurrence is balanced within ±2 across all `v*(v-1)/2` player pairs (greedy + multi-seed retry up to 16 seeds). Triples and quadruples may repeat. Illegal `(v, N)` combinations (where `R·v` is not divisible by N, with `R = ceil(2(v-1)/(N-1))`) are rejected at activation with a list of legal v counts up to 32.
 
 ### 2. Composite Key Safety
 - **Match PK**: `{CompetitionId, BracketNumber, MatchNumber}` — configured in `Persistence/AppDbContext.cs`
@@ -94,10 +96,11 @@ These rules MUST be checked before any domain-touching change:
 - NEVER modify composite key columns without a migration review and explicit task-board approval
 
 ### 3. Statistics Integrity
-- **Points formula**: Win = 4 points, Flawless bonus = 1 point
-- **Flawless definition**: Win where exactly 2 rounds have a WinnerUserId set (2-0 victory)
-- Statistics are computed backend-only in `GetLeagueLeaderboard.Handler`
-- Frontend NEVER computes points or statistics — it only displays backend results
+- **Points formula**: computed by `Application.Common.PlacementPoints.PointsForParticipant(match, rounds, userId)` (`Application/Common/PlacementPoints.cs`). Rounds are passed explicitly to enforce eager-load discipline at call sites.
+- **N=2 (Bo3) formula**: Win = 4 points, Flawless bonus = 1 point.
+- **Flawless applies to N=2 (Bo3) matches only.** Detection branches on `match.PlayerCount == 2`, not on Round-row outcome counts. A stray `Round.WinnerUserId` on an N>2 match does NOT award flawless credit.
+- **Placement points (N>2 leagues)**: 1st = 4 pts, 2nd = 2 pts, 3rd = 1 pt, 4th = 0 pts. No flawless bonus.
+- Statistics are computed backend-only in `GetLeagueLeaderboard.Handler`. Frontend NEVER computes points or statistics — it only displays backend results.
 
 ### 4. Guest Merge Safety
 - When merging a guest into a registered user, all FK references (CompetitionMember, Match.PlayerOneUserId, Match.PlayerTwoUserId, Match.WinnerUserId, Round.WinnerUserId) are migrated from the guest's UserId to the target user's UserId in a single transaction

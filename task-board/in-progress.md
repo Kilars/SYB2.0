@@ -6,7 +6,7 @@
 
 ## Current Task
 
-_None — 047 just completed. Next: 044 (League N-player integration) — see `backlog/044-FEATURE-league-n-player-integration.md`._
+_None — 044 just completed. Next: 045 (Casual N-player integration) — see `backlog/045-FEATURE-casual-n-player-integration.md`._
 
 <!--
 When a task is active, replace the above with:

@@ -122,4 +122,8 @@ type LeaderboardUser = {
   displayName: string;
   userId?: string;
   isGuest?: boolean;
+  firstPlaceCount?: number;
+  secondPlaceCount?: number;
+  thirdPlaceCount?: number;
+  fourthPlaceCount?: number;
 };
