@@ -127,6 +127,13 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .Property(l => l.PlayerCount)
             .HasColumnName("LeaguePlayerCount");
 
+        // Match.PlayerCount carries a SQL DEFAULT 2 created by the 042 migration
+        // (used to backfill pre-existing rows). Mirror it in the model so EF's
+        // PendingModelChangesWarning doesn't fire on startup.
+        builder.Entity<Match>()
+            .Property(m => m.PlayerCount)
+            .HasDefaultValue(2);
+
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),
             v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
