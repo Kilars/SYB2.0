@@ -1,6 +1,10 @@
 import { ArrowBack, SportsEsports } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { Link as RouterLink, useParams } from "react-router";
+import { toast } from "react-toastify";
+import z from "zod/v4";
 
 import AppBreadcrumbs from "../../app/shared/components/AppBreadcrumbs";
 import EmptyState from "../../app/shared/components/EmptyState";
@@ -9,12 +13,15 @@ import { useCompetitionMatch } from "../../lib/hooks/useCompetitionMatch";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 import { useTournaments } from "../../lib/hooks/useTournaments";
 import { matchSchema, tournamentMatchSchema } from "../../lib/schemas/matchSchema";
+import { getPlayerDisplayName } from "../../lib/util/util";
 import MatchDetailsForm from "./MatchDetailsForm";
 import MatchDetailsView from "./MatchDetailsView";
 
 interface MatchDetailsProps {
   type: "league" | "tournament";
 }
+
+type MatchFormValues = { rounds: Round[] };
 
 export default function MatchDetails({ type }: MatchDetailsProps) {
   const { competitionId, bracketNumber, matchNumber } = useParams();
@@ -34,6 +41,46 @@ export default function MatchDetails({ type }: MatchDetailsProps) {
   const { tournament } = useTournaments(type === "tournament" ? competitionId : undefined);
   const competition = league ?? tournament;
 
+  const isLeague = type === "league";
+  const schema = isLeague ? matchSchema : tournamentMatchSchema;
+
+  const { control, handleSubmit, watch, reset, formState: { isSubmitting } } = useForm<MatchFormValues>({
+    defaultValues: { rounds: matchData?.rounds ?? [] },
+  });
+
+  // Re-sync form state when matchData changes (navigating between matches or reopening)
+  useEffect(() => {
+    if (matchData) {
+      reset({ rounds: matchData.rounds });
+    }
+  }, [matchData, reset]);
+
+  const onSubmit = async (data: MatchFormValues) => {
+    try {
+      schema.parse(data.rounds);
+      await completeMatch.mutateAsync(data.rounds);
+      const { playerOne: p1, playerTwo: p2 } = matchData ?? {};
+      if (p1 && p2) {
+        const p1Score = data.rounds.filter((r) => r.winnerUserId === p1.userId).length;
+        const p2Score = data.rounds.filter((r) => r.winnerUserId === p2.userId).length;
+        const winner = p1Score > p2Score ? getPlayerDisplayName(p1) : getPlayerDisplayName(p2);
+        toast(`${winner} wins ${Math.max(p1Score, p2Score)}–${Math.min(p1Score, p2Score)}!`, { type: "success" });
+      } else {
+        toast("Match completed!", { type: "success" });
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        for (const issue of error.issues) {
+          toast(issue.message, { type: "error" });
+        }
+      } else toast("Server error", { type: "error" });
+    }
+  };
+
+  const handleReopen = async () => {
+    await reopenMatch.mutateAsync();
+  };
+
   if (isMatchLoading) return <LoadingSkeleton variant="detail" />;
   if (!matchData)
     return <EmptyState icon={<SportsEsports sx={{ fontSize: 48 }} />} message="Match not found" />;
@@ -45,7 +92,6 @@ export default function MatchDetails({ type }: MatchDetailsProps) {
       />
     );
 
-  const isLeague = type === "league";
   const backUrl = isLeague
     ? `/leagues/${competitionId}/matches`
     : `/tournaments/${competitionId}`;
@@ -62,16 +108,6 @@ export default function MatchDetails({ type }: MatchDetailsProps) {
         { label: competition?.title ?? "...", href: `/tournaments/${competitionId}` },
         { label: `Match #${matchNumber}` },
       ];
-
-  const schema = isLeague ? matchSchema : tournamentMatchSchema;
-
-  const handleComplete = async (rounds: Round[]) => {
-    await completeMatch.mutateAsync(rounds);
-  };
-
-  const handleReopen = async () => {
-    await reopenMatch.mutateAsync();
-  };
 
   return (
     <Box>
@@ -102,7 +138,13 @@ export default function MatchDetails({ type }: MatchDetailsProps) {
           isReopening={reopenMatch.isPending}
         />
       ) : (
-        <MatchDetailsForm matchData={matchData} onComplete={handleComplete} schema={schema} />
+        <MatchDetailsForm
+          matchData={matchData}
+          control={control}
+          handleSubmit={handleSubmit(onSubmit)}
+          watch={watch}
+          isSubmitting={isSubmitting}
+        />
       )}
     </Box>
   );

@@ -11,59 +11,37 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import z from "zod/v4";
+import { type Control, useFieldArray, type UseFormWatch } from "react-hook-form";
 
 import { useAppTheme } from "../../app/context/ThemeContext";
 import { SMASH_COLORS } from "../../app/theme";
+import { getPlayerDisplayName } from "../../lib/util/util";
 import CharacterSelect from "./CharacterSelect";
+
+type MatchFormValues = { rounds: Round[] };
 
 interface MatchDetailsFormProps {
   matchData: Match;
-  onComplete: (rounds: Round[]) => Promise<void>;
-  schema: z.ZodType<unknown>;
+  control: Control<MatchFormValues>;
+  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  watch: UseFormWatch<MatchFormValues>;
+  isSubmitting: boolean;
 }
 
-export default function MatchDetailsForm({ matchData, onComplete, schema }: MatchDetailsFormProps) {
+export default function MatchDetailsForm({
+  matchData,
+  control,
+  handleSubmit,
+  watch,
+  isSubmitting,
+}: MatchDetailsFormProps) {
   const { meta } = useAppTheme();
-  const [rounds, setRounds] = useState(matchData.rounds);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    setRounds(matchData.rounds);
-  }, [matchData]);
-
-  const onSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      schema.parse(rounds);
-      await onComplete(rounds);
-      const { playerOne: p1, playerTwo: p2 } = matchData;
-      if (p1 && p2) {
-        const p1Score = rounds.filter((r) => r.winnerUserId === p1.userId).length;
-        const p2Score = rounds.filter((r) => r.winnerUserId === p2.userId).length;
-        const winner = p1Score > p2Score ? getDisplayName(p1) : getDisplayName(p2);
-        toast(`${winner} wins ${Math.max(p1Score, p2Score)}–${Math.min(p1Score, p2Score)}!`, { type: "success" });
-      } else {
-        toast("Match completed!", { type: "success" });
-      }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        for (const issue of error.issues) {
-          toast(issue.message, { type: "error" });
-        }
-      } else toast("Server error", { type: "error" });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { fields, update } = useFieldArray({ control, name: "rounds" });
+  const rounds = watch("rounds");
 
   const { playerOne, playerTwo } = matchData;
   if (!playerOne || !playerTwo) return null;
-
-  const getDisplayName = (player: Player) =>
-    player.isGuest ? `${player.displayName} (guest)` : player.displayName;
 
   const playerOneScore = rounds.filter((r) => r.winnerUserId === playerOne.userId).length;
   const playerTwoScore = rounds.filter((r) => r.winnerUserId === playerTwo.userId).length;
@@ -126,7 +104,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
               maxWidth: { xs: "30vw", sm: "none" },
             }}
           >
-            {getDisplayName(playerOne)}
+            {getPlayerDisplayName(playerOne)}
           </Typography>
           <Box
             sx={{
@@ -150,7 +128,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
               maxWidth: { xs: "30vw", sm: "none" },
             }}
           >
-            {getDisplayName(playerTwo)}
+            {getPlayerDisplayName(playerTwo)}
           </Typography>
         </Box>
       </Paper>
@@ -179,7 +157,8 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
         })}
       </Box>
 
-      {rounds.map((round, i) => {
+      {fields.map((field, i) => {
+        const round = rounds[i];
         const roundStatus = getRoundStatus(round);
         const isDecidedEarly = matchDecided && !round.winnerUserId;
         const borderColor = ROUND_STATUS_COLORS[roundStatus];
@@ -195,7 +174,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
 
         return (
           <Card
-            key={round.competitionId + round.bracketNumber + round.matchNumber + round.roundNumber}
+            key={field.id}
             variant="outlined"
             sx={{
               opacity: isDecidedEarly ? 0.5 : 1,
@@ -227,15 +206,11 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
               <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="h6" sx={{ color: SMASH_COLORS.p1Red }}>
-                    {getDisplayName(playerOne)}
+                    {getPlayerDisplayName(playerOne)}
                   </Typography>
                   <CharacterSelect
                     onChange={(id) =>
-                      setRounds((originalRounds) =>
-                        originalRounds.map((r, index) =>
-                          index === i ? { ...r, playerOneCharacterId: id } : r,
-                        ),
-                      )
+                      update(i, { ...rounds[i], playerOneCharacterId: id })
                     }
                     selectedId={round.playerOneCharacterId}
                     userId={playerOne.userId}
@@ -244,15 +219,11 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                 </Box>
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="h6" sx={{ color: SMASH_COLORS.p2Blue }}>
-                    {getDisplayName(playerTwo)}
+                    {getPlayerDisplayName(playerTwo)}
                   </Typography>
                   <CharacterSelect
                     onChange={(id) =>
-                      setRounds((originalRounds) =>
-                        originalRounds.map((r, index) =>
-                          index === i ? { ...r, playerTwoCharacterId: id } : r,
-                        ),
-                      )
+                      update(i, { ...rounds[i], playerTwoCharacterId: id })
                     }
                     selectedId={round.playerTwoCharacterId}
                     userId={playerTwo.userId}
@@ -274,11 +245,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                   fullWidth
                   value={round.winnerUserId ?? null}
                   onChange={(_, newValue) => {
-                    setRounds((prev) =>
-                      prev.map((r, idx) =>
-                        idx === i ? { ...r, winnerUserId: newValue ?? undefined } : r,
-                      ),
-                    );
+                    update(i, { ...rounds[i], winnerUserId: newValue ?? undefined });
                   }}
                   aria-label={`Round ${round.roundNumber} winner selection`}
                   sx={{
@@ -289,7 +256,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                 >
                   <ToggleButton
                     value={playerOne.userId}
-                    aria-label={`${getDisplayName(playerOne)} wins round ${round.roundNumber}`}
+                    aria-label={`${getPlayerDisplayName(playerOne)} wins round ${round.roundNumber}`}
                     sx={{
                       "&.Mui-selected": {
                         backgroundColor: `${SMASH_COLORS.p1Red}22`,
@@ -298,11 +265,11 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                       },
                     }}
                   >
-                    {getDisplayName(playerOne)}
+                    {getPlayerDisplayName(playerOne)}
                   </ToggleButton>
                   <ToggleButton
                     value={playerTwo.userId}
-                    aria-label={`${getDisplayName(playerTwo)} wins round ${round.roundNumber}`}
+                    aria-label={`${getPlayerDisplayName(playerTwo)} wins round ${round.roundNumber}`}
                     sx={{
                       "&.Mui-selected": {
                         backgroundColor: `${SMASH_COLORS.p2Blue}22`,
@@ -311,7 +278,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
                       },
                     }}
                   >
-                    {getDisplayName(playerTwo)}
+                    {getPlayerDisplayName(playerTwo)}
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Box>
@@ -342,7 +309,7 @@ export default function MatchDetailsForm({ matchData, onComplete, schema }: Matc
             <CheckCircleOutlineIcon />
           ) : undefined
         }
-        onClick={() => onSubmit()}
+        onClick={handleSubmit}
       >
         {isSubmitting ? "Completing..." : matchDecided ? "Complete Match" : "Fill in rounds to complete"}
       </Button>

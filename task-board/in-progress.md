@@ -6,7 +6,7 @@
 
 ## Current Task
 
-_None — 043 just completed. Next: 047 (MatchDetailsForm RHF conversion) — see `backlog/047-REFACTOR-matchdetailsform-rhf-conversion.md`._
+_None — 047 just completed. Next: 044 (League N-player integration) — see `backlog/044-FEATURE-league-n-player-integration.md`._
 
 <!--
 When a task is active, replace the above with:
