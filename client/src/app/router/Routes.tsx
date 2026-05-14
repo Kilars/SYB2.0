@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 
 import LoginForm from "../../features/account/LoginForm";
@@ -14,6 +15,8 @@ import TournamentList from "../../features/tournaments/TournamentList";
 import App from "../layout/App";
 import SwipeableModesLayout from "../layout/SwipeableModesLayout";
 import RequireAuth from "./RequireAuth";
+
+const PodiumDemo = lazy(() => import("../../features/_dev/PodiumDemo"));
 
 export const router = createBrowserRouter([
   {
@@ -51,7 +54,6 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      // Swipeable mode pages (list views)
       {
         element: <SwipeableModesLayout />,
         children: [
@@ -63,6 +65,14 @@ export const router = createBrowserRouter([
       { path: "login", element: <LoginForm /> },
       { path: "register", element: <RegisterForm /> },
       { path: "server-error", element: <ServerError /> },
+      {
+        path: "_dev/podium",
+        element: (
+          <Suspense fallback={null}>
+            <PodiumDemo />
+          </Suspense>
+        ),
+      },
     ],
   },
 ]);

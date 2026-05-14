@@ -1,6 +1,6 @@
 import { Add, SportsEsports } from "@mui/icons-material";
 import { Avatar, Box, Card, CardContent, Chip, Typography } from "@mui/material";
-import  useState } from "react";
+import { useState } from "react";
 
 import EmptyState from "../../app/shared/components/EmptyState";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";

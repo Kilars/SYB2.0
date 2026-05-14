@@ -52,7 +52,7 @@ export default defineConfig({
       url: 'https://localhost:5002/api/leagues',
       reuseExistingServer: !process.env.CI,
       cwd: '..',
-      timeout: 120000, // Allow time for .NET build + EF seeding
+      timeout: 240000, // Allow time for migration (many ALTER TABLE) + seed data
       stdout: 'ignore',
       stderr: 'pipe',
       ignoreHTTPSErrors: true,

@@ -88,7 +88,7 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
   };
 
   useEffect(() => {
-    if (league) reset(league);
+    if (league) reset({ ...league });
   }, [reset, league]);
 
   if (isEditMode && isLeagueLoading) return <LoadingSkeleton variant="detail" />;

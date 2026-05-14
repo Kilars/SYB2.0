@@ -3,6 +3,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 concurrency:
   group: pr-build-${{ github.ref }}
   cancel-in-progress: true
@@ -77,12 +81,47 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: e2e
 
+      - name: Pre-build API (skip cold compile inside playwright webServer)
+        run: dotnet build API --configuration Debug
+
       - name: Run E2E (full suite)
-        run: npm test
+        id: run_e2e
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee /tmp/e2e-output.log
         working-directory: e2e
         env:
           CI: "true"
           ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=Syb;User Id=sa;Password=Password@1;TrustServerCertificate=True"
+
+      - name: Summarize E2E failure inline
+        if: failure()
+        run: |
+          echo "============================================================"
+          echo "E2E FAILURE SUMMARY (inline so the issue is visible in CI log)"
+          echo "============================================================"
+          echo ""
+          echo "--- Last 200 lines of Playwright stdout/stderr ---"
+          tail -n 200 /tmp/e2e-output.log || echo "no stdout captured"
+          echo ""
+          echo "--- Failed test titles + errors (grep) ---"
+          grep -E "^\s*(✘|✓|FAIL|Error:|Timeout|expect\(|at .*\.spec\.ts)" /tmp/e2e-output.log | head -100 || true
+          echo ""
+          echo "--- Playwright HTML report directory listing ---"
+          ls -la playwright-report/ 2>/dev/null || echo "no playwright-report dir"
+          echo ""
+          echo "--- test-results.json (if present) ---"
+          cat playwright-report/test-results.json 2>/dev/null | head -200 || echo "no test-results.json"
+        working-directory: e2e
+
+      - name: Upload raw E2E log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-raw-log
+          path: /tmp/e2e-output.log
+          retention-days: 7
+          if-no-files-found: warn
 
       - name: Upload Playwright report on failure
         if: failure()
@@ -91,3 +130,35 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+      - name: Post E2E failure summary as PR comment
+        if: failure()
+        run: |
+          # Extract the most useful slice of the playwright output:
+          # the failure block(s) plus the final summary line.
+          {
+            echo '## E2E failure — `'"$GITHUB_SHA"'`'
+            echo
+            echo '<details><summary>Last 120 lines of Playwright output</summary>'
+            echo
+            echo '```'
+            tail -n 120 /tmp/e2e-output.log 2>/dev/null || echo "(no log captured)"
+            echo '```'
+            echo
+            echo '</details>'
+            echo
+            echo '<details><summary>Failure markers (✘ / Error: / Timeout / expect / at *.spec.ts)</summary>'
+            echo
+            echo '```'
+            grep -E "(✘|FAIL|Error:|Timeout|expect\(|at .*\.spec\.ts)" /tmp/e2e-output.log 2>/dev/null | head -80 || echo "(no markers grepped)"
+            echo '```'
+            echo
+            echo '</details>'
+            echo
+            echo "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "Artifact: \`e2e-raw-log\` and \`playwright-report\` (7d retention)"
+          } > /tmp/pr-comment.md
+
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/pr-comment.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

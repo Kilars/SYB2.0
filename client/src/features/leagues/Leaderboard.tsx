@@ -20,6 +20,7 @@ import { useNavigate, useParams } from "react-router";
 
 import EmptyState from "../../app/shared/components/EmptyState";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
+import { getRankStyleSafe } from "../../app/shared/components/rankStyles";
 import UserChip from "../../app/shared/components/UserChip";
 import { SMASH_COLORS } from "../../app/theme";
 import { useAccount } from "../../lib/hooks/useAccount";
@@ -27,26 +28,6 @@ import { useLeagues } from "../../lib/hooks/useLeagues";
 import MergeGuestDialog from "./MergeGuestDialog";
 import StatusButton from "./StatusButton";
 
-const RANK_STYLES: Record<number, { bg: string; border: string; color: string; icon: string }> = {
-  1: {
-    bg: "linear-gradient(135deg, #FFF8E1 0%, #FFD700 100%)",
-    border: SMASH_COLORS.gold,
-    color: "#5D4E00",
-    icon: "🥇",
-  },
-  2: {
-    bg: "linear-gradient(135deg, #F5F5F5 0%, #C0C0C0 100%)",
-    border: SMASH_COLORS.silver,
-    color: "#424242",
-    icon: "🥈",
-  },
-  3: {
-    bg: "linear-gradient(135deg, #FBE9E7 0%, #CD7F32 100%)",
-    border: SMASH_COLORS.bronze,
-    color: "#4E342E",
-    icon: "🥉",
-  },
-};
 
 type LeaderboardCardProps = {
   rank: number;
@@ -59,7 +40,7 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
     entry.wins + entry.losses === 0
       ? 0
       : Math.round((entry.wins * 100) / (entry.wins + entry.losses));
-  const rankStyle = RANK_STYLES[rank];
+  const rankStyle = getRankStyleSafe(rank);
   return (
     <Paper
       elevation={rankStyle ? 4 : 2}
@@ -144,7 +125,7 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
 }
 
 function RankBadge({ rank }: { rank: number }) {
-  const rankStyle = RANK_STYLES[rank];
+  const rankStyle = getRankStyleSafe(rank);
   if (!rankStyle) {
     return (
       <Box
@@ -288,7 +269,7 @@ export default function Leaderboard() {
             <TableBody>
               {leaderboard.map((leaderboardUser, i) => {
                 const rank = i + 1;
-                const rankStyle = RANK_STYLES[rank];
+                const rankStyle = getRankStyleSafe(rank);
                 const rowBg = rankStyle ? rankStyle.bg : undefined;
                 return (
                   <TableRow

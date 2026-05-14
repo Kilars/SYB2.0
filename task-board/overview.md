@@ -8,25 +8,25 @@ UX & Accessibility audit — 22 tasks covering bugs, mobile responsiveness, inte
 
 | Status | Count |
 |--------|-------|
-| Backlog | 7 |
+| Backlog | 6 |
 | In Progress | 0 |
-| Done | 43 |
+| Done | 44 |
 
 ## Top Priorities
 
-N-player support initiative — sub-plans 2 onward. Dependency order: 043 → 047 → 044 → (045, 046a → 046b) → 048.
+N-player support initiative — sub-plans 2 onward. Dependency order: 047 → 044 → (045, 046a → 046b) → 048.
 
-1. **043-FEATURE-podium-picker-ui-primitives** — Podium Picker UI primitives + RHF adapter
-2. **047-REFACTOR-matchdetailsform-rhf-conversion** — MatchDetailsForm RHF conversion (prerequisite for 044)
-3. **044-FEATURE-league-n-player-integration** — League schedule + stats + match-entry
-4. **045-FEATURE-casual-n-player-integration** — Casual N-player integration
-5. **046a-FEATURE-tournament-n-player-backend** — Tournament backend (schema + StartTournament + BracketSizing/Builder)
-6. **046b-FEATURE-tournament-n-player-frontend** — Tournament frontend (Complete/Reopen + bracket UI + SlotMapping)
-7. **048-TEST-3p-league-lifecycle-e2e** — 3-player league lifecycle E2E test
+1. **047-REFACTOR-matchdetailsform-rhf-conversion** — MatchDetailsForm RHF conversion (prerequisite for 044)
+2. **044-FEATURE-league-n-player-integration** — League schedule + stats + match-entry
+3. **045-FEATURE-casual-n-player-integration** — Casual N-player integration
+4. **046a-FEATURE-tournament-n-player-backend** — Tournament backend (schema + StartTournament + BracketSizing/Builder)
+5. **046b-FEATURE-tournament-n-player-frontend** — Tournament frontend (Complete/Reopen + bracket UI + SlotMapping)
+6. **048-TEST-3p-league-lifecycle-e2e** — 3-player league lifecycle E2E test
 
 ## Recently Completed
 
-1. **043-FEATURE-unselectable-played-characters-bo-n** — Enforced per-player, per-match character lockout in Bo-N matches. Backend validators and handlers reject duplicate-character submissions; frontend disables already-used characters in CharacterSelect dropdowns; Zod schemas provide frontend parity. Completed 2026-05-06.
+1. **043-FEATURE-podium-picker-ui-primitives** — Shipped headless `usePodiumState` hook, dumb `PodiumPicker` view, RHF `PodiumPickerField` adapter, `PodiumDisplay`, `PodiumPlinth`, `PlayerCountToggle`, lifted `rankStyles`, `makeFfaResultSchema` factory, `useFfaMatch` mutation, and a `/_dev/podium` demo route. CompetitionForm now wires `PlayerCountToggle` for leagues. Unit tests deferred (no JS test harness in repo). Completed 2026-05-13.
+2. **043-FEATURE-unselectable-played-characters-bo-n** — Enforced per-player, per-match character lockout in Bo-N matches. Backend validators and handlers reject duplicate-character submissions; frontend disables already-used characters in CharacterSelect dropdowns; Zod schemas provide frontend parity. Completed 2026-05-06.
 2. **042-FEATURE-character-select-top-picks** — Added top-5 most-used character picks to CharacterSelect dropdown with "Most likely picks" grouped header. New backend endpoint `GET /api/characters/user/{userId}/top`, new `useTopCharacters` hook, and MUI grouped Autocomplete. Completed 2026-05-06.
 2. **041-BUG-recharts-responsive-container-warnings** — Replaced `ready` boolean with measured `dims` and passed numeric width/height to ResponsiveContainer in 3 chart components. Completed 2026-04-29.
 2. **036-BUG-e2e-test-workarounds** — Removed console error suppressions, tightened URL patterns, replaced hardcoded waits. Completed 2026-03-03.
