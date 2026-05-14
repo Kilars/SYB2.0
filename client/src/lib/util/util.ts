@@ -11,3 +11,7 @@ export function timeAgo(date: DateArg<Date>) {
 
 export const requiredString = (fieldName: string) =>
   z.string({ error: `${fieldName} is required` }).min(1, { message: `${fieldName} is required` });
+
+export function getPlayerDisplayName(player: { displayName: string; isGuest?: boolean }) {
+  return player.isGuest ? `${player.displayName} (guest)` : player.displayName;
+}

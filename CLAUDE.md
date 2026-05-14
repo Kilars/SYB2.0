@@ -237,7 +237,6 @@ A task is complete when:
 
 - MobX is used minimally (just uiStore + observer on NavBar) — could be removed in favor of React Query + context
 - `requiredString` utility is defined in both `util.ts` and `leagueSchema.ts` — needs consolidation
-- Match details form uses local `useState` instead of React Hook Form for round state management (scheduled for retirement in task 047)
 - No error boundary components (only ServerError page for 500s)
 
 ---
