@@ -78,11 +78,43 @@ jobs:
         working-directory: e2e
 
       - name: Run E2E (full suite)
-        run: npm test
+        id: run_e2e
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee /tmp/e2e-output.log
         working-directory: e2e
         env:
           CI: "true"
           ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=Syb;User Id=sa;Password=Password@1;TrustServerCertificate=True"
+
+      - name: Summarize E2E failure inline
+        if: failure()
+        run: |
+          echo "============================================================"
+          echo "E2E FAILURE SUMMARY (inline so the issue is visible in CI log)"
+          echo "============================================================"
+          echo ""
+          echo "--- Last 200 lines of Playwright stdout/stderr ---"
+          tail -n 200 /tmp/e2e-output.log || echo "no stdout captured"
+          echo ""
+          echo "--- Failed test titles + errors (grep) ---"
+          grep -E "^\s*(✘|✓|FAIL|Error:|Timeout|expect\(|at .*\.spec\.ts)" /tmp/e2e-output.log | head -100 || true
+          echo ""
+          echo "--- Playwright HTML report directory listing ---"
+          ls -la playwright-report/ 2>/dev/null || echo "no playwright-report dir"
+          echo ""
+          echo "--- test-results.json (if present) ---"
+          cat playwright-report/test-results.json 2>/dev/null | head -200 || echo "no test-results.json"
+        working-directory: e2e
+
+      - name: Upload raw E2E log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-raw-log
+          path: /tmp/e2e-output.log
+          retention-days: 7
+          if-no-files-found: warn
 
       - name: Upload Playwright report on failure
         if: failure()
