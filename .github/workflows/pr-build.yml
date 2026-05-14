@@ -3,6 +3,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 concurrency:
   group: pr-build-${{ github.ref }}
   cancel-in-progress: true
@@ -123,3 +127,35 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+      - name: Post E2E failure summary as PR comment
+        if: failure()
+        run: |
+          # Extract the most useful slice of the playwright output:
+          # the failure block(s) plus the final summary line.
+          {
+            echo '## E2E failure — `'"$GITHUB_SHA"'`'
+            echo
+            echo '<details><summary>Last 120 lines of Playwright output</summary>'
+            echo
+            echo '```'
+            tail -n 120 /tmp/e2e-output.log 2>/dev/null || echo "(no log captured)"
+            echo '```'
+            echo
+            echo '</details>'
+            echo
+            echo '<details><summary>Failure markers (✘ / Error: / Timeout / expect / at *.spec.ts)</summary>'
+            echo
+            echo '```'
+            grep -E "(✘|FAIL|Error:|Timeout|expect\(|at .*\.spec\.ts)" /tmp/e2e-output.log 2>/dev/null | head -80 || echo "(no markers grepped)"
+            echo '```'
+            echo
+            echo '</details>'
+            echo
+            echo "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "Artifact: \`e2e-raw-log\` and \`playwright-report\` (7d retention)"
+          } > /tmp/pr-comment.md
+
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/pr-comment.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
