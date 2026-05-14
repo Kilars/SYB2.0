@@ -50,8 +50,12 @@ export const useLeagues = (id?: string) => {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async (data: number) => {
-      await agent.post(`leagues/${id}/status?status=${data}`);
+    mutationFn: async (data: number | { status: number; playerCount?: number }) => {
+      const status = typeof data === "number" ? data : data.status;
+      const playerCount = typeof data === "number" ? undefined : data.playerCount;
+      const params = new URLSearchParams({ status: String(status) });
+      if (playerCount != null) params.append("playerCount", String(playerCount));
+      await agent.post(`leagues/${id}/status?${params.toString()}`);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["league", id] });

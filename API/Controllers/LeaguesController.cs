@@ -37,9 +37,9 @@ public class LeaguesController() : BaseApiController
     }
     [HttpPost("{competitionId}/status")]
     [Authorize(Policy = "IsCompetitionAdmin")]
-    public async Task<ActionResult> ChangeLeagueStatus(string competitionId, CompetitionStatus status)
+    public async Task<ActionResult> ChangeLeagueStatus(string competitionId, CompetitionStatus status, int? playerCount = null)
     {
-        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = competitionId, NewStatus = status }));
+        return HandleResult(await Mediator.Send(new ChangeLeagueStatus.Command { LeagueId = competitionId, NewStatus = status, PlayerCount = playerCount }));
     }
     [HttpDelete("{competitionId}")]
     [Authorize(Policy = "IsCompetitionAdmin")]

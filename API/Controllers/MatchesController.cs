@@ -32,6 +32,23 @@ public class MatchesController : BaseApiController
         return HandleResult(await Mediator.Send(new ReopenMatch.Command { CompetitionId = competitionId, BracketNumber = bracketNumber, MatchNumber = matchNumber }));
     }
 
+    [HttpPost("{competitionId}/bracket/{bracketNumber}/match/{matchNumber}/complete-ffa")]
+    [Authorize(Policy = "IsCompetitionMember")]
+    [Authorize(Policy = "IsMatchEditable")]
+    public async Task<ActionResult<MatchDto>> CompleteFfaMatch(string competitionId, int bracketNumber, int matchNumber, FfaMatchBody body)
+    {
+        return HandleResult(await Mediator.Send(new CompleteFfaMatch.Command
+        {
+            CompetitionId = competitionId,
+            BracketNumber = bracketNumber,
+            MatchNumber = matchNumber,
+            WinnerUserId = body.WinnerUserId,
+            SecondPlaceUserId = body.SecondPlaceUserId,
+            ThirdPlaceUserId = body.ThirdPlaceUserId,
+            FourthPlaceUserId = body.FourthPlaceUserId,
+        }));
+    }
+
     [HttpGet("user/{id}")]
     public async Task<ActionResult<MatchDto>> GetUserMatches(string id)
     {

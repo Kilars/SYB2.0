@@ -27,9 +27,17 @@ public class ReopenMatch
             foreach (var round in match.Rounds)
             {
                 round.Completed = false;
+                round.WinnerUserId = null;
+                round.PlayerOneCharacterId = null;
+                round.PlayerTwoCharacterId = null;
+                round.PlayerThreeCharacterId = null;
+                round.PlayerFourCharacterId = null;
             }
             match.Completed = false;
             match.WinnerUserId = null;
+            match.SecondPlaceUserId = null;
+            match.ThirdPlaceUserId = null;
+            match.FourthPlaceUserId = null;
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
 

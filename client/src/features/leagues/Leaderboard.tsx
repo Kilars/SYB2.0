@@ -113,7 +113,7 @@ function LeaderboardCard({ rank, entry }: LeaderboardCardProps) {
             </Typography>
             {entry.flawless > 0 && <AutoAwesome sx={{ color: SMASH_COLORS.gold, fontSize: 18 }} />}
           </Box>
-          <Tooltip title="4 pts per win + 1 bonus for 2-0 sweep" enterDelay={200} arrow>
+          <Tooltip title="Placement-based points (1st=4, 2nd=2, 3rd=1, 4th=0) plus flawless bonus for 2-0 sweeps in N=2 leagues." enterDelay={200} arrow>
             <Typography variant="caption" color="text.secondary" sx={{ cursor: "help", borderBottom: "1px dotted", borderColor: "text.secondary" }}>
               pts{entry.flawless > 0 ? ` (${entry.flawless} flawless)` : ""}
             </Typography>
@@ -221,11 +221,12 @@ export default function Leaderboard() {
                 <TableCell
                   sx={{ backgroundColor: "primary.main", color: "white", fontWeight: "bold" }}
                   align="center"
-                  aria-label="Points"
+                  aria-label="Performance"
+                  data-testid="leaderboard-header-performance"
                 >
-                  <Tooltip title="4 pts per win + 1 bonus for 2-0 sweep" arrow>
+                  <Tooltip title="Placement-based points (1st=4, 2nd=2, 3rd=1, 4th=0) plus flawless bonus for 2-0 sweeps in N=2 leagues." arrow>
                     <Box display="inline-flex" alignItems="center" gap={0.5} sx={{ cursor: "help" }}>
-                      Points
+                      Performance
                       <HelpOutline sx={{ fontSize: 16, opacity: 0.8 }} />
                     </Box>
                   </Tooltip>
@@ -274,6 +275,7 @@ export default function Leaderboard() {
                 return (
                   <TableRow
                     key={leaderboardUser.displayName}
+                    data-testid={`leaderboard-row-${leaderboardUser.userId ?? ""}`}
                     onClick={() =>
                       leaderboardUser.userId &&
                       navigate(`/user/${leaderboardUser.userId}`)

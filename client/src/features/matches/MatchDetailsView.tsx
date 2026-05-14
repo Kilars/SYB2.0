@@ -17,8 +17,10 @@ import {
 import { useState } from "react";
 
 import { useAppTheme } from "../../app/context/ThemeContext";
+import PodiumDisplay from "../../app/shared/components/PodiumDisplay";
 import { SMASH_COLORS } from "../../app/theme";
 import { useCharacters } from "../../lib/hooks/useCharacters";
+import { getPlayerDisplayName } from "../../lib/util/util";
 
 interface MatchDetailsViewProps {
   matchData: Match;
@@ -40,8 +42,101 @@ export default function MatchDetailsView({
   const { playerOne, playerTwo } = matchData;
   if (!playerOne || !playerTwo) return null;
 
-  const getDisplayName = (player: Player) =>
-    player.isGuest ? `${player.displayName} (Guest)` : player.displayName;
+  const handleConfirmReopen = async () => {
+    await onReopen();
+    setConfirmOpen(false);
+  };
+
+  // N>2 completed view: render PodiumDisplay instead of round cards
+  if ((matchData.playerCount ?? 2) > 2) {
+    const allPlayers = [playerOne, playerTwo, matchData.playerThree, matchData.playerFour]
+      .filter((p): p is Player => p != null);
+
+    const findEntry = (userId: string | undefined) => {
+      if (!userId) return undefined;
+      const p = allPlayers.find(x => x.userId === userId);
+      return p ? { userId: p.userId, displayName: p.displayName, isGuest: p.isGuest } : undefined;
+    };
+
+    const placements = {
+      winner: findEntry(matchData.winnerUserId),
+      second: findEntry(matchData.secondPlaceUserId),
+      third: findEntry(matchData.thirdPlaceUserId),
+      fourth: findEntry(matchData.fourthPlaceUserId),
+    };
+
+    const allParticipants = allPlayers.map(p => ({
+      userId: p.userId,
+      displayName: p.displayName,
+      isGuest: p.isGuest,
+    }));
+
+    return (
+      <Box>
+        <Box mb={3}>
+          <PodiumDisplay
+            placements={placements}
+            participants={allParticipants}
+            collapseRule="winner-only"
+          />
+        </Box>
+
+        {/* Reopen button */}
+        <Button
+          variant="contained"
+          color="warning"
+          fullWidth
+          sx={{
+            mt: 3,
+            py: 1.5,
+            fontWeight: "bold",
+            "&:focus-visible": {
+              outline: "2px solid",
+              outlineColor: "warning.main",
+              outlineOffset: 2,
+            },
+          }}
+          disabled={isReopening}
+          startIcon={isReopening ? <CircularProgress size={18} /> : <Warning />}
+          onClick={() => setConfirmOpen(true)}
+        >
+          {isReopening ? "Reopening..." : "Reopen match"}
+        </Button>
+
+        <Dialog
+          open={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          aria-labelledby="reopen-dialog-title"
+          aria-describedby="reopen-dialog-description"
+        >
+          <DialogTitle
+            id="reopen-dialog-title"
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
+            <Warning sx={{ color: SMASH_COLORS.p3Yellow }} />
+            Reopen Match?
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="reopen-dialog-description">
+              This will allow editing of match results. Are you sure?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
+            <Button
+              onClick={handleConfirmReopen}
+              color="warning"
+              variant="contained"
+              disabled={isReopening}
+              startIcon={isReopening ? <CircularProgress size={16} /> : undefined}
+            >
+              {isReopening ? "Reopening..." : "Reopen"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    );
+  }
 
   const completedRounds = matchData.rounds.filter((r) => !!r.winnerUserId);
   const playerOneWins = completedRounds.filter((r) => r.winnerUserId === playerOne.userId).length;
@@ -52,11 +147,6 @@ export default function MatchDetailsView({
   const isFlawless =
     (playerOneWins === requiredWins && playerTwoWins === 0) ||
     (playerTwoWins === requiredWins && playerOneWins === 0);
-
-  const handleConfirmReopen = async () => {
-    await onReopen();
-    setConfirmOpen(false);
-  };
 
   return (
     <Box>
@@ -89,7 +179,7 @@ export default function MatchDetailsView({
               sx={{ color: isFlawless ? SMASH_COLORS.gold : SMASH_COLORS.p4Green, fontSize: 28 }}
             />
             <Typography variant="body1" fontWeight="bold" sx={{ color: SMASH_COLORS.p4Green }}>
-              {getDisplayName(playerOneIsWinner ? playerOne : playerTwo)} wins!
+              {getPlayerDisplayName(playerOneIsWinner ? playerOne : playerTwo)} wins!
               {isFlawless && (
                 <Typography
                   component="span"
@@ -119,7 +209,7 @@ export default function MatchDetailsView({
               maxWidth: { xs: "30vw", sm: "none" },
             }}
           >
-            {getDisplayName(playerOne)}
+            {getPlayerDisplayName(playerOne)}
           </Typography>
           <Box
             sx={{
@@ -143,7 +233,7 @@ export default function MatchDetailsView({
               maxWidth: { xs: "30vw", sm: "none" },
             }}
           >
-            {getDisplayName(playerTwo)}
+            {getPlayerDisplayName(playerTwo)}
           </Typography>
         </Box>
       </Paper>
@@ -228,7 +318,7 @@ export default function MatchDetailsView({
                       maxWidth: "100%",
                     }}
                   >
-                    {getDisplayName(playerOne)}
+                    {getPlayerDisplayName(playerOne)}
                   </Typography>
                   {p1Char && (
                     <img
@@ -305,7 +395,7 @@ export default function MatchDetailsView({
                       maxWidth: "100%",
                     }}
                   >
-                    {getDisplayName(playerTwo)}
+                    {getPlayerDisplayName(playerTwo)}
                   </Typography>
                   {p2Char && (
                     <img
