@@ -81,6 +81,9 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: e2e
 
+      - name: Pre-build API (skip cold compile inside playwright webServer)
+        run: dotnet build API --configuration Debug
+
       - name: Run E2E (full suite)
         id: run_e2e
         run: |
