@@ -27,6 +27,10 @@ public class GetMatchDetails
                 .Include(x => x.PlayerOne!.User)
                 .Include(x => x.PlayerTwo)
                 .Include(x => x.PlayerTwo!.User)
+                .Include(x => x.PlayerThree)
+                .Include(x => x.PlayerThree!.User)
+                .Include(x => x.PlayerFour)
+                .Include(x => x.PlayerFour!.User)
                 .FirstOrDefaultAsync(x =>
                     x.CompetitionId == request.CompetitionId && x.BracketNumber == request.BracketNumber && x.MatchNumber == request.MatchNumber,
                     cancellationToken

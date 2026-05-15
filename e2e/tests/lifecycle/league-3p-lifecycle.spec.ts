@@ -58,7 +58,7 @@ test.describe('League 3P Lifecycle', () => {
     await leaderboard.waitForTable();
 
     // Choose the 3-player format on the activation toggle
-    await page.getByTestId('player-count-toggle').getByRole('button', { name: '3' }).click();
+    await page.getByTestId('player-count-toggle').locator('button[value="3"]').click();
 
     await status.clickStartLeague();
     await status.expectRevertVisible();
