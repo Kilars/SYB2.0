@@ -6,7 +6,7 @@
 
 ## Current Task
 
-_None — 045 just completed. Next: 046a (Tournament N-player backend) — see `backlog/046a-FEATURE-tournament-n-player-backend.md`._
+_None — 046a completed 2026-05-15 (moved to done/). Next: 046b (Tournament N-player frontend) — see `backlog/046b-FEATURE-tournament-n-player-frontend.md`._
 
 <!--
 When a task is active, replace the above with:

@@ -1,5 +1,6 @@
 using System;
 using Application.Core;
+using Application.Tournaments;
 using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,105 +30,31 @@ public class StartTournament
             if (tournament.Status != CompetitionStatus.Planned)
                 return Result<Unit>.Failure("Tournament must be in Planned status to start", 400);
 
-            var validCounts = new[] { 4, 8, 16, 32 };
-            if (!validCounts.Contains(tournament.Members.Count))
-                return Result<Unit>.Failure($"Tournament must have exactly 4, 8, 16, or 32 players to start. Got {tournament.Members.Count}.", 400);
+            var perHeatPlayerCount = tournament.PerHeatPlayerCount;
 
-            GenerateBracket(tournament);
+            // Exact-size roster required: member count must equal a legal bracket size for
+            // this per-heat N. No padding — short rosters are rejected, not filled.
+            if (!BracketSizing.IsLegalRosterCount(perHeatPlayerCount, tournament.Members.Count))
+            {
+                var legal = string.Join(", ", BracketSizing.ValidBracketSizesFor(perHeatPlayerCount));
+                return Result<Unit>.Failure(
+                    $"N={perHeatPlayerCount}-player tournament requires exactly one of these member counts: {legal}. Currently {tournament.Members.Count} members invited.",
+                    400);
+            }
+
+            tournament.BracketSize = tournament.Members.Count;
+
+            // Defense-in-depth: re-validate BestOf vs per-heat N (validator enforces this at create).
+            if (perHeatPlayerCount > 2 && tournament.BestOf != 1)
+                return Result<Unit>.Failure("Best of must be 1 when per-heat player count is greater than 2", 400);
+
+            BracketBuilder.BuildBracket(context, tournament, tournament.Members.ToList(), perHeatPlayerCount);
             tournament.Status = CompetitionStatus.Active;
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;
             return res
                 ? Result<Unit>.Success(Unit.Value)
                 : Result<Unit>.Failure("Could not start tournament", 400);
-        }
-
-        private void GenerateBracket(Tournament tournament)
-        {
-            // Remove existing matches and rounds if any
-            context.RemoveRange(context.Rounds.Where(r => r.CompetitionId == tournament.Id));
-            context.RemoveRange(context.Matches.Where(m => m.CompetitionId == tournament.Id));
-
-            var members = tournament.Members.ToList();
-            Shuffle(members);
-
-            // Assign seeds based on shuffled order
-            for (int i = 0; i < members.Count; i++)
-            {
-                members[i].Seed = i + 1;
-            }
-
-            int playerCount = members.Count;
-            int totalRounds = (int)Math.Log2(playerCount);
-            int matchNumber = 1;
-
-            // Create first round matches with players
-            int firstRoundMatches = playerCount / 2;
-            for (int i = 0; i < firstRoundMatches; i++)
-            {
-                var match = new Match
-                {
-                    CompetitionId = tournament.Id,
-                    BracketNumber = 1,
-                    MatchNumber = matchNumber,
-                    PlayerOneUserId = members[i * 2].UserId,
-                    PlayerTwoUserId = members[i * 2 + 1].UserId,
-                };
-                context.Matches.Add(match);
-
-                for (int r = 0; r < tournament.BestOf; r++)
-                {
-                    context.Rounds.Add(new Round
-                    {
-                        CompetitionId = tournament.Id,
-                        BracketNumber = 1,
-                        MatchNumber = matchNumber,
-                        RoundNumber = r + 1,
-                    });
-                }
-                matchNumber++;
-            }
-
-            // Create placeholder matches for subsequent rounds (no players yet)
-            for (int round = 2; round <= totalRounds; round++)
-            {
-                int matchesInRound = playerCount / (int)Math.Pow(2, round);
-                for (int i = 0; i < matchesInRound; i++)
-                {
-                    var match = new Match
-                    {
-                        CompetitionId = tournament.Id,
-                        BracketNumber = round,
-                        MatchNumber = matchNumber,
-                        PlayerOneUserId = null,
-                        PlayerTwoUserId = null,
-                    };
-                    context.Matches.Add(match);
-
-                    for (int r = 0; r < tournament.BestOf; r++)
-                    {
-                        context.Rounds.Add(new Round
-                        {
-                            CompetitionId = tournament.Id,
-                            BracketNumber = round,
-                            MatchNumber = matchNumber,
-                            RoundNumber = r + 1,
-                        });
-                    }
-                    matchNumber++;
-                }
-            }
-        }
-
-        private static void Shuffle<T>(IList<T> list)
-        {
-            Random rng = new();
-            int n = list.Count;
-            while (n > 1)
-            {
-                int k = rng.Next(n--);
-                (list[n], list[k]) = (list[k], list[n]);
-            }
         }
     }
 }

@@ -15,6 +15,7 @@ public class TournamentDto
     public DateTime? EndDate { get; set; }
     public int BestOf { get; set; }
     public int BracketSize { get; set; }
+    public int PerHeatPlayerCount { get; set; }
     public string? WinnerUserId { get; set; }
     public required ICollection<CompetitionMemberDto> Members { get; set; }
     public required ICollection<MatchDto> Matches { get; set; }
