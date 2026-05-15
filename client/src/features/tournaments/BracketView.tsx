@@ -296,7 +296,7 @@ export default function BracketView() {
               sx={{ fontWeight: "bold" }}
             />
             <Chip label={`Best of ${tournament.bestOf}`} variant="outlined" />
-            <Chip label={`${tournament.bracketSize} players`} variant="outlined" />
+            <Chip label={`${tournament.members.length} players`} variant="outlined" />
           </Box>
         </Box>
         <Box display="flex" gap={1} flexWrap="wrap">

@@ -79,7 +79,7 @@ export default function TournamentList() {
               </Box>
               <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                 <Group sx={{ color: "success.main" }} />
-                <Typography>{tournament.bracketSize} players</Typography>
+                <Typography>{tournament.members.length} players</Typography>
               </Box>
               {totalMatches > 0 && (
                 <Typography variant="body2" color="text.secondary" mt={1}>
