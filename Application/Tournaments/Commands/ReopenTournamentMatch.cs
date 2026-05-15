@@ -30,16 +30,23 @@ public class ReopenTournamentMatch
             if (match == null) return Result<Unit>.Failure("Match not found", 404);
             if (!match.Completed) return Result<Unit>.Failure("Match is not completed", 400);
 
-            // Check if winner has advanced and next match has been played
-            var totalRounds = (int)Math.Log2(tournament.BracketSize);
+            int perHeatN = match.PlayerCount;
+            var totalRounds = BracketSizing.TotalRoundsFor(perHeatN, tournament.BracketSize);
+
+            // If this is not the final round, clear the advancers from the next-round match
+            // using SlotMapping — the same mapping used by AdvanceAdvancers in CompleteTournamentMatch,
+            // so the exact slots that were filled are the ones cleared here.
+            //
+            // Transitive safety: we only need to block completion of the immediate next match.
+            // A next-next match cannot be completed unless the next match is Complete first,
+            // so blocking one level is sufficient to protect the entire downstream subtree.
             if (match.BracketNumber < totalRounds)
             {
-                // Find position within bracket round
                 var matchesInThisRound = await context.Matches
                     .Where(m => m.CompetitionId == tournament.Id && m.BracketNumber == match.BracketNumber)
                     .OrderBy(m => m.MatchNumber)
                     .ToListAsync(cancellationToken);
-                var positionInRound = matchesInThisRound.FindIndex(m => m.MatchNumber == match.MatchNumber) + 1;
+                var positionInRound = matchesInThisRound.FindIndex(m => m.MatchNumber == match.MatchNumber);
 
                 int nextBracketNumber = match.BracketNumber + 1;
                 var nextRoundMatches = await context.Matches
@@ -47,19 +54,17 @@ public class ReopenTournamentMatch
                     .OrderBy(m => m.MatchNumber)
                     .ToListAsync(cancellationToken);
 
-                int nextMatchIndex = (positionInRound - 1) / 2;
+                var (nextMatchIndex, slotIndices) = SlotMapping.For(positionInRound, perHeatN);
+
                 var nextMatch = nextMatchIndex < nextRoundMatches.Count ? nextRoundMatches[nextMatchIndex] : null;
 
                 if (nextMatch?.Completed == true)
                     return Result<Unit>.Failure("Cannot reopen — the next bracket match has already been completed", 400);
 
-                // Remove winner from next match
                 if (nextMatch != null)
                 {
-                    if (positionInRound % 2 == 1)
-                        nextMatch.PlayerOneUserId = null;
-                    else
-                        nextMatch.PlayerTwoUserId = null;
+                    foreach (var slotIndex in slotIndices)
+                        SlotMapping.SetSlot(nextMatch, slotIndex, null);
                 }
             }
 
@@ -73,14 +78,34 @@ public class ReopenTournamentMatch
 
             match.Completed = false;
             match.WinnerUserId = null;
+            match.SecondPlaceUserId = null;
+            match.ThirdPlaceUserId = null;
+            match.FourthPlaceUserId = null;
 
-            // Reset all rounds
-            foreach (var round in match.Rounds)
+            if (perHeatN == 2)
             {
-                round.Completed = false;
-                round.WinnerUserId = null;
-                round.PlayerOneCharacterId = null;
-                round.PlayerTwoCharacterId = null;
+                // N=2 Bo3: reset all per-round data
+                foreach (var round in match.Rounds)
+                {
+                    round.Completed = false;
+                    round.WinnerUserId = null;
+                    round.PlayerOneCharacterId = null;
+                    round.PlayerTwoCharacterId = null;
+                }
+            }
+            else
+            {
+                // N>2 single-round: reset the one round row
+                var singleRound = match.Rounds.FirstOrDefault(r => r.RoundNumber == 1);
+                if (singleRound != null)
+                {
+                    singleRound.Completed = false;
+                    singleRound.WinnerUserId = null;
+                    singleRound.PlayerOneCharacterId = null;
+                    singleRound.PlayerTwoCharacterId = null;
+                    singleRound.PlayerThreeCharacterId = null;
+                    singleRound.PlayerFourCharacterId = null;
+                }
             }
 
             var res = await context.SaveChangesAsync(cancellationToken) > 0;

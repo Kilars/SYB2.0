@@ -23,7 +23,23 @@ export const leagueSchema = baseCompetitionSchema.extend({
   members: baseMember.extend({ id: z.string().optional() }).array(),
 });
 
-export const tournamentSchema = baseCompetitionSchema;
+export const tournamentSchema = baseCompetitionSchema
+  .extend({
+    perHeatPlayerCount: z
+      .number()
+      .refine((v) => [2, 3, 4].includes(v), { message: "Per-heat player count must be 2, 3, or 4" })
+      .default(2),
+  })
+  .superRefine((data, ctx) => {
+    if (data.perHeatPlayerCount > 2 && data.bestOf !== 1) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Best of must be 1 when per-heat player count is greater than 2",
+        path: ["bestOf"],
+        input: data.bestOf,
+      });
+    }
+  });
 
 export type LeagueSchema = z.infer<typeof leagueSchema>;
 export type TournamentSchema = z.infer<typeof tournamentSchema>;

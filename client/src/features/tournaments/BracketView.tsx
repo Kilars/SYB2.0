@@ -15,6 +15,8 @@ import {
   DialogTitle,
   Paper,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -23,37 +25,32 @@ import { toast } from "react-toastify";
 import { useAppTheme } from "../../app/context/ThemeContext";
 import EmptyState from "../../app/shared/components/EmptyState";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
+import PodiumDisplay from "../../app/shared/components/PodiumDisplay";
 import { SMASH_COLORS } from "../../app/theme";
 import { useAccount } from "../../lib/hooks/useAccount";
 import { useCharacters } from "../../lib/hooks/useCharacters";
 import { useTournaments } from "../../lib/hooks/useTournaments";
+import { totalRoundsFor } from "../../lib/util/bracketSizing";
 import { COMPETITION_STATUSES } from "../../lib/util/constants";
 import { computeCharacterWinRates, computePlayerWinRates } from "../../lib/util/statUtils";
 import { CharacterWinRateLogScatter, CharacterWinRateTable, PlayerWinRateBar } from "../stats/charts";
-
-const ROUND_LABELS: Record<number, string> = {
-  1: "Round 1",
-  2: "Round 2",
-  3: "Quarterfinals",
-  4: "Semifinals",
-  5: "Final",
-};
 
 function getRoundLabel(bracketRound: number, totalRounds: number): string {
   const roundsFromEnd = totalRounds - bracketRound;
   if (roundsFromEnd === 0) return "Final";
   if (roundsFromEnd === 1) return "Semifinals";
   if (roundsFromEnd === 2) return "Quarterfinals";
-  return ROUND_LABELS[bracketRound] || `Round ${bracketRound}`;
+  return `Round ${bracketRound}`;
 }
+
+// ─── N=2 match card (existing two-player layout) ────────────────────────────
 
 interface BracketMatchCardProps {
   match: Match;
-  competitionId: string;
   onClick: () => void;
 }
 
-function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
+function BracketMatchCardN2({ match, onClick }: BracketMatchCardProps) {
   const getPlayerName = (player?: Player) => {
     if (!player) return "— TBD —";
     return player.isGuest ? `${player.displayName} (guest)` : player.displayName;
@@ -103,7 +100,6 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
       }}
     >
       <Box sx={{ p: 1 }}>
-        {/* Player 1 */}
         <Box
           sx={{
             display: "flex",
@@ -145,7 +141,6 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
 
         <Box sx={{ borderTop: "1px solid", borderColor: "divider" }} />
 
-        {/* Player 2 */}
         <Box
           sx={{
             display: "flex",
@@ -189,6 +184,122 @@ function BracketMatchCard({ match, onClick }: BracketMatchCardProps) {
   );
 }
 
+// ─── N>2 heat card ────────────────────────────────────────────────────────────
+
+interface HeatCardNProps {
+  match: Match;
+  members: CompetitionMember[];
+  onClick: () => void;
+}
+
+type HeatPlayer = { userId: string; displayName: string; isGuest?: boolean };
+
+function HeatCardN({ match, members, onClick }: HeatCardNProps) {
+  // Resolve player data from members list. GetTournamentDetails only includes PlayerOne/Two
+  // as nav properties; PlayerThree/Four are resolved from userId fields + members list.
+  const findMember = (userId?: string | null): HeatPlayer | undefined => {
+    if (!userId) return undefined;
+    const m = members.find((mb) => mb.userId === userId);
+    return m ? { userId: m.userId, displayName: m.displayName, isGuest: m.isGuest } : undefined;
+  };
+
+  const p1: HeatPlayer | undefined = match.playerOne
+    ? { userId: match.playerOne.userId, displayName: match.playerOne.displayName, isGuest: match.playerOne.isGuest }
+    : undefined;
+  const p2: HeatPlayer | undefined = match.playerTwo
+    ? { userId: match.playerTwo.userId, displayName: match.playerTwo.displayName, isGuest: match.playerTwo.isGuest }
+    : undefined;
+  const p3 = findMember(match.playerThreeUserId);
+  const p4 = findMember(match.playerFourUserId);
+
+  const playerCount = match.playerCount ?? 2;
+  const rawPlayers: (HeatPlayer | undefined)[] = [p1, p2, p3, p4].slice(0, playerCount);
+  const players: HeatPlayer[] = rawPlayers.filter((p): p is HeatPlayer => p != null);
+  const allAssigned = players.length === playerCount;
+  const canPlay = allAssigned && !match.completed;
+
+  const podiumPlacements = {
+    winner: findMember(match.winnerUserId),
+    second: findMember(match.secondPlaceUserId),
+    third: findMember(match.thirdPlaceUserId),
+    fourth: findMember(match.fourthPlaceUserId),
+  };
+  const podiumParticipants = players.map((p) => ({
+    userId: p.userId,
+    displayName: p.displayName,
+    isGuest: p.isGuest,
+  }));
+
+  return (
+    <Card
+      sx={{
+        maxWidth: 300,
+        border: match.completed
+          ? `2px solid ${SMASH_COLORS.p4Green}`
+          : canPlay
+            ? `2px solid ${SMASH_COLORS.p2Blue}`
+            : "1px solid",
+        borderColor: match.completed
+          ? SMASH_COLORS.p4Green
+          : canPlay
+            ? SMASH_COLORS.p2Blue
+            : "divider",
+        opacity: !allAssigned && !match.completed ? 0.5 : 1,
+        transition: "transform 0.15s ease, box-shadow 0.15s ease",
+        ...(canPlay && {
+          "@keyframes bracketPulse": {
+            "0%, 100%": { boxShadow: `0 0 0 0 ${SMASH_COLORS.p2Blue}44` },
+            "50%": { boxShadow: `0 0 0 4px ${SMASH_COLORS.p2Blue}22` },
+          },
+          animation: "bracketPulse 2s ease-in-out infinite",
+        }),
+        ...(canPlay && {
+          cursor: "pointer",
+          "&:hover": {
+            transform: "translateY(-2px)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            animation: "none",
+          },
+        }),
+      }}
+      onClick={canPlay ? onClick : undefined}
+    >
+      <Box sx={{ p: 1.5 }}>
+        {match.completed && podiumPlacements.winner ? (
+          <PodiumDisplay
+            placements={podiumPlacements}
+            participants={podiumParticipants}
+            collapseRule="never"
+          />
+        ) : (
+          <>
+            {players.length === 0 ? (
+              <Typography variant="body2" color="text.disabled" fontStyle="italic" sx={{ px: 1 }}>
+                — TBD —
+              </Typography>
+            ) : (
+              players.map((p) => (
+                <Typography key={p.userId} variant="body2" noWrap sx={{ px: 1, py: 0.25 }}>
+                  {p.isGuest ? `${p.displayName} (guest)` : p.displayName}
+                </Typography>
+              ))
+            )}
+            {canPlay && (
+              <Box sx={{ mt: 1, textAlign: "center" }}>
+                <Typography variant="caption" color="primary.main" fontWeight="bold">
+                  Tap to enter result
+                </Typography>
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
+    </Card>
+  );
+}
+
+// ─── Main BracketView ─────────────────────────────────────────────────────────
+
 export default function BracketView() {
   const { competitionId } = useParams();
   const { tournament, isTournamentLoading, startTournament, shuffleBracket, deleteTournament } =
@@ -197,6 +308,9 @@ export default function BracketView() {
   const { characters } = useCharacters();
   const { meta } = useAppTheme();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [isStarting, setIsStarting] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -211,15 +325,16 @@ export default function BracketView() {
 
   const isAdmin =
     currentUser && tournament.members.some((m) => m.userId === currentUser.id && m.isAdmin);
-  const totalRounds = Math.log2(tournament.bracketSize);
 
-  // Group matches by bracket number (round)
+  const perHeatN = tournament.perHeatPlayerCount ?? 2;
+  const totalRounds = totalRoundsFor(perHeatN, tournament.bracketSize);
+
+  // Group matches by bracket number (round), sorted by match number
   const matchesByRound: Record<number, Match[]> = {};
   for (const match of tournament.matches) {
     if (!matchesByRound[match.bracketNumber]) matchesByRound[match.bracketNumber] = [];
     matchesByRound[match.bracketNumber].push(match);
   }
-  // Sort within each round by match number
   for (const round in matchesByRound) {
     matchesByRound[round].sort((a, b) => a.matchNumber - b.matchNumber);
   }
@@ -260,10 +375,11 @@ export default function BracketView() {
 
   const canShuffle = tournament.status === 1 && !tournament.matches.some((m) => m.completed);
 
-  // Winner banner
   const winner = tournament.winnerUserId
     ? tournament.members.find((m) => m.userId === tournament.winnerUserId)
     : null;
+
+  const roundNumbers = Array.from({ length: totalRounds }, (_, i) => i + 1);
 
   return (
     <Box>
@@ -295,7 +411,11 @@ export default function BracketView() {
               }
               sx={{ fontWeight: "bold" }}
             />
-            <Chip label={`Best of ${tournament.bestOf}`} variant="outlined" />
+            {perHeatN === 2 ? (
+              <Chip label={`Best of ${tournament.bestOf}`} variant="outlined" />
+            ) : (
+              <Chip label={`${perHeatN}-player FFA`} variant="outlined" />
+            )}
             <Chip label={`${tournament.members.length} players`} variant="outlined" />
           </Box>
         </Box>
@@ -382,23 +502,22 @@ export default function BracketView() {
         </Paper>
       )}
 
-      {/* Active/Complete: show bracket */}
+      {/* Active/Complete: bracket view */}
       {tournament.status > 0 && (
-        <Box
-          sx={{
-            overflowX: "auto",
-            pb: 2,
-          }}
-        >
+        isMobile ? (
+          // Mobile: horizontal scroll-snap — each round is a full-width column
           <Box
             sx={{
               display: "flex",
-              gap: { xs: 2, sm: 4 },
-              minWidth: "fit-content",
-              alignItems: "stretch",
+              overflowX: "auto",
+              scrollSnapType: "x mandatory",
+              WebkitOverflowScrolling: "touch",
+              pb: 2,
+              mx: -2, // bleed to screen edge
+              px: 2,
             }}
           >
-            {Array.from({ length: totalRounds }, (_, i) => i + 1).map((bracketRound) => {
+            {roundNumbers.map((bracketRound) => {
               const matches = matchesByRound[bracketRound] || [];
               const roundLabel = getRoundLabel(bracketRound, totalRounds);
 
@@ -406,10 +525,9 @@ export default function BracketView() {
                 <Box
                   key={bracketRound}
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 0,
-                    minWidth: { xs: 200, sm: 240 },
+                    flex: "0 0 100vw",
+                    scrollSnapAlign: "start",
+                    pr: 2,
                   }}
                 >
                   <Typography
@@ -425,34 +543,126 @@ export default function BracketView() {
                     }}
                   >
                     {roundLabel}
+                    {totalRounds > 1 && (
+                      <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                        ({bracketRound}/{totalRounds})
+                      </Typography>
+                    )}
                   </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-around",
-                      flex: 1,
-                      gap: 2,
-                    }}
-                  >
-                    {matches.map((match) => (
-                      <BracketMatchCard
-                        key={match.matchNumber}
-                        match={match}
-                        competitionId={tournament.id}
-                        onClick={() =>
-                          navigate(
-                            `/tournaments/${tournament.id}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
-                          )
-                        }
-                      />
-                    ))}
+                  <Box display="flex" flexDirection="column" gap={2}>
+                    {matches.map((match) =>
+                      perHeatN === 2 ? (
+                        <BracketMatchCardN2
+                          key={match.matchNumber}
+                          match={match}
+                          onClick={() =>
+                            navigate(
+                              `/tournaments/${tournament.id}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
+                            )
+                          }
+                        />
+                      ) : (
+                        <HeatCardN
+                          key={match.matchNumber}
+                          match={match}
+                          members={tournament.members}
+                          onClick={() =>
+                            navigate(
+                              `/tournaments/${tournament.id}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
+                            )
+                          }
+                        />
+                      ),
+                    )}
                   </Box>
                 </Box>
               );
             })}
           </Box>
-        </Box>
+        ) : (
+          // Desktop: side-by-side columns (existing behavior)
+          <Box
+            sx={{
+              overflowX: "auto",
+              pb: 2,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                gap: { xs: 2, sm: 4 },
+                minWidth: "fit-content",
+                alignItems: "stretch",
+              }}
+            >
+              {roundNumbers.map((bracketRound) => {
+                const matches = matchesByRound[bracketRound] || [];
+                const roundLabel = getRoundLabel(bracketRound, totalRounds);
+
+                return (
+                  <Box
+                    key={bracketRound}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 0,
+                      minWidth: { xs: 200, sm: 240 },
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight="bold"
+                      textAlign="center"
+                      sx={{
+                        mb: 2,
+                        py: 0.5,
+                        px: 2,
+                        borderRadius: 1,
+                        backgroundColor: "action.hover",
+                      }}
+                    >
+                      {roundLabel}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-around",
+                        flex: 1,
+                        gap: 2,
+                      }}
+                    >
+                      {matches.map((match) =>
+                        perHeatN === 2 ? (
+                          <BracketMatchCardN2
+                            key={match.matchNumber}
+                            match={match}
+                            onClick={() =>
+                              navigate(
+                                `/tournaments/${tournament.id}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
+                              )
+                            }
+                          />
+                        ) : (
+                          <HeatCardN
+                            key={match.matchNumber}
+                            match={match}
+                            members={tournament.members}
+                            onClick={() =>
+                              navigate(
+                                `/tournaments/${tournament.id}/bracket/${match.bracketNumber}/match/${match.matchNumber}`,
+                              )
+                            }
+                          />
+                        ),
+                      )}
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Box>
+        )
       )}
 
       {/* Stats section */}

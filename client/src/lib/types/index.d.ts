@@ -16,6 +16,7 @@ type League = Competition & {
 
 type Tournament = Competition & {
   bracketSize: number;
+  perHeatPlayerCount: number;
   winnerUserId?: string;
 };
 

@@ -139,7 +139,7 @@ export default function MatchDetails({ type }: MatchDetailsProps) {
           isReopening={reopenMatch.isPending}
         />
       ) : (matchData.playerCount ?? 2) > 2 ? (
-        <FfaMatchForm matchData={matchData} />
+        <FfaMatchForm matchData={matchData} mode={type} />
       ) : (
         <MatchDetailsForm
           matchData={matchData}
