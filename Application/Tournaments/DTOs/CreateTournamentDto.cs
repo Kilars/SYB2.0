@@ -9,5 +9,6 @@ public class CreateTournamentDto
     public required string Description { get; set; }
     public DateTime StartDate { get; set; }
     public int BestOf { get; set; } = 3;
+    public int PerHeatPlayerCount { get; set; } = 2;
     public List<CreateMemberDto> Members { get; set; } = [];
 }

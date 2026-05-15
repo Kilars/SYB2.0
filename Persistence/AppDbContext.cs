@@ -123,6 +123,13 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .Property(t => t.BracketSize)
             .HasColumnName("BracketSize");
 
+        // Tournament.PerHeatPlayerCount carries a SQL DEFAULT 2 created by the
+        // AddTournamentPerHeatPlayerCount migration (used to backfill pre-existing rows).
+        // Mirror it in the model so EF's PendingModelChangesWarning doesn't fire on startup.
+        builder.Entity<Tournament>()
+            .Property(t => t.PerHeatPlayerCount)
+            .HasDefaultValue(2);
+
         builder.Entity<League>()
             .Property(l => l.PlayerCount)
             .HasColumnName("LeaguePlayerCount");

@@ -23,16 +23,18 @@ public class CreateTournament
             var user = await userAccessor.GetUserAsync();
             var tournament = mapper.Map<Tournament>(request.TournamentDto);
 
-            var validCounts = new[] { 4, 8, 16, 32 };
-            if (!validCounts.Contains(tournament.Members.Count))
-                return Result<string>.Failure($"Tournament must have exactly 4, 8, 16, or 32 players. Got {tournament.Members.Count}.", 400);
-
             var validBestOf = new[] { 1, 3, 5 };
             if (!validBestOf.Contains(request.TournamentDto.BestOf))
                 return Result<string>.Failure("BestOf must be 1, 3, or 5.", 400);
 
-            tournament.BracketSize = tournament.Members.Count;
             tournament.BestOf = request.TournamentDto.BestOf;
+            tournament.PerHeatPlayerCount = request.TournamentDto.PerHeatPlayerCount;
+
+            // Initialize BracketSize to the minimum legal size for this N (= PerHeatPlayerCount,
+            // which is always present in ValidBracketSizesFor(N) because every set starts with N).
+            // This avoids log2(0)-style pathologies in any Planned-status read path. The final
+            // BracketSize is locked at StartTournament once the exact roster is invited.
+            tournament.BracketSize = tournament.PerHeatPlayerCount;
 
             if (tournament.Members.Any(m => m.UserId == user.Id))
             {
@@ -45,9 +47,6 @@ public class CreateTournament
                     UserId = user.Id,
                     IsAdmin = true
                 });
-                tournament.BracketSize = tournament.Members.Count;
-                if (!validCounts.Contains(tournament.BracketSize))
-                    return Result<string>.Failure($"Tournament must have exactly 4, 8, 16, or 32 players (including you). Got {tournament.BracketSize}.", 400);
             }
 
             context.Tournaments.Add(tournament);
