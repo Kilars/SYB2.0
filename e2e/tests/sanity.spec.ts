@@ -48,7 +48,7 @@ test.describe('Sanity Checks', () => {
     await expect(page.getByRole('columnheader', { name: /player/i })).toBeVisible({
       timeout: 15000,
     });
-    await expect(page.getByRole('columnheader', { name: /points/i })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: /performance/i })).toBeVisible();
 
     // Should have at least one data row (seeded with 12 players)
     const rows = page.getByRole('row');

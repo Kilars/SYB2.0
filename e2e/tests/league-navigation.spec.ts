@@ -81,7 +81,7 @@ test.describe('Leaderboard data', () => {
 
   test('leaderboard table has expected columns and 12 player rows', async ({ page, pageErrors }) => {
     await expect(page.getByRole('columnheader', { name: /player/i })).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: /points/i })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: /performance/i })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: /wr/i })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: /wins/i })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: /losses/i })).toBeVisible();
