@@ -61,19 +61,24 @@ export default function UserStats() {
       />
     );
 
-  const player = userMatches[0].playerOne?.userId === userId
-    ? userMatches[0].playerOne
-    : userMatches[0].playerTwo;
+  // Resolve display name: user may appear in any of the 4 positional slots.
+  const findPlayerInMatch = (match: Match) =>
+    [match.playerOne, match.playerTwo, match.playerThree, match.playerFour].find(
+      (p) => p?.userId === userId,
+    );
+  const player = userMatches.map(findPlayerInMatch).find(Boolean);
   const displayName = player?.displayName ?? "Player";
 
   const stats = userMatches.flatMap((match) =>
     match.rounds
       .filter((round) => round.winnerUserId)
       .map((round) => {
-        const charId =
-          match.playerOne?.userId === userId
-            ? (round.playerOneCharacterId as string)
-            : (round.playerTwoCharacterId as string);
+        // Resolve which positional character slot belongs to this user
+        let charId: string | undefined;
+        if (match.playerOne?.userId === userId) charId = round.playerOneCharacterId;
+        else if (match.playerTwo?.userId === userId) charId = round.playerTwoCharacterId;
+        else if (match.playerThree?.userId === userId) charId = round.playerThreeCharacterId;
+        else if (match.playerFour?.userId === userId) charId = round.playerFourCharacterId;
         const won = round.winnerUserId === userId;
         return {
           charId,

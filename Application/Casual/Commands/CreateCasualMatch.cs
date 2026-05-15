@@ -27,34 +27,35 @@ public class CreateCasualMatch
             if (casual == null)
                 return Result<Unit>.Failure("Casual competition not found", 404);
 
-            // Lazy-join: add players as CompetitionMembers if not already
+            // Collect all participant userIds, deduplicated, excluding nulls.
+            var participantIds = new[] { dto.PlayerOneUserId, dto.PlayerTwoUserId, dto.PlayerThreeUserId, dto.PlayerFourUserId }
+                .Where(id => !string.IsNullOrEmpty(id))
+                .Distinct()
+                .ToList()!;
+
+            // PHASE 1: Lazy-join — insert CompetitionMember rows for any new participants.
+            // This SaveChangesAsync MUST happen before the Match insert because the
+            // composite FKs on Match.PlayerThree/Four → CompetitionMember (added in task 042)
+            // require the member rows to exist before the Match FK is validated.
             var existingMembers = await context.CompetitionMembers
                 .Where(m => m.CompetitionId == CasualConstants.GlobalCasualId
-                    && (m.UserId == dto.PlayerOneUserId || m.UserId == dto.PlayerTwoUserId))
+                    && participantIds.Contains(m.UserId))
                 .Select(m => m.UserId)
                 .ToListAsync(cancellationToken);
 
-            if (!existingMembers.Contains(dto.PlayerOneUserId))
+            foreach (var userId in participantIds)
             {
-                context.CompetitionMembers.Add(new CompetitionMember
+                if (!existingMembers.Contains(userId))
                 {
-                    UserId = dto.PlayerOneUserId,
-                    CompetitionId = CasualConstants.GlobalCasualId,
-                    IsAdmin = false
-                });
+                    context.CompetitionMembers.Add(new CompetitionMember
+                    {
+                        UserId = userId,
+                        CompetitionId = CasualConstants.GlobalCasualId,
+                        IsAdmin = false
+                    });
+                }
             }
 
-            if (!existingMembers.Contains(dto.PlayerTwoUserId))
-            {
-                context.CompetitionMembers.Add(new CompetitionMember
-                {
-                    UserId = dto.PlayerTwoUserId,
-                    CompetitionId = CasualConstants.GlobalCasualId,
-                    IsAdmin = false
-                });
-            }
-
-            // Save members first to satisfy FK constraints
             await context.SaveChangesAsync(cancellationToken);
 
             // Auto-increment MatchNumber
@@ -69,15 +70,22 @@ public class CreateCasualMatch
                 CompetitionId = CasualConstants.GlobalCasualId,
                 BracketNumber = 1,
                 MatchNumber = matchNumber,
+                PlayerCount = dto.PlayerCount,
                 PlayerOneUserId = dto.PlayerOneUserId,
                 PlayerTwoUserId = dto.PlayerTwoUserId,
+                PlayerThreeUserId = dto.PlayerThreeUserId,
+                PlayerFourUserId = dto.PlayerFourUserId,
                 WinnerUserId = dto.WinnerUserId,
+                SecondPlaceUserId = dto.SecondPlaceUserId,
+                ThirdPlaceUserId = dto.ThirdPlaceUserId,
+                FourthPlaceUserId = dto.FourthPlaceUserId,
                 Completed = true,
                 RegisteredTime = DateTime.UtcNow
             };
 
             context.Matches.Add(match);
 
+            // Exactly one Round row per match (single-game pattern for all N).
             var round = new Round
             {
                 CompetitionId = CasualConstants.GlobalCasualId,
@@ -86,6 +94,8 @@ public class CreateCasualMatch
                 RoundNumber = 1,
                 PlayerOneCharacterId = dto.PlayerOneCharacterId,
                 PlayerTwoCharacterId = dto.PlayerTwoCharacterId,
+                PlayerThreeCharacterId = dto.PlayerThreeCharacterId,
+                PlayerFourCharacterId = dto.PlayerFourCharacterId,
                 WinnerUserId = dto.WinnerUserId,
                 Completed = true
             };

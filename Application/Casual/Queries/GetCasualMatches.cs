@@ -25,6 +25,10 @@ public class GetCasualMatches
                 .Include(m => m.PlayerOne!.User)
                 .Include(m => m.PlayerTwo)
                 .Include(m => m.PlayerTwo!.User)
+                .Include(m => m.PlayerThree)
+                .Include(m => m.PlayerThree!.User)
+                .Include(m => m.PlayerFour)
+                .Include(m => m.PlayerFour!.User)
                 .OrderByDescending(m => m.RegisteredTime)
                 .Take(50)
                 .ToListAsync(cancellationToken);

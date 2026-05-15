@@ -6,7 +6,7 @@
 
 ## Current Task
 
-_None — 044 just completed. Next: 045 (Casual N-player integration) — see `backlog/045-FEATURE-casual-n-player-integration.md`._
+_None — 045 just completed. Next: 046a (Tournament N-player backend) — see `backlog/046a-FEATURE-tournament-n-player-backend.md`._
 
 <!--
 When a task is active, replace the above with:

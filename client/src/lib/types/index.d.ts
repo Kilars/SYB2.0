@@ -90,11 +90,19 @@ type Character = {
 };
 
 type CreateCasualMatchInput = {
+  playerCount: 2 | 3 | 4;
   playerOneUserId: string;
   playerTwoUserId: string;
-  playerOneCharacterId: string;
-  playerTwoCharacterId: string;
+  playerThreeUserId?: string;
+  playerFourUserId?: string;
+  playerOneCharacterId?: string;
+  playerTwoCharacterId?: string;
+  playerThreeCharacterId?: string;
+  playerFourCharacterId?: string;
   winnerUserId: string;
+  secondPlaceUserId?: string | null;
+  thirdPlaceUserId?: string | null;
+  fourthPlaceUserId?: string | null;
 };
 
 type CharacterWinRate = {
