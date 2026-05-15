@@ -263,3 +263,11 @@ A task is complete when:
 - **LOAD CONTEXT BEFORE WORKING** — always read relevant entity files, AppDbContext, and types/index.d.ts before domain work
 - **CHECK DOMAIN INVARIANTS** — review the 5 invariants above before any entity or schema change
 - **FOLLOW LAYER ORDER** — Domain → Application → Persistence → Infrastructure → API → Frontend
+
+---
+
+## Auto-Merge PR Workflow
+
+- `enable_pr_auto_merge` only succeeds when the PR's `mergeStateStatus` is `BLOCKED` (waiting on a **required** status check or required review). The `backend`/`frontend` checks on this repo are **not** branch-protection-required, so a freshly opened PR is `UNSTABLE` and the call fails with "required checks are failing" even though CI is merely still running — this is a branch-protection gap, not a CI failure.
+- **Pattern**: subscribe to PR activity, then re-attempt auto-merge on the CI-completion webhook. If the PR is then `BLOCKED`, enable auto-merge; if `CLEAN` (nothing required), merge directly. Treat the initial `UNSTABLE`/`CLEAN` rejection as "retry when CI settles", not a hard failure.
+- **Durable fix (needs repo admin, once)**: add `backend` and `frontend` to `main`'s required-status-checks in branch protection so new PRs go straight to `BLOCKED` and auto-merge can be enabled at creation time.
