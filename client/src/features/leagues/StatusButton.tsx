@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
+import PlayerCountToggle from "../../app/shared/components/PlayerCountToggle";
 import { SMASH_COLORS } from "../../app/theme";
 import { useLeagues } from "../../lib/hooks/useLeagues";
 
@@ -22,9 +23,10 @@ type Props = {
 export default function StatusButton({ competitionId, leagueStatus }: Props) {
   const [open, setOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<number | undefined>(undefined);
+  const [playerCount, setPlayerCount] = useState<2 | 3 | 4>(2);
   const { updateStatus } = useLeagues(competitionId);
 
-  const onSubmit = async (changeStatusTo: number) => {
+  const onSubmit = async (changeStatusTo: number | { status: number; playerCount?: number }) => {
     await updateStatus.mutateAsync(changeStatusTo);
   };
 
@@ -133,18 +135,23 @@ export default function StatusButton({ competitionId, leagueStatus }: Props) {
 
   return (
     <>
-      <Button
-        sx={{ ml: 2, fontWeight: "bold" }}
-        color={color}
-        variant="contained"
-        disabled={updateStatus.isPending}
-        onClick={() => handleClick(changeStatusTo)}
-      >
-        {updateStatus.isPending ? <CircularProgress size={18} sx={{ mr: 1 }} /> : icon}
-        <Typography variant="button" ml={1}>
-          {text}
-        </Typography>
-      </Button>
+      <Stack spacing={1} sx={{ ml: 2 }}>
+        {leagueStatus === 0 && (
+          <PlayerCountToggle value={playerCount} onChange={setPlayerCount} />
+        )}
+        <Button
+          sx={{ fontWeight: "bold" }}
+          color={color}
+          variant="contained"
+          disabled={updateStatus.isPending}
+          onClick={() => handleClick(changeStatusTo)}
+        >
+          {updateStatus.isPending ? <CircularProgress size={18} sx={{ mr: 1 }} /> : icon}
+          <Typography variant="button" ml={1}>
+            {text}
+          </Typography>
+        </Button>
+      </Stack>
       <Dialog open={open} onClose={() => setOpen(false)} aria-labelledby="status-dialog-title">
         <DialogTitle
           id="status-dialog-title"
@@ -172,7 +179,12 @@ export default function StatusButton({ competitionId, leagueStatus }: Props) {
               variant="contained"
               onClick={() => {
                 setOpen(false);
-                if (pendingStatus !== undefined) onSubmit(pendingStatus);
+                if (pendingStatus === undefined) return;
+                if (pendingStatus === 1 && leagueStatus === 0) {
+                  onSubmit({ status: 1, playerCount });
+                } else {
+                  onSubmit(pendingStatus);
+                }
               }}
             >
               Yes, proceed
