@@ -6,7 +6,7 @@
 
 ## Current Task
 
-_None — 046a completed 2026-05-15 (moved to done/). Next: 046b (Tournament N-player frontend) — see `backlog/046b-FEATURE-tournament-n-player-frontend.md`._
+_None — 046b completed 2026-05-15 (moved to done/, /simplify pass applied). Next: 048 (3-player league lifecycle E2E test) — see `backlog/048-TEST-3p-league-lifecycle-e2e.md`._
 
 <!--
 When a task is active, replace the above with:

@@ -12,6 +12,7 @@ import { makeFfaResultSchema } from "../../lib/schemas/ffaPlacementsRefine";
 
 interface FfaMatchFormProps {
   matchData: Match;
+  mode?: "league" | "tournament";
 }
 
 type FfaFormValues = {
@@ -25,13 +26,13 @@ const EMPTY_PLACEMENTS: FfaPlacements = {
   fourthPlaceUserId: null,
 };
 
-export default function FfaMatchForm({ matchData }: FfaMatchFormProps) {
+export default function FfaMatchForm({ matchData, mode = "league" }: FfaMatchFormProps) {
   const { competitionId, bracketNumber, matchNumber } = matchData;
-  const { completeFfaMatch } = useFfaMatch({
-    competitionId,
-    bracketNumber,
-    matchNumber,
-  });
+  const { completeFfaMatch } = useFfaMatch(
+    mode === "tournament"
+      ? { mode: "tournament", competitionId, matchNumber }
+      : { mode: "league", competitionId, bracketNumber, matchNumber },
+  );
 
   // Collect participants from matchData (N>2 has playerThree/Four as well)
   const participants: PodiumPlayer[] = useMemo(() => {
@@ -63,16 +64,18 @@ export default function FfaMatchForm({ matchData }: FfaMatchFormProps) {
     return result;
   }, [matchData.playerOne, matchData.playerTwo, matchData.playerThree, matchData.playerFour]);
 
+  const playerCount = (matchData.playerCount ?? 2) as 2 | 3 | 4;
+
+  // Tournaments with N=4 require full podium (top-2 for advancement).
+  const requireFullPodium = mode === "tournament" && playerCount === 4;
   const schema = useMemo(
     () =>
       makeFfaResultSchema(() => participants.map((p) => p.userId), {
-        allowWinnerOnly: true,
-        requireFullPodium: false,
+        allowWinnerOnly: !requireFullPodium,
+        requireFullPodium,
       }),
-    [participants],
+    [participants, requireFullPodium],
   );
-
-  const playerCount = (matchData.playerCount ?? 2) as 2 | 3 | 4;
 
   const {
     control,
@@ -118,7 +121,7 @@ export default function FfaMatchForm({ matchData }: FfaMatchFormProps) {
           name="placements"
           playerCount={playerCount}
           players={participants}
-          rules={{ allowWinnerOnly: true, requireFullPodium: false }}
+          rules={{ allowWinnerOnly: !requireFullPodium, requireFullPodium }}
         />
       </Box>
 

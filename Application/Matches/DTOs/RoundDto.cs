@@ -16,4 +16,10 @@ public class RoundDto
     // Character selections for N>2 rounds (string, not int — Character.Id is string)
     public string? PlayerThreeCharacterId { get; set; }
     public string? PlayerFourCharacterId { get; set; }
+
+    // N>2 placement captures. Read by CompleteTournamentMatch.Handler from Rounds[0].
+    // WinnerUserId (above) = 1st place for all modes.
+    public string? SecondPlaceUserId { get; set; }
+    public string? ThirdPlaceUserId { get; set; }
+    public string? FourthPlaceUserId { get; set; }
 }

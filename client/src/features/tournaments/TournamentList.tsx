@@ -71,7 +71,11 @@ export default function TournamentList() {
               <Typography mb={2}>{tournament.description}</Typography>
               <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                 <EmojiEvents sx={{ color: "warning.main" }} />
-                <Typography>Best of {tournament.bestOf} · Single Elimination</Typography>
+                {(tournament.perHeatPlayerCount ?? 2) > 2 ? (
+                  <Typography>{tournament.perHeatPlayerCount}-player FFA · Single Elimination</Typography>
+                ) : (
+                  <Typography>Best of {tournament.bestOf} · Single Elimination</Typography>
+                )}
               </Box>
               <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                 <AccessTime sx={{ color: "info.main" }} />

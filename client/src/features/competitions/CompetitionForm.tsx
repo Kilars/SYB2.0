@@ -5,6 +5,7 @@ import {
   Button,
   CircularProgress,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Paper,
@@ -13,11 +14,12 @@ import {
 } from "@mui/material";
 import { startOfToday } from "date-fns";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 
 import DateTimeInput from "../../app/shared/components/DateTimeInput";
 import LoadingSkeleton from "../../app/shared/components/LoadingSkeleton";
+import PlayerCountToggle from "../../app/shared/components/PlayerCountToggle";
 import TextInput from "../../app/shared/components/TextInput";
 import UserSelectInput from "../../app/shared/components/UserSelectInput";
 import { useAccount } from "../../lib/hooks/useAccount";
@@ -30,6 +32,7 @@ import {
   type TournamentSchema,
   tournamentSchema,
 } from "../../lib/schemas/competitionSchema";
+import { validBracketSizesFor } from "../../lib/util/bracketSizing";
 
 interface CompetitionFormProps {
   type: "league" | "tournament";
@@ -53,16 +56,21 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { isValid, isSubmitting, isDirty },
     reset,
   } = useForm({
     mode: "onTouched",
     resolver: zodResolver(schema),
-    defaultValues: {
-      bestOf: 3,
-      startDate: startOfToday(),
-    },
+    defaultValues: isLeague
+      ? { bestOf: 3, startDate: startOfToday() }
+      : { bestOf: 3, startDate: startOfToday(), perHeatPlayerCount: 2 },
   });
+
+  // Watch perHeatPlayerCount for tournament-specific UI
+  const perHeatPlayerCount = useWatch({ control, name: "perHeatPlayerCount" }) as number | undefined;
+  const currentPerHeat = perHeatPlayerCount ?? 2;
+  const isMultiPlayerHeat = !isLeague && currentPerHeat > 2;
 
   const onSubmit = async (data: LeagueSchema | TournamentSchema) => {
     if (isLeague) {
@@ -106,7 +114,14 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
       : isLeague
         ? "Create League"
         : "Create Tournament";
-  const memberLabel = isLeague ? "Add members" : "Add players (4, 8, 16, or 32)";
+
+  const validSizes = validBracketSizesFor(currentPerHeat);
+  const memberLabel = isLeague
+    ? "Add members"
+    : `Add players (${validSizes.join(", ")})`;
+  const memberHelperText = isLeague
+    ? undefined
+    : `N=${currentPerHeat}-player tournaments require exactly one of: ${validSizes.join(", ")} members.`;
 
   return (
     <Paper
@@ -133,6 +148,29 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
         <Typography variant="h4">{heading}</Typography>
       </Box>
       <Box display="flex" flexDirection="column" gap={3}>
+        {/* Tournament-only: per-heat player count toggle */}
+        {!isLeague && (
+          <Controller
+            name="perHeatPlayerCount"
+            control={control}
+            render={({ field }) => (
+              <PlayerCountToggle
+                value={(field.value as 2 | 3 | 4) ?? 2}
+                onChange={(val) => {
+                  field.onChange(val);
+                  // Force BestOf = 1 when N > 2
+                  if (val > 2) setValue("bestOf", 1);
+                }}
+                labels={{
+                  two: "1v1 Bo3",
+                  three: "3-FFA Single",
+                  four: "4-FFA Single",
+                }}
+              />
+            )}
+          />
+        )}
+
         <TextInput label="Title" control={control} name="title" />
         <TextInput label="Description" control={control} name="description" />
         <DateTimeInput
@@ -142,31 +180,39 @@ export default function CompetitionForm({ type }: CompetitionFormProps) {
           defaultValue={startOfToday()}
         />
 
-        <Controller
-          name="bestOf"
-          control={control}
-          render={({ field }) => (
-            <FormControl fullWidth>
-              <InputLabel>Best Of</InputLabel>
-              <Select {...field} label="Best Of">
-                <MenuItem value={1}>Best of 1</MenuItem>
-                <MenuItem value={3}>Best of 3</MenuItem>
-                <MenuItem value={5}>Best of 5</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-        />
+        {/* BestOf: hidden/forced to 1 for N>2 tournaments */}
+        {!isMultiPlayerHeat && (
+          <Controller
+            name="bestOf"
+            control={control}
+            render={({ field }) => (
+              <FormControl fullWidth>
+                <InputLabel>Best Of</InputLabel>
+                <Select {...field} label="Best Of">
+                  <MenuItem value={1}>Best of 1</MenuItem>
+                  <MenuItem value={3}>Best of 3</MenuItem>
+                  <MenuItem value={5}>Best of 5</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          />
+        )}
 
         {users && currentUser && (
-          <UserSelectInput
-            label={memberLabel}
-            control={control}
-            name="members"
-            users={users}
-            currentUser={currentUser}
-            defaultValue={[{ userId: currentUser.id, displayName: currentUser.displayName }]}
-            onCreateGuest={async (displayName) => await createGuest.mutateAsync(displayName)}
-          />
+          <Box>
+            <UserSelectInput
+              label={memberLabel}
+              control={control}
+              name="members"
+              users={users}
+              currentUser={currentUser}
+              defaultValue={[{ userId: currentUser.id, displayName: currentUser.displayName }]}
+              onCreateGuest={async (displayName) => await createGuest.mutateAsync(displayName)}
+            />
+            {memberHelperText && (
+              <FormHelperText>{memberHelperText}</FormHelperText>
+            )}
+          </Box>
         )}
         <Box
           sx={{
