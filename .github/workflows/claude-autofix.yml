@@ -159,7 +159,7 @@ jobs:
             Stop conditions — post a PR comment summarizing what you found and exit without pushing if:
             - The failure looks intentional (deliberate breaking change with no matching test/code update).
             - Multiple plausible root causes; choosing wrong would mask a real bug.
-            - The fix would change composite keys, round-robin generation, the points formula, the guest-merge transaction, or auth route-param contracts — these need human review per CLAUDE.md.
+            - The fix would semantically alter composite keys, the round-robin pairing/shuffle algorithm, the points formula, the guest-merge transaction, or auth route-param contracts — these need human review per CLAUDE.md. (A trivial fix in the same file — a cast, a `using` directive, a rename of a non-domain local, a typo — does NOT count; only changes to those algorithms' behavior do.)
             - You cannot reproduce the failure and the artifacts are ambiguous.
 
             ---
