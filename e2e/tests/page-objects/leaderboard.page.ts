@@ -5,7 +5,7 @@
  * Table columns: # | Player | Points | WR | Wins | Losses | Flawless
  */
 
-import { Page, expect } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 
 export interface PlayerStats {
   player: string;
@@ -71,5 +71,13 @@ export class LeaderboardPage {
 
   async clickEditLeague() {
     await this.page.getByRole('button', { name: /edit league/i }).click();
+  }
+
+  getPerformanceColumnHeader(): Locator {
+    return this.page.getByTestId('leaderboard-header-performance');
+  }
+
+  getPlayerRowByUserId(userId: string): Locator {
+    return this.page.getByTestId(`leaderboard-row-${userId}`);
   }
 }

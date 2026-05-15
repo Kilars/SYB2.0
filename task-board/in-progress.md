@@ -6,7 +6,7 @@
 
 ## Current Task
 
-_None — 046b completed 2026-05-15 (moved to done/, /simplify pass applied). Next: 048 (3-player league lifecycle E2E test) — see `backlog/048-TEST-3p-league-lifecycle-e2e.md`._
+_None — 048 completed 2026-05-15 (scope expanded with user approval to add the missing league N-player activation UI; moved to done/, /simplify pass applied). Backlog is empty._
 
 <!--
 When a task is active, replace the above with:

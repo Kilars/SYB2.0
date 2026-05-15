@@ -39,3 +39,9 @@ export function uniqueLeagueName(prefix: string): string {
 export function uniqueTournamentName(prefix: string): string {
   return `${prefix}-${Date.now()}`;
 }
+
+// Expected total match count for a v-player league with N-player matches.
+// Two brackets times the per-bracket count. expectedMatchCount(3, 3) === 4.
+export function expectedMatchCount(v: number, n: number): number {
+  return 2 * Math.ceil(2 * (v - 1) / (n - 1)) * v / n;
+}
